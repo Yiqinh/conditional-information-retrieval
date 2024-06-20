@@ -1,0 +1,7 @@
+transformers
+torch
+bitsandbytes==0.43.1
+accelerate==0.31.0
+datasets
+pandas
+numpy

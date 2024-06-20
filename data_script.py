@@ -50,9 +50,9 @@ def infer(model, tokenizer, messages):
 if __name__ == "__main__":
 
     #load in the data
-    data_dir = './data'
+    data_dir = '../data'
     source_df = pd.read_json(f'{data_dir}/full-source-scored-data.jsonl.gz', lines=True, compression='gzip', nrows=100)
-    article_d = load_from_disk(f'{data_dir}/all-coref-resolved')
+    article_d = load_from_disk('all-coref-resolved')
     
     #process the data into right format: article with annotated sentences
     filtered_article_d = article_d.filter(lambda x: x['article_url'] in set(source_df['article_url']), num_proc=10)

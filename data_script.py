@@ -50,7 +50,7 @@ def infer(model, tokenizer, messages):
 if __name__ == "__main__":
 
     #load in the data
-    data_dir = '../data'
+    data_dir = './data'
     source_df = pd.read_json(f'{data_dir}/full-source-scored-data.jsonl.gz', lines=True, compression='gzip', nrows=100)
     article_d = load_from_disk('all-coref-resolved')
     
@@ -64,32 +64,37 @@ if __name__ == "__main__":
             [['article_url', 'attributions', 'quote_type', 'sent_lists',]]
             .explode(['attributions', 'quote_type', 'sent_lists'])
     )
+
     sentences_with_quotes = (sentences_with_quotes
         .assign(attributions=lambda df: 
                 df.apply(lambda x: x['attributions'] if x['quote_type'] not in disallowed_quote_types else np.nan, axis=1)
         )
     )
 
-    #store each article in a map
-    article_map = {}
-    url_map = {}
-    for i in range(len(sentences_with_quotes.index.unique())):
-    #for i in range(2):
-        article_map[i] = sentences_with_quotes.loc[sentences_with_quotes.index == i][['sent_lists', 'attributions']].to_json(lines=True, orient='records')
-        url_map[i] = sentences_with_quotes.loc[99].iloc[0]['article_url']
+    #store each article_url, annoted_sentences pair
+    articles = []
+    for url in sentences_with_quotes['article_url'].unique():
+        one_article = (
+            sentences_with_quotes
+                .loc[lambda df: df['article_url'] == url]
+                .reset_index(drop=True)
+                )
+        
+        json_str = one_article[['sent_lists', 'attributions']].to_json(lines=True, orient='records')
+        articles.append((url, json_str))
 
-    
     #load the model
     model, tokenizer = load_model("meta-llama/Meta-Llama-3-8B-Instruct")
-
+    
     # loop through and create prompts for each article
-    for i in range(len(article_map)):
-        article = article_map[i]
+    for article in articles:
+        json_str = article[1]
+        url = article[0]
 
         prompt = f"""
                 Here is a news article, with each sentence annotated according to the source of it's information:
                 ```
-                {article}
+                {json_str}
                 ```
 
                 Please summarize each of our source annotations. Tell me in one paragraph per source: (1) who the source is (2) what informational content they provide to the article. 
@@ -107,8 +112,9 @@ if __name__ == "__main__":
             ]
         
         response = infer(model, tokenizer, message)
-        with open('output.txt', 'w') as file:
-            file.write(url_map[i])
+
+        with open('output.txt', 'a') as file:
+            file.write(url)
             file.write('\n')
             file.write(response)
             file.write('\n')

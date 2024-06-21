@@ -85,7 +85,7 @@ if __name__ == "__main__":
 
     #load the model
     model, tokenizer = load_model("meta-llama/Meta-Llama-3-8B-Instruct")
-    
+
     # loop through and create prompts for each article
     for article in articles:
         json_str = article[1]

@@ -1,6 +1,6 @@
 transformers
 torch
-bitsandbytes==0.43.1
+bitsandbytes
 accelerate==0.31.0
 datasets
 pandas

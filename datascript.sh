@@ -3,8 +3,8 @@
 #SBATCH -n 1
 #SBATCH --time=40:00:00
 #SBATCH --gres=gpu:2
-#SBATCH --mem-per-gpu=80GB
-#SBATCH --cpus-per-gpu=20
+#SBATCH --mem-per-gpu=100GB
+#SBATCH --cpus-per-gpu=10
 #SBATCH --partition=gpu
 
 module load conda

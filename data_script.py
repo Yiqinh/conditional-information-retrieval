@@ -4,49 +4,43 @@ import pandas as pd
 import numpy as np
 from tqdm.auto import tqdm
 
-from transformers import (AutoModelForCausalLM,
-                          AutoTokenizer,
-                          pipeline,
-                          set_seed)
 import os
 import json
 import torch
+import transformers
 
 def load_model(model_id, cache_dir):
     config_data = json.load(open('config.json'))
     os.environ['HF_TOKEN'] = config_data["HF_TOKEN"]
 
-    tokenizer = AutoTokenizer.from_pretrained(model_id, cache_dir=cache_dir)
-    model = AutoModelForCausalLM.from_pretrained(
-        model_id,
-        torch_dtype=torch.bfloat16,
+    pipeline = transformers.pipeline(
+        "text-generation",
+        model=model_id,
+        model_kwargs={"torch_dtype": torch.bfloat16},
         device_map="auto",
-        cache_dir=cache_dir)
-    model.generation_config.pad_token_id = tokenizer.pad_token_id
-    return model, tokenizer
+        cache_dir=cache_dir
+    )
+
+    return pipeline
 
 
-def infer(model, tokenizer, messages):
-    input_ids = tokenizer.apply_chat_template(
-        messages,
-        add_generation_prompt=True,
-        return_tensors="pt"
-        ).to(model.device)
-        
+def infer(pipeline, messages):
+
     terminators = [
-        tokenizer.eos_token_id,
-        tokenizer.convert_tokens_to_ids("<|eot_id|>")]
+        pipeline.tokenizer.eos_token_id,
+        pipeline.tokenizer.convert_tokens_to_ids("<|eot_id|>")
+    ]
         
-    outputs = model.generate(
-        input_ids,
+    outputs = pipeline(
+        messages,
         max_new_tokens=1024,
         eos_token_id=terminators,
         do_sample=True,
         temperature=0.6,
         top_p=0.9,
-)
-    response = outputs[0][input_ids.shape[-1]:-1]
-    return tokenizer.decode(response, skip_special_tokens=True)
+        )
+    
+    return outputs[0]["generated_text"][-1]
 
 if __name__ == "__main__":
 
@@ -84,8 +78,8 @@ if __name__ == "__main__":
         json_str = one_article[['sent_lists', 'attributions']].to_json(lines=True, orient='records')
         articles.append((url, json_str))
 
-    #load the model
-    model, tokenizer = load_model("meta-llama/Meta-Llama-3-70B-Instruct", "/project/jonmay_231/spangher/huggingface_cache")
+    #load the model pipeline
+    pipeline = load_model("meta-llama/Meta-Llama-3-70B-Instruct", "/project/jonmay_231/spangher/huggingface_cache")
 
     # loop through and create prompts for each article
     for article in articles:
@@ -112,11 +106,12 @@ if __name__ == "__main__":
             "content": prompt},
             ]
         
-        response = infer(model, tokenizer, message)
-
+        response = infer(pipeline, message)
         with open('output.txt', 'a') as file:
-            file.write(url)
+            file.write('url')
             file.write('\n')
-            file.write(response)
+            file.write('{')
+            file.write('response')
+            file.write('}')
             file.write('\n')
-            file.write('\n')
+

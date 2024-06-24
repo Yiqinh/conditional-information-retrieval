@@ -11,7 +11,7 @@ from transformers import (AutoModelForCausalLM,
 import os
 import json
 import torch
-
+#TESTING GITHUB
 def load_model(model_id):
     config_data = json.load(open('config.json'))
     os.environ['HF_TOKEN'] = config_data["HF_TOKEN"]

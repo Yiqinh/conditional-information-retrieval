@@ -11,17 +11,18 @@ from transformers import (AutoModelForCausalLM,
 import os
 import json
 import torch
-#TESTING GITHUB
-def load_model(model_id):
+
+def load_model(model_id, cache_dir):
     config_data = json.load(open('config.json'))
     os.environ['HF_TOKEN'] = config_data["HF_TOKEN"]
 
-    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    tokenizer = AutoTokenizer.from_pretrained(model_id, cache_dir=cache_dir)
     model = AutoModelForCausalLM.from_pretrained(
         model_id,
         torch_dtype=torch.bfloat16,
-        device_map="auto")
-
+        device_map="auto",
+        cache_dir=cache_dir)
+    model.generation_config.pad_token_id = tokenizer.pad_token_id
     return model, tokenizer
 
 
@@ -38,7 +39,7 @@ def infer(model, tokenizer, messages):
         
     outputs = model.generate(
         input_ids,
-        max_new_tokens=256,
+        max_new_tokens=1024,
         eos_token_id=terminators,
         do_sample=True,
         temperature=0.6,
@@ -84,7 +85,7 @@ if __name__ == "__main__":
         articles.append((url, json_str))
 
     #load the model
-    model, tokenizer = load_model("meta-llama/Meta-Llama-3-8B-Instruct")
+    model, tokenizer = load_model("meta-llama/Meta-Llama-3-70B-Instruct", "/project/jonmay_231/spangher/huggingface_cache")
 
     # loop through and create prompts for each article
     for article in articles:
@@ -117,4 +118,5 @@ if __name__ == "__main__":
             file.write(url)
             file.write('\n')
             file.write(response)
+            file.write('\n')
             file.write('\n')

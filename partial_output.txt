@@ -1,0 +1,62 @@
+www.bbc.co.uk/blogs/researchanddevelopment/2012/10/digital-hd-radio-camera-halfrf.shtml
+{Here are the summaries for each source:
+
+**BBC R&D**
+The source is the BBC Research and Development team. They provide informational content related to the development of the halfRF system, including its history, goals, and technical details. They also share their experiences and challenges in building the system, such as designing and testing the transmitter unit, and overcoming issues with the modulator card. Additionally, they provide context about the project's objectives, such as reducing spectrum usage and improving signal quality.
+
+**BBC**
+The source is the British Broadcasting Corporation (BBC). They provide general information about the organization's involvement in the halfRF project, including its participation in the International Broadcasting Convention (IBC) and its collaboration with the European Broadcasting Union (EBU). They also mention the BBC's Technical Support Services and its role in manufacturing components for the project.
+
+**Xilinx Feild**
+The source is Xilinx, a company that specializes in field-programmable gate arrays (FPGAs). They provide specific information about the FPGA device used in the halfRF system, including its capabilities and limitations. The annotation suggests that the Xilinx device was used in the modulator board and that the team had to work with pre-production engineering samples.
+
+**BBC R&D (again)**
+This source is the same as the first one, but it's annotated separately. They provide additional information about the halfRF system, including its performance, features, and demonstrations. They also share details about the system's testing, such as the walk-around tests at the South Lab and the demonstration at IBC.
+
+**Ulrich Reimers**
+The source is Professor Ulrich Reimers, the Chairman of the DVB technical module. He provides a brief endorsement of the halfRF system, expressing his impression that the team had managed to implement part of the DVB-NGH standard even before it was finished.}
+www.prweb.com/releases/2015/02/prweb12528912.htm
+{Here are the summaries for each source:
+
+**Socrata Foundation**
+The Socrata Foundation is the source of three sentences in the article. They provide informational content related to their mission and goals, stating that they will support organizations that lack resources to fulfill their data-driven mission, and that they believe open data can remove barriers to social justice and economic progress.
+
+**Robert Runge**
+Robert Runge is a member of Socrata's Board of Directors and is the source of one sentence in the article. He provides informational content related to the gap between publicly funded open data projects and underfunded open data opportunities, stating that the Socrata Foundation bridges this gap.
+
+**Mike Duggan**
+Mike Duggan is the Mayor of Detroit and is the source of three sentences in the article. He provides informational content related to his vision for data-driven government in Detroit, stating that he wants to show residents that their government is working for them, and that open data is essential for transparency, accountability, and fact-based decision-making.
+
+**Susan Scrupski**
+Susan Scrupski is the Founder of Big Mountain Data (BMD) and is the source of three sentences in the article. She provides informational content related to BMD's mission and goals, stating that they hope to build custom applications from datasets to help determine and deter domestic abuse offenders, and that they believe access to open data will help solve the problem of family abuse and violence.
+
+**William Jeffries**
+William Jeffries is the Founder of Heat Seek NYC and is the source of two sentences in the article. He provides informational content related to Heat Seek NYC's mission and goals, stating that they gather data to protect tenants from unsafe living conditions and track the city's worst heating violations.}
+www.usatoday.com/story/news/health/2015/08/06/cvs-drops-viagra/31227269/
+{Here are the summaries for each source:
+
+**CVS**
+CVS is a pharmaceutical company and the main subject of the article. They provide informational content about their decision to remove certain drugs from their insurance coverage, specifically the announcement of the removal of more than a dozen drugs from their insurance.
+
+**Christine Cramer**
+Christine Cramer is a spokeswoman for CVS. She provides quotes and statements on behalf of CVS, confirming the removal of 26 drugs from their insurance coverage and explaining the company's consideration of "clinical acceptability" and "equally effective products with lower overall costs" in making their decisions.
+
+**CNN/Money**
+CNN/Money is a news organization that provides context and background information on the pharmaceutical industry. They contribute to the article by providing data on the rising costs of prescription drugs, including the fact that spending on prescription drugs reached a record-breaking $374 billion in 2015 and that CVS's list of excluded drugs has increased from 34 to 124 since 2012.
+
+**Express Scripts Holding Co.**
+Express Scripts Holding Co. is a competitor to CVS in the pharmaceutical industry. They provide information about their own insurance coverage, specifically that they will continue to cover Viagra and Cialis in 2016, in contrast to CVS's decision to drop Viagra.}
+thehill.com/changing-america/well-being/mental-health/3632993-teens-confide-in-these-adults-more-than-parents-about-mental-health/
+{Here are the summaries for each source:
+
+**CVS Health/Morning Consult**: This source is a joint effort between CVS Health and Morning Consult, a survey research firm. They provide statistical information from a survey they conducted, including the percentage of educators and parents who have been approached by a child about mental or emotional concerns, the percentage of educators and parents who are concerned about adolescents' mental health, and the top stressors that educators and parents believe teens face today. They also provide information on the resources that educators and parents believe would be most beneficial for teen mental health.
+
+**Biden Administration**: The Biden Administration is the executive branch of the US federal government, led by President Joe Biden. They provide information on the administration's efforts to improve access to mental health care, specifically the allotment of nearly $300 million to bolster mental health resources in schools.
+
+**Experts**: The "experts" source is not a specific individual or organization, but rather a general reference to authorities in the field of mental health. They provide context and analysis on the importance of both educators and parents playing complementary roles in supporting young people's mental health.
+
+**Vivek Murthy**: Vivek Murthy is the U.S. Surgeon General. He provides a quote from an advisory he issued in December, in which he highlights the widespread mental health challenges facing children, adolescents, and young adults, and emphasizes the importance of supporting and investing in the next generation.
+
+**President Biden**: President Biden is the President of the United States. He provides information on his administration's efforts to expand access to mental health care in schools, specifically the allotment of nearly $300 million for this purpose.
+
+**Karen S. Lynch**: Karen S. Lynch is the President and Chief Executive Officer of CVS Health. She provides a quote from a press release, in which she emphasizes the importance of making mental health a part of everyday conversation and notes that young people are not facing the mental health crisis alone.}

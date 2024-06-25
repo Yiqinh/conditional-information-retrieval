@@ -1,7 +1,5 @@
 transformers
 torch
-bitsandbytes
-accelerate==0.31.0
 datasets
 pandas
 numpy

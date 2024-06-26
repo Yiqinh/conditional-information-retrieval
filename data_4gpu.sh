@@ -5,10 +5,11 @@
 #SBATCH --gres=gpu:4
 #SBATCH --mem-per-gpu=100GB
 #SBATCH --cpus-per-gpu=10
+#SBATCH --account=jonmay_231
 #SBATCH --partition=isi
 
 
 module load python/3.11
 pip install -r requirements.txt
-python3 data_script.py
+python3 data_vllm.py
 ~                        

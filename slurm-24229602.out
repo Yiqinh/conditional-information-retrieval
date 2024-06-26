@@ -1,103 +1,0 @@
-==========================================
-SLURM_JOB_ID = 24229602
-SLURM_JOB_NODELIST = b10-13
-TMPDIR = /tmp/SLURM_24229602
-==========================================
-Defaulting to user installation because normal site-packages is not writeable
-Requirement already satisfied: transformers in /home1/yh_739/.local/lib/python3.11/site-packages (from -r requirements.txt (line 1)) (4.41.2)
-Requirement already satisfied: torch in /home1/yh_739/.local/lib/python3.11/site-packages (from -r requirements.txt (line 2)) (2.3.1)
-Requirement already satisfied: datasets in /home1/yh_739/.local/lib/python3.11/site-packages (from -r requirements.txt (line 3)) (2.20.0)
-Requirement already satisfied: pandas in /home1/yh_739/.local/lib/python3.11/site-packages (from -r requirements.txt (line 4)) (2.2.2)
-Requirement already satisfied: numpy in /home1/yh_739/.local/lib/python3.11/site-packages (from -r requirements.txt (line 5)) (2.0.0)
-Requirement already satisfied: huggingface_hub in /home1/yh_739/.local/lib/python3.11/site-packages (from -r requirements.txt (line 6)) (0.23.4)
-Requirement already satisfied: filelock in /home1/yh_739/.local/lib/python3.11/site-packages (from transformers->-r requirements.txt (line 1)) (3.15.3)
-Requirement already satisfied: packaging>=20.0 in /spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/python-3.11.3-gl2q3yz/lib/python3.11/site-packages (from transformers->-r requirements.txt (line 1)) (23.1)
-Requirement already satisfied: pyyaml>=5.1 in /home1/yh_739/.local/lib/python3.11/site-packages (from transformers->-r requirements.txt (line 1)) (6.0.1)
-Requirement already satisfied: regex!=2019.12.17 in /home1/yh_739/.local/lib/python3.11/site-packages (from transformers->-r requirements.txt (line 1)) (2024.5.15)
-Requirement already satisfied: requests in /home1/yh_739/.local/lib/python3.11/site-packages (from transformers->-r requirements.txt (line 1)) (2.32.3)
-Requirement already satisfied: tokenizers<0.20,>=0.19 in /home1/yh_739/.local/lib/python3.11/site-packages (from transformers->-r requirements.txt (line 1)) (0.19.1)
-Requirement already satisfied: safetensors>=0.4.1 in /home1/yh_739/.local/lib/python3.11/site-packages (from transformers->-r requirements.txt (line 1)) (0.4.3)
-Requirement already satisfied: tqdm>=4.27 in /home1/yh_739/.local/lib/python3.11/site-packages (from transformers->-r requirements.txt (line 1)) (4.66.4)
-Requirement already satisfied: typing-extensions>=4.8.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (4.12.2)
-Requirement already satisfied: sympy in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (1.12.1)
-Requirement already satisfied: networkx in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (3.3)
-Requirement already satisfied: jinja2 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (3.1.4)
-Requirement already satisfied: fsspec in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (2024.5.0)
-Requirement already satisfied: nvidia-cuda-nvrtc-cu12==12.1.105 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (12.1.105)
-Requirement already satisfied: nvidia-cuda-runtime-cu12==12.1.105 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (12.1.105)
-Requirement already satisfied: nvidia-cuda-cupti-cu12==12.1.105 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (12.1.105)
-Requirement already satisfied: nvidia-cudnn-cu12==8.9.2.26 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (8.9.2.26)
-Requirement already satisfied: nvidia-cublas-cu12==12.1.3.1 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (12.1.3.1)
-Requirement already satisfied: nvidia-cufft-cu12==11.0.2.54 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (11.0.2.54)
-Requirement already satisfied: nvidia-curand-cu12==10.3.2.106 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (10.3.2.106)
-Requirement already satisfied: nvidia-cusolver-cu12==11.4.5.107 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (11.4.5.107)
-Requirement already satisfied: nvidia-cusparse-cu12==12.1.0.106 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (12.1.0.106)
-Requirement already satisfied: nvidia-nccl-cu12==2.20.5 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (2.20.5)
-Requirement already satisfied: nvidia-nvtx-cu12==12.1.105 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (12.1.105)
-Requirement already satisfied: triton==2.3.1 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (2.3.1)
-Requirement already satisfied: nvidia-nvjitlink-cu12 in /home1/yh_739/.local/lib/python3.11/site-packages (from nvidia-cusolver-cu12==11.4.5.107->torch->-r requirements.txt (line 2)) (12.5.40)
-Requirement already satisfied: pyarrow>=15.0.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from datasets->-r requirements.txt (line 3)) (16.1.0)
-Requirement already satisfied: pyarrow-hotfix in /home1/yh_739/.local/lib/python3.11/site-packages (from datasets->-r requirements.txt (line 3)) (0.6)
-Requirement already satisfied: dill<0.3.9,>=0.3.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from datasets->-r requirements.txt (line 3)) (0.3.8)
-Requirement already satisfied: xxhash in /home1/yh_739/.local/lib/python3.11/site-packages (from datasets->-r requirements.txt (line 3)) (3.4.1)
-Requirement already satisfied: multiprocess in /home1/yh_739/.local/lib/python3.11/site-packages (from datasets->-r requirements.txt (line 3)) (0.70.16)
-Requirement already satisfied: aiohttp in /home1/yh_739/.local/lib/python3.11/site-packages (from datasets->-r requirements.txt (line 3)) (3.9.5)
-Requirement already satisfied: python-dateutil>=2.8.2 in /home1/yh_739/.local/lib/python3.11/site-packages (from pandas->-r requirements.txt (line 4)) (2.9.0.post0)
-Requirement already satisfied: pytz>=2020.1 in /home1/yh_739/.local/lib/python3.11/site-packages (from pandas->-r requirements.txt (line 4)) (2024.1)
-Requirement already satisfied: tzdata>=2022.7 in /home1/yh_739/.local/lib/python3.11/site-packages (from pandas->-r requirements.txt (line 4)) (2024.1)
-Requirement already satisfied: aiosignal>=1.1.2 in /home1/yh_739/.local/lib/python3.11/site-packages (from aiohttp->datasets->-r requirements.txt (line 3)) (1.3.1)
-Requirement already satisfied: attrs>=17.3.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from aiohttp->datasets->-r requirements.txt (line 3)) (23.2.0)
-Requirement already satisfied: frozenlist>=1.1.1 in /home1/yh_739/.local/lib/python3.11/site-packages (from aiohttp->datasets->-r requirements.txt (line 3)) (1.4.1)
-Requirement already satisfied: multidict<7.0,>=4.5 in /home1/yh_739/.local/lib/python3.11/site-packages (from aiohttp->datasets->-r requirements.txt (line 3)) (6.0.5)
-Requirement already satisfied: yarl<2.0,>=1.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from aiohttp->datasets->-r requirements.txt (line 3)) (1.9.4)
-Requirement already satisfied: six>=1.5 in /home1/yh_739/.local/lib/python3.11/site-packages (from python-dateutil>=2.8.2->pandas->-r requirements.txt (line 4)) (1.16.0)
-Requirement already satisfied: charset-normalizer<4,>=2 in /spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/python-3.11.3-gl2q3yz/lib/python3.11/site-packages (from requests->transformers->-r requirements.txt (line 1)) (3.2.0)
-Requirement already satisfied: idna<4,>=2.5 in /spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/python-3.11.3-gl2q3yz/lib/python3.11/site-packages (from requests->transformers->-r requirements.txt (line 1)) (3.4)
-Requirement already satisfied: urllib3<3,>=1.21.1 in /spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/python-3.11.3-gl2q3yz/lib/python3.11/site-packages (from requests->transformers->-r requirements.txt (line 1)) (1.26.16)
-Requirement already satisfied: certifi>=2017.4.17 in /spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/python-3.11.3-gl2q3yz/lib/python3.11/site-packages (from requests->transformers->-r requirements.txt (line 1)) (2023.5.7)
-Requirement already satisfied: MarkupSafe>=2.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from jinja2->torch->-r requirements.txt (line 2)) (2.1.5)
-Requirement already satisfied: mpmath<1.4.0,>=1.1.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from sympy->torch->-r requirements.txt (line 2)) (1.3.0)
-
-[notice] A new release of pip is available: 23.1.2 -> 24.1
-[notice] To update, run: pip install --upgrade pip
-Special tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.
-Loading checkpoint shards:   0%|          | 0/30 [00:00<?, ?it/s]Loading checkpoint shards:   3%|▎         | 1/30 [00:08<04:09,  8.61s/it]Loading checkpoint shards:   7%|▋         | 2/30 [00:17<04:06,  8.79s/it]Loading checkpoint shards:  10%|█         | 3/30 [00:27<04:09,  9.22s/it]Loading checkpoint shards:  13%|█▎        | 4/30 [00:35<03:54,  9.02s/it]Loading checkpoint shards:  17%|█▋        | 5/30 [00:44<03:43,  8.93s/it]Loading checkpoint shards:  20%|██        | 6/30 [00:56<03:59, 10.00s/it]Loading checkpoint shards:  23%|██▎       | 7/30 [01:05<03:36,  9.42s/it]Loading checkpoint shards:  27%|██▋       | 8/30 [01:20<04:08, 11.28s/it]Loading checkpoint shards:  30%|███       | 9/30 [01:30<03:48, 10.86s/it]Loading checkpoint shards:  33%|███▎      | 10/30 [01:37<03:17,  9.90s/it]Loading checkpoint shards:  37%|███▋      | 11/30 [01:46<03:00,  9.50s/it]Loading checkpoint shards:  40%|████      | 12/30 [01:59<03:09, 10.54s/it]Loading checkpoint shards:  43%|████▎     | 13/30 [02:07<02:46,  9.80s/it]Loading checkpoint shards:  47%|████▋     | 14/30 [02:17<02:36,  9.77s/it]Loading checkpoint shards:  50%|█████     | 15/30 [02:26<02:23,  9.57s/it]Loading checkpoint shards:  53%|█████▎    | 16/30 [02:33<02:04,  8.91s/it]Loading checkpoint shards:  57%|█████▋    | 17/30 [02:41<01:51,  8.61s/it]Loading checkpoint shards:  60%|██████    | 18/30 [02:50<01:44,  8.71s/it]Loading checkpoint shards:  63%|██████▎   | 19/30 [03:00<01:41,  9.19s/it]Loading checkpoint shards:  67%|██████▋   | 20/30 [03:09<01:31,  9.12s/it]Loading checkpoint shards:  70%|███████   | 21/30 [03:18<01:20,  8.98s/it]Loading checkpoint shards:  73%|███████▎  | 22/30 [03:25<01:06,  8.36s/it]Loading checkpoint shards:  77%|███████▋  | 23/30 [03:47<01:26, 12.42s/it]Loading checkpoint shards:  80%|████████  | 24/30 [03:55<01:07, 11.24s/it]Loading checkpoint shards:  83%|████████▎ | 25/30 [04:05<00:54, 10.86s/it]Loading checkpoint shards:  87%|████████▋ | 26/30 [04:14<00:40, 10.09s/it]Loading checkpoint shards:  90%|█████████ | 27/30 [04:20<00:27,  9.10s/it]Loading checkpoint shards:  93%|█████████▎| 28/30 [04:29<00:17,  8.82s/it]Loading checkpoint shards:  97%|█████████▋| 29/30 [04:38<00:08,  8.91s/it]Loading checkpoint shards: 100%|██████████| 30/30 [04:42<00:00,  7.41s/it]Loading checkpoint shards: 100%|██████████| 30/30 [04:42<00:00,  9.40s/it]
-The attention mask and the pad token id were not set. As a consequence, you may observe unexpected behavior. Please pass your input's `attention_mask` to obtain reliable results.
-Setting `pad_token_id` to `eos_token_id`:128009 for open-end generation.
-The attention mask and the pad token id were not set. As a consequence, you may observe unexpected behavior. Please pass your input's `attention_mask` to obtain reliable results.
-Setting `pad_token_id` to `eos_token_id`:128009 for open-end generation.
-The attention mask and the pad token id were not set. As a consequence, you may observe unexpected behavior. Please pass your input's `attention_mask` to obtain reliable results.
-Setting `pad_token_id` to `eos_token_id`:128009 for open-end generation.
-The attention mask and the pad token id were not set. As a consequence, you may observe unexpected behavior. Please pass your input's `attention_mask` to obtain reliable results.
-Setting `pad_token_id` to `eos_token_id`:128009 for open-end generation.
-The attention mask and the pad token id were not set. As a consequence, you may observe unexpected behavior. Please pass your input's `attention_mask` to obtain reliable results.
-Setting `pad_token_id` to `eos_token_id`:128009 for open-end generation.
-Traceback (most recent call last):
-  File "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/data_script.py", line 114, in <module>
-    response = infer(model, tokenizer, message)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/data_script.py", line 39, in infer
-    outputs = model.generate(
-              ^^^^^^^^^^^^^^^
-  File "/home1/yh_739/.local/lib/python3.11/site-packages/torch/utils/_contextlib.py", line 115, in decorate_context
-    return func(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^
-  File "/home1/yh_739/.local/lib/python3.11/site-packages/transformers/generation/utils.py", line 1758, in generate
-    result = self._sample(
-             ^^^^^^^^^^^^^
-  File "/home1/yh_739/.local/lib/python3.11/site-packages/transformers/generation/utils.py", line 2397, in _sample
-    outputs = self(
-              ^^^^^
-  File "/home1/yh_739/.local/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
-    return self._call_impl(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home1/yh_739/.local/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
-    return forward_call(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home1/yh_739/.local/lib/python3.11/site-packages/accelerate/hooks.py", line 166, in new_forward
-    output = module._old_forward(*args, **kwargs)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home1/yh_739/.local/lib/python3.11/site-packages/transformers/models/llama/modeling_llama.py", line 1184, in forward
-    logits = logits.float()
-             ^^^^^^^^^^^^^^
-torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 8.26 GiB. GPU  has a total capacity of 79.15 GiB of which 4.22 GiB is free. Including non-PyTorch memory, this process has 74.91 GiB memory in use. Of the allocated memory 72.75 GiB is allocated by PyTorch, and 1.67 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)

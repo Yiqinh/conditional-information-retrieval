@@ -1,0 +1,183 @@
+==========================================
+SLURM_JOB_ID = 24250054
+SLURM_JOB_NODELIST = b09-14
+TMPDIR = /tmp/SLURM_24250054
+==========================================
+Defaulting to user installation because normal site-packages is not writeable
+Requirement already satisfied: transformers in /home1/yh_739/.local/lib/python3.11/site-packages (from -r requirements.txt (line 1)) (4.41.2)
+Requirement already satisfied: torch in /home1/yh_739/.local/lib/python3.11/site-packages (from -r requirements.txt (line 2)) (2.3.0)
+Requirement already satisfied: datasets in /home1/yh_739/.local/lib/python3.11/site-packages (from -r requirements.txt (line 3)) (2.20.0)
+Requirement already satisfied: pandas in /home1/yh_739/.local/lib/python3.11/site-packages (from -r requirements.txt (line 4)) (2.2.2)
+Requirement already satisfied: numpy in /home1/yh_739/.local/lib/python3.11/site-packages (from -r requirements.txt (line 5)) (1.26.4)
+Requirement already satisfied: huggingface_hub in /home1/yh_739/.local/lib/python3.11/site-packages (from -r requirements.txt (line 6)) (0.23.4)
+Requirement already satisfied: vllm in /home1/yh_739/.local/lib/python3.11/site-packages (from -r requirements.txt (line 7)) (0.5.0.post1)
+Requirement already satisfied: filelock in /home1/yh_739/.local/lib/python3.11/site-packages (from transformers->-r requirements.txt (line 1)) (3.15.3)
+Requirement already satisfied: packaging>=20.0 in /spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/python-3.11.3-gl2q3yz/lib/python3.11/site-packages (from transformers->-r requirements.txt (line 1)) (23.1)
+Requirement already satisfied: pyyaml>=5.1 in /home1/yh_739/.local/lib/python3.11/site-packages (from transformers->-r requirements.txt (line 1)) (6.0.1)
+Requirement already satisfied: regex!=2019.12.17 in /home1/yh_739/.local/lib/python3.11/site-packages (from transformers->-r requirements.txt (line 1)) (2024.5.15)
+Requirement already satisfied: requests in /home1/yh_739/.local/lib/python3.11/site-packages (from transformers->-r requirements.txt (line 1)) (2.32.3)
+Requirement already satisfied: tokenizers<0.20,>=0.19 in /home1/yh_739/.local/lib/python3.11/site-packages (from transformers->-r requirements.txt (line 1)) (0.19.1)
+Requirement already satisfied: safetensors>=0.4.1 in /home1/yh_739/.local/lib/python3.11/site-packages (from transformers->-r requirements.txt (line 1)) (0.4.3)
+Requirement already satisfied: tqdm>=4.27 in /home1/yh_739/.local/lib/python3.11/site-packages (from transformers->-r requirements.txt (line 1)) (4.66.4)
+Requirement already satisfied: typing-extensions>=4.8.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (4.12.2)
+Requirement already satisfied: sympy in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (1.12.1)
+Requirement already satisfied: networkx in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (3.3)
+Requirement already satisfied: jinja2 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (3.1.4)
+Requirement already satisfied: fsspec in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (2024.5.0)
+Requirement already satisfied: nvidia-cuda-nvrtc-cu12==12.1.105 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (12.1.105)
+Requirement already satisfied: nvidia-cuda-runtime-cu12==12.1.105 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (12.1.105)
+Requirement already satisfied: nvidia-cuda-cupti-cu12==12.1.105 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (12.1.105)
+Requirement already satisfied: nvidia-cudnn-cu12==8.9.2.26 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (8.9.2.26)
+Requirement already satisfied: nvidia-cublas-cu12==12.1.3.1 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (12.1.3.1)
+Requirement already satisfied: nvidia-cufft-cu12==11.0.2.54 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (11.0.2.54)
+Requirement already satisfied: nvidia-curand-cu12==10.3.2.106 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (10.3.2.106)
+Requirement already satisfied: nvidia-cusolver-cu12==11.4.5.107 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (11.4.5.107)
+Requirement already satisfied: nvidia-cusparse-cu12==12.1.0.106 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (12.1.0.106)
+Requirement already satisfied: nvidia-nccl-cu12==2.20.5 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (2.20.5)
+Requirement already satisfied: nvidia-nvtx-cu12==12.1.105 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (12.1.105)
+Requirement already satisfied: triton==2.3.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from torch->-r requirements.txt (line 2)) (2.3.0)
+Requirement already satisfied: nvidia-nvjitlink-cu12 in /home1/yh_739/.local/lib/python3.11/site-packages (from nvidia-cusolver-cu12==11.4.5.107->torch->-r requirements.txt (line 2)) (12.5.40)
+Requirement already satisfied: pyarrow>=15.0.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from datasets->-r requirements.txt (line 3)) (16.1.0)
+Requirement already satisfied: pyarrow-hotfix in /home1/yh_739/.local/lib/python3.11/site-packages (from datasets->-r requirements.txt (line 3)) (0.6)
+Requirement already satisfied: dill<0.3.9,>=0.3.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from datasets->-r requirements.txt (line 3)) (0.3.8)
+Requirement already satisfied: xxhash in /home1/yh_739/.local/lib/python3.11/site-packages (from datasets->-r requirements.txt (line 3)) (3.4.1)
+Requirement already satisfied: multiprocess in /home1/yh_739/.local/lib/python3.11/site-packages (from datasets->-r requirements.txt (line 3)) (0.70.16)
+Requirement already satisfied: aiohttp in /home1/yh_739/.local/lib/python3.11/site-packages (from datasets->-r requirements.txt (line 3)) (3.9.5)
+Requirement already satisfied: python-dateutil>=2.8.2 in /home1/yh_739/.local/lib/python3.11/site-packages (from pandas->-r requirements.txt (line 4)) (2.9.0.post0)
+Requirement already satisfied: pytz>=2020.1 in /home1/yh_739/.local/lib/python3.11/site-packages (from pandas->-r requirements.txt (line 4)) (2024.1)
+Requirement already satisfied: tzdata>=2022.7 in /home1/yh_739/.local/lib/python3.11/site-packages (from pandas->-r requirements.txt (line 4)) (2024.1)
+Requirement already satisfied: cmake>=3.21 in /home1/yh_739/.local/lib/python3.11/site-packages (from vllm->-r requirements.txt (line 7)) (3.29.6)
+Requirement already satisfied: ninja in /home1/yh_739/.local/lib/python3.11/site-packages (from vllm->-r requirements.txt (line 7)) (1.11.1.1)
+Requirement already satisfied: psutil in /home1/yh_739/.local/lib/python3.11/site-packages (from vllm->-r requirements.txt (line 7)) (6.0.0)
+Requirement already satisfied: sentencepiece in /home1/yh_739/.local/lib/python3.11/site-packages (from vllm->-r requirements.txt (line 7)) (0.2.0)
+Requirement already satisfied: py-cpuinfo in /home1/yh_739/.local/lib/python3.11/site-packages (from vllm->-r requirements.txt (line 7)) (9.0.0)
+Requirement already satisfied: fastapi in /home1/yh_739/.local/lib/python3.11/site-packages (from vllm->-r requirements.txt (line 7)) (0.111.0)
+Requirement already satisfied: openai in /home1/yh_739/.local/lib/python3.11/site-packages (from vllm->-r requirements.txt (line 7)) (1.35.5)
+Requirement already satisfied: uvicorn[standard] in /home1/yh_739/.local/lib/python3.11/site-packages (from vllm->-r requirements.txt (line 7)) (0.30.1)
+Requirement already satisfied: pydantic>=2.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from vllm->-r requirements.txt (line 7)) (2.7.4)
+Requirement already satisfied: pillow in /spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/python-3.11.3-gl2q3yz/lib/python3.11/site-packages (from vllm->-r requirements.txt (line 7)) (10.0.0)
+Requirement already satisfied: prometheus-client>=0.18.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from vllm->-r requirements.txt (line 7)) (0.20.0)
+Requirement already satisfied: prometheus-fastapi-instrumentator>=7.0.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from vllm->-r requirements.txt (line 7)) (7.0.0)
+Requirement already satisfied: tiktoken>=0.6.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from vllm->-r requirements.txt (line 7)) (0.7.0)
+Requirement already satisfied: lm-format-enforcer==0.10.1 in /home1/yh_739/.local/lib/python3.11/site-packages (from vllm->-r requirements.txt (line 7)) (0.10.1)
+Requirement already satisfied: outlines>=0.0.43 in /home1/yh_739/.local/lib/python3.11/site-packages (from vllm->-r requirements.txt (line 7)) (0.0.46)
+Requirement already satisfied: ray>=2.9 in /home1/yh_739/.local/lib/python3.11/site-packages (from vllm->-r requirements.txt (line 7)) (2.31.0)
+Requirement already satisfied: nvidia-ml-py in /home1/yh_739/.local/lib/python3.11/site-packages (from vllm->-r requirements.txt (line 7)) (12.555.43)
+Requirement already satisfied: xformers==0.0.26.post1 in /home1/yh_739/.local/lib/python3.11/site-packages (from vllm->-r requirements.txt (line 7)) (0.0.26.post1)
+Requirement already satisfied: vllm-flash-attn==2.5.9 in /home1/yh_739/.local/lib/python3.11/site-packages (from vllm->-r requirements.txt (line 7)) (2.5.9)
+Requirement already satisfied: interegular>=0.3.2 in /home1/yh_739/.local/lib/python3.11/site-packages (from lm-format-enforcer==0.10.1->vllm->-r requirements.txt (line 7)) (0.3.3)
+Requirement already satisfied: aiosignal>=1.1.2 in /home1/yh_739/.local/lib/python3.11/site-packages (from aiohttp->datasets->-r requirements.txt (line 3)) (1.3.1)
+Requirement already satisfied: attrs>=17.3.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from aiohttp->datasets->-r requirements.txt (line 3)) (23.2.0)
+Requirement already satisfied: frozenlist>=1.1.1 in /home1/yh_739/.local/lib/python3.11/site-packages (from aiohttp->datasets->-r requirements.txt (line 3)) (1.4.1)
+Requirement already satisfied: multidict<7.0,>=4.5 in /home1/yh_739/.local/lib/python3.11/site-packages (from aiohttp->datasets->-r requirements.txt (line 3)) (6.0.5)
+Requirement already satisfied: yarl<2.0,>=1.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from aiohttp->datasets->-r requirements.txt (line 3)) (1.9.4)
+Requirement already satisfied: lark in /home1/yh_739/.local/lib/python3.11/site-packages (from outlines>=0.0.43->vllm->-r requirements.txt (line 7)) (1.1.9)
+Requirement already satisfied: nest-asyncio in /spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/python-3.11.3-gl2q3yz/lib/python3.11/site-packages (from outlines>=0.0.43->vllm->-r requirements.txt (line 7)) (1.5.6)
+Requirement already satisfied: cloudpickle in /home1/yh_739/.local/lib/python3.11/site-packages (from outlines>=0.0.43->vllm->-r requirements.txt (line 7)) (3.0.0)
+Requirement already satisfied: diskcache in /home1/yh_739/.local/lib/python3.11/site-packages (from outlines>=0.0.43->vllm->-r requirements.txt (line 7)) (5.6.3)
+Requirement already satisfied: numba in /home1/yh_739/.local/lib/python3.11/site-packages (from outlines>=0.0.43->vllm->-r requirements.txt (line 7)) (0.60.0)
+Requirement already satisfied: referencing in /spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/python-3.11.3-gl2q3yz/lib/python3.11/site-packages (from outlines>=0.0.43->vllm->-r requirements.txt (line 7)) (0.29.1)
+Requirement already satisfied: jsonschema in /spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/python-3.11.3-gl2q3yz/lib/python3.11/site-packages (from outlines>=0.0.43->vllm->-r requirements.txt (line 7)) (4.18.2)
+Requirement already satisfied: pycountry in /home1/yh_739/.local/lib/python3.11/site-packages (from outlines>=0.0.43->vllm->-r requirements.txt (line 7)) (24.6.1)
+Requirement already satisfied: pyairports in /home1/yh_739/.local/lib/python3.11/site-packages (from outlines>=0.0.43->vllm->-r requirements.txt (line 7)) (2.1.1)
+Requirement already satisfied: starlette<1.0.0,>=0.30.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from prometheus-fastapi-instrumentator>=7.0.0->vllm->-r requirements.txt (line 7)) (0.37.2)
+Requirement already satisfied: annotated-types>=0.4.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from pydantic>=2.0->vllm->-r requirements.txt (line 7)) (0.7.0)
+Requirement already satisfied: pydantic-core==2.18.4 in /home1/yh_739/.local/lib/python3.11/site-packages (from pydantic>=2.0->vllm->-r requirements.txt (line 7)) (2.18.4)
+Requirement already satisfied: six>=1.5 in /home1/yh_739/.local/lib/python3.11/site-packages (from python-dateutil>=2.8.2->pandas->-r requirements.txt (line 4)) (1.16.0)
+Requirement already satisfied: click>=7.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from ray>=2.9->vllm->-r requirements.txt (line 7)) (8.1.7)
+Requirement already satisfied: msgpack<2.0.0,>=1.0.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from ray>=2.9->vllm->-r requirements.txt (line 7)) (1.0.8)
+Requirement already satisfied: protobuf!=3.19.5,>=3.15.3 in /spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/python-3.11.3-gl2q3yz/lib/python3.11/site-packages (from ray>=2.9->vllm->-r requirements.txt (line 7)) (4.23.4)
+Requirement already satisfied: charset-normalizer<4,>=2 in /spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/python-3.11.3-gl2q3yz/lib/python3.11/site-packages (from requests->transformers->-r requirements.txt (line 1)) (3.2.0)
+Requirement already satisfied: idna<4,>=2.5 in /spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/python-3.11.3-gl2q3yz/lib/python3.11/site-packages (from requests->transformers->-r requirements.txt (line 1)) (3.4)
+Requirement already satisfied: urllib3<3,>=1.21.1 in /spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/python-3.11.3-gl2q3yz/lib/python3.11/site-packages (from requests->transformers->-r requirements.txt (line 1)) (1.26.16)
+Requirement already satisfied: certifi>=2017.4.17 in /spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/python-3.11.3-gl2q3yz/lib/python3.11/site-packages (from requests->transformers->-r requirements.txt (line 1)) (2023.5.7)
+Requirement already satisfied: fastapi-cli>=0.0.2 in /home1/yh_739/.local/lib/python3.11/site-packages (from fastapi->vllm->-r requirements.txt (line 7)) (0.0.4)
+Requirement already satisfied: httpx>=0.23.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from fastapi->vllm->-r requirements.txt (line 7)) (0.27.0)
+Requirement already satisfied: python-multipart>=0.0.7 in /home1/yh_739/.local/lib/python3.11/site-packages (from fastapi->vllm->-r requirements.txt (line 7)) (0.0.9)
+Requirement already satisfied: ujson!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0,>=4.0.1 in /home1/yh_739/.local/lib/python3.11/site-packages (from fastapi->vllm->-r requirements.txt (line 7)) (5.10.0)
+Requirement already satisfied: orjson>=3.2.1 in /home1/yh_739/.local/lib/python3.11/site-packages (from fastapi->vllm->-r requirements.txt (line 7)) (3.10.5)
+Requirement already satisfied: email_validator>=2.0.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from fastapi->vllm->-r requirements.txt (line 7)) (2.2.0)
+Requirement already satisfied: MarkupSafe>=2.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from jinja2->torch->-r requirements.txt (line 2)) (2.1.5)
+Requirement already satisfied: h11>=0.8 in /home1/yh_739/.local/lib/python3.11/site-packages (from uvicorn[standard]->vllm->-r requirements.txt (line 7)) (0.14.0)
+Requirement already satisfied: httptools>=0.5.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from uvicorn[standard]->vllm->-r requirements.txt (line 7)) (0.6.1)
+Requirement already satisfied: python-dotenv>=0.13 in /home1/yh_739/.local/lib/python3.11/site-packages (from uvicorn[standard]->vllm->-r requirements.txt (line 7)) (1.0.1)
+Requirement already satisfied: uvloop!=0.15.0,!=0.15.1,>=0.14.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from uvicorn[standard]->vllm->-r requirements.txt (line 7)) (0.19.0)
+Requirement already satisfied: watchfiles>=0.13 in /home1/yh_739/.local/lib/python3.11/site-packages (from uvicorn[standard]->vllm->-r requirements.txt (line 7)) (0.22.0)
+Requirement already satisfied: websockets>=10.4 in /home1/yh_739/.local/lib/python3.11/site-packages (from uvicorn[standard]->vllm->-r requirements.txt (line 7)) (12.0)
+Requirement already satisfied: anyio<5,>=3.5.0 in /spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/python-3.11.3-gl2q3yz/lib/python3.11/site-packages (from openai->vllm->-r requirements.txt (line 7)) (3.7.1)
+Requirement already satisfied: distro<2,>=1.7.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from openai->vllm->-r requirements.txt (line 7)) (1.9.0)
+Requirement already satisfied: sniffio in /spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/python-3.11.3-gl2q3yz/lib/python3.11/site-packages (from openai->vllm->-r requirements.txt (line 7)) (1.3.0)
+Requirement already satisfied: mpmath<1.4.0,>=1.1.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from sympy->torch->-r requirements.txt (line 2)) (1.3.0)
+Requirement already satisfied: dnspython>=2.0.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from email_validator>=2.0.0->fastapi->vllm->-r requirements.txt (line 7)) (2.6.1)
+Requirement already satisfied: typer>=0.12.3 in /home1/yh_739/.local/lib/python3.11/site-packages (from fastapi-cli>=0.0.2->fastapi->vllm->-r requirements.txt (line 7)) (0.12.3)
+Requirement already satisfied: httpcore==1.* in /home1/yh_739/.local/lib/python3.11/site-packages (from httpx>=0.23.0->fastapi->vllm->-r requirements.txt (line 7)) (1.0.5)
+Requirement already satisfied: jsonschema-specifications>=2023.03.6 in /spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/python-3.11.3-gl2q3yz/lib/python3.11/site-packages (from jsonschema->outlines>=0.0.43->vllm->-r requirements.txt (line 7)) (2023.6.1)
+Requirement already satisfied: rpds-py>=0.7.1 in /spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/python-3.11.3-gl2q3yz/lib/python3.11/site-packages (from jsonschema->outlines>=0.0.43->vllm->-r requirements.txt (line 7)) (0.8.10)
+Requirement already satisfied: llvmlite<0.44,>=0.43.0dev0 in /home1/yh_739/.local/lib/python3.11/site-packages (from numba->outlines>=0.0.43->vllm->-r requirements.txt (line 7)) (0.43.0)
+Requirement already satisfied: shellingham>=1.3.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from typer>=0.12.3->fastapi-cli>=0.0.2->fastapi->vllm->-r requirements.txt (line 7)) (1.5.4)
+Requirement already satisfied: rich>=10.11.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from typer>=0.12.3->fastapi-cli>=0.0.2->fastapi->vllm->-r requirements.txt (line 7)) (13.7.1)
+Requirement already satisfied: markdown-it-py>=2.2.0 in /home1/yh_739/.local/lib/python3.11/site-packages (from rich>=10.11.0->typer>=0.12.3->fastapi-cli>=0.0.2->fastapi->vllm->-r requirements.txt (line 7)) (3.0.0)
+Requirement already satisfied: pygments<3.0.0,>=2.13.0 in /spack/2206/apps/linux-centos7-x86_64_v3/gcc-11.3.0/python-3.11.3-gl2q3yz/lib/python3.11/site-packages (from rich>=10.11.0->typer>=0.12.3->fastapi-cli>=0.0.2->fastapi->vllm->-r requirements.txt (line 7)) (2.15.1)
+Requirement already satisfied: mdurl~=0.1 in /home1/yh_739/.local/lib/python3.11/site-packages (from markdown-it-py>=2.2.0->rich>=10.11.0->typer>=0.12.3->fastapi-cli>=0.0.2->fastapi->vllm->-r requirements.txt (line 7)) (0.1.2)
+/home1/yh_739/.local/lib/python3.11/site-packages/huggingface_hub/file_download.py:1132: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
+  warnings.warn(
+WARNING 06-26 21:48:27 config.py:1222] Casting torch.bfloat16 to torch.float16.
+INFO 06-26 21:48:27 llm_engine.py:161] Initializing an LLM engine (v0.5.0.post1) with config: model='meta-llama/Meta-Llama-3-70B-Instruct', speculative_config=None, tokenizer='meta-llama/Meta-Llama-3-70B-Instruct', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, rope_scaling=None, rope_theta=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.float16, max_seq_len=8192, download_dir=None, load_format=LoadFormat.AUTO, tensor_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, kv_cache_dtype=auto, quantization_param_path=None, device_config=cuda, decoding_config=DecodingConfig(guided_decoding_backend='outlines'), seed=0, served_model_name=meta-llama/Meta-Llama-3-70B-Instruct)
+Special tokens have been added in the vocabulary, make sure the associated word embeddings are fine-tuned or trained.
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/data_vllm_70b.py", line 69, in <module>
+[rank0]:     model = load_model("meta-llama/Meta-Llama-3-70B-Instruct")
+[rank0]:             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/data_vllm_70b.py", line 19, in load_model
+[rank0]:     model = LLM(model, dtype=torch.float16)
+[rank0]:             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home1/yh_739/.local/lib/python3.11/site-packages/vllm/entrypoints/llm.py", line 144, in __init__
+[rank0]:     self.llm_engine = LLMEngine.from_engine_args(
+[rank0]:                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home1/yh_739/.local/lib/python3.11/site-packages/vllm/engine/llm_engine.py", line 363, in from_engine_args
+[rank0]:     engine = cls(
+[rank0]:              ^^^^
+[rank0]:   File "/home1/yh_739/.local/lib/python3.11/site-packages/vllm/engine/llm_engine.py", line 223, in __init__
+[rank0]:     self.model_executor = executor_class(
+[rank0]:                           ^^^^^^^^^^^^^^^
+[rank0]:   File "/home1/yh_739/.local/lib/python3.11/site-packages/vllm/executor/executor_base.py", line 41, in __init__
+[rank0]:     self._init_executor()
+[rank0]:   File "/home1/yh_739/.local/lib/python3.11/site-packages/vllm/executor/gpu_executor.py", line 24, in _init_executor
+[rank0]:     self.driver_worker.load_model()
+[rank0]:   File "/home1/yh_739/.local/lib/python3.11/site-packages/vllm/worker/worker.py", line 122, in load_model
+[rank0]:     self.model_runner.load_model()
+[rank0]:   File "/home1/yh_739/.local/lib/python3.11/site-packages/vllm/worker/model_runner.py", line 148, in load_model
+[rank0]:     self.model = get_model(
+[rank0]:                  ^^^^^^^^^^
+[rank0]:   File "/home1/yh_739/.local/lib/python3.11/site-packages/vllm/model_executor/model_loader/__init__.py", line 21, in get_model
+[rank0]:     return loader.load_model(model_config=model_config,
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home1/yh_739/.local/lib/python3.11/site-packages/vllm/model_executor/model_loader/loader.py", line 261, in load_model
+[rank0]:     model = _initialize_model(model_config, self.load_config,
+[rank0]:             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home1/yh_739/.local/lib/python3.11/site-packages/vllm/model_executor/model_loader/loader.py", line 98, in _initialize_model
+[rank0]:     return model_class(config=model_config.hf_config,
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home1/yh_739/.local/lib/python3.11/site-packages/vllm/model_executor/models/llama.py", line 340, in __init__
+[rank0]:     self.model = LlamaModel(config,
+[rank0]:                  ^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home1/yh_739/.local/lib/python3.11/site-packages/vllm/model_executor/models/llama.py", line 262, in __init__
+[rank0]:     self.layers = nn.ModuleList([
+[rank0]:                                 ^
+[rank0]:   File "/home1/yh_739/.local/lib/python3.11/site-packages/vllm/model_executor/models/llama.py", line 263, in <listcomp>
+[rank0]:     LlamaDecoderLayer(config=config,
+[rank0]:   File "/home1/yh_739/.local/lib/python3.11/site-packages/vllm/model_executor/models/llama.py", line 188, in __init__
+[rank0]:     self.self_attn = LlamaAttention(
+[rank0]:                      ^^^^^^^^^^^^^^^
+[rank0]:   File "/home1/yh_739/.local/lib/python3.11/site-packages/vllm/model_executor/models/llama.py", line 130, in __init__
+[rank0]:     self.o_proj = RowParallelLinear(
+[rank0]:                   ^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home1/yh_739/.local/lib/python3.11/site-packages/vllm/model_executor/layers/linear.py", line 744, in __init__
+[rank0]:     self.quant_method.create_weights(
+[rank0]:   File "/home1/yh_739/.local/lib/python3.11/site-packages/vllm/model_executor/layers/linear.py", line 94, in create_weights
+[rank0]:     weight = Parameter(torch.empty(sum(output_partition_sizes),
+[rank0]:                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/home1/yh_739/.local/lib/python3.11/site-packages/torch/utils/_device.py", line 78, in __torch_function__
+[rank0]:     return func(*args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^
+[rank0]: torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 128.00 MiB. GPU 

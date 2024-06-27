@@ -166,4 +166,4 @@ data
 notebooks/all-coref-resolved
 notebooks/
 all-coref-resolved
-output.txt
+slurm*

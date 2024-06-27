@@ -1,9 +1,3 @@
-from datasets import load_from_disk
-import pandas as pd
-import pandas as pd
-import numpy as np
-from tqdm.auto import tqdm
-
 import os
 import json
 import torch
@@ -15,6 +9,7 @@ from transformers import AutoTokenizer
 def load_model(model: str):
     config_data = json.load(open('config.json'))
     os.environ['HF_TOKEN'] = config_data["HF_TOKEN"]
+    os.environ['HF_HOME'] = "/project/jonmay_231/spangher/huggingface_cache"
     model = LLM(model, dtype=torch.float16)
     return model
 
@@ -34,7 +29,7 @@ if __name__ == "__main__":
     data_dir = './data'
     source_df = pd.read_json(f'{data_dir}/full-source-scored-data.jsonl.gz', lines=True, compression='gzip', nrows=100)
     article_d = load_from_disk('all-coref-resolved')
-    
+
     #process the data into right format: article with annotated sentences
     filtered_article_d = article_d.filter(lambda x: x['article_url'] in set(source_df['article_url']), num_proc=10)
     disallowed_quote_types = set(['Other', 'Background/Narrative', 'No Quote'])
@@ -47,7 +42,7 @@ if __name__ == "__main__":
     )
 
     sentences_with_quotes = (sentences_with_quotes
-        .assign(attributions=lambda df: 
+        .assign(attributions=lambda df:
                 df.apply(lambda x: x['attributions'] if x['quote_type'] not in disallowed_quote_types else np.nan, axis=1)
         )
     )
@@ -60,12 +55,12 @@ if __name__ == "__main__":
                 .loc[lambda df: df['article_url'] == url]
                 .reset_index(drop=True)
                 )
-        
+
         json_str = one_article[['sent_lists', 'attributions']].to_json(lines=True, orient='records')
         articles.append((url, json_str))
 
     #load the model
-    model = load_model("/project/jonmay_231/spangher/llama3-70b/Meta-Llama-3-70B-Instruct")
+    model = load_model("meta-llama/Meta-Llama-3-70B-Instruct")
 
     # loop through and create prompts for each article
     for article in articles:
@@ -91,7 +86,7 @@ if __name__ == "__main__":
             {"role": "user",
             "content": prompt},
             ]
-        
+
         response = infer(model, message)
 
         with open('output.txt', 'a') as file:
@@ -102,3 +97,4 @@ if __name__ == "__main__":
             file.write('}')
             file.write('\n')
             file.write('\n')
+

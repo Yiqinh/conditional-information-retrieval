@@ -23,7 +23,7 @@ def load_model(model: str):
 
 def infer(model, messages):
     tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
-    formatted_prompt =  tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+    formatted_prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
     sampling_params = SamplingParams(temperature=0.1, max_tokens=1024)
     output = model.generate(formatted_prompt, sampling_params)
 
@@ -89,9 +89,11 @@ if __name__ == "__main__":
                 "content": "You are an experienced journalist.",
             },
 
-            {"role": "user",
-            "content": prompt},
-            ]
+            {
+                "role": "user",
+                "content": prompt
+            },
+        ]
 
         response = infer(model, message)
 

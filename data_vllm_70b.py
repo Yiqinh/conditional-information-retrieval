@@ -17,12 +17,13 @@ logging.basicConfig(
 
 from vllm import LLM,  SamplingParams
 from transformers import AutoTokenizer
-
+import os
 HF_HOME = "/project/jonmay_231/spangher/huggingface_cache"
+config_data = json.load(open('config.json'))
+os.environ['HF_TOKEN'] = config_data["HF_TOKEN"]
+os.environ['HF_HOME'] = HF_HOME
+
 def load_model(model: str):
-    config_data = json.load(open('config.json'))
-    os.environ['HF_TOKEN'] = config_data["HF_TOKEN"]
-    os.environ['HF_HOME'] = HF_HOME
     torch.cuda.memory_summary(device=None, abbreviated=False)
     model = LLM(
         model,
@@ -32,7 +33,6 @@ def load_model(model: str):
         enforce_eager=True
     )
     return model
-
 
 
 def infer(model, messages):
@@ -82,8 +82,9 @@ if __name__ == "__main__":
                                (x['attributions'] not in disallowed_sources)) else np.nan, axis=1)
         )
     )
+    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
 
-    #store each article_url, annoted_sentences pair
+    # store each article_url, annoted_sentences pair
     messages = []
     urls = []
     for url in sentences_with_quotes['article_url'].unique():
@@ -105,21 +106,38 @@ if __name__ == "__main__":
                         {json_str}
                         ```
 
-                        Please summarize each of our source annotations. Tell me in one paragraph per source: (1) who the source is (2) what informational content they provide to the article. 
-                        Only rely on the annotations I have provided, don't identify additional sources. Generate only ONE summary per source. That is, summarize the SAME source if it occurs in multiple source annotations.
+                        Please summarize each source, based on our source annotations. 
+                        Tell me in one paragraph per source: (1) who the source is (2) what informational content they provide to the article. 
+                        Only rely on the annotations I have provided, don't identify additional sources. 
+                        Generate only ONE summary per source. Group sources that are clearly the same but named slightly differently.
+                        That is, summarize the SAME source if it occurs in multiple source annotations. 
                     """
+        message = [
+            {
+                "role": "system",
+                "content": "You are an experienced journalist.",
+            },
 
-        messages.append( prompt)
+            {
+                "role": "user",
+                "content": prompt
+            },
+        ]
+        formatted_prompt = tokenizer.apply_chat_template(message, tokenize=False, add_generation_prompt=True)
+        messages.append(formatted_prompt)
+
         urls.append(url)
 
-    #load the model
+    # load the model
     model = load_model(args.model)
-    outputs = model.generate(messages, SamplingParams(temperature=0.8, top_p=0.95))
+    sampling_params = SamplingParams(temperature=0.1, max_tokens=1024)
+    outputs = model.generate(messages, sampling_params)
 
     if args.start_idx is None:
         args.start_idx = 0
     if args.end_idx is None:
         args.end_idx = len(urls)
+
     fname = f'sources_data_70b__{args.start_idx}_{args.end_idx}.txt'
     with open(fname, 'w') as file:
         for url, output in zip( urls, outputs):

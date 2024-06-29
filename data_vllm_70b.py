@@ -11,12 +11,19 @@ import torch
 from vllm import LLM,  SamplingParams
 from transformers import AutoTokenizer
 
+HF_HOME = "/project/jonmay_231/spangher/huggingface_cache"
 def load_model(model: str):
     config_data = json.load(open('config.json'))
     os.environ['HF_TOKEN'] = config_data["HF_TOKEN"]
-    os.environ['HF_HOME'] = "/project/jonmay_231/spangher/huggingface_cache"
+    os.environ['HF_HOME'] = HF_HOME
     torch.cuda.memory_summary(device=None, abbreviated=False)
-    model = LLM(model, dtype=torch.float16, tensor_parallel_size=torch.cuda.device_count())
+    model = LLM(
+        model,
+        dtype=torch.float16,
+        tensor_parallel_size=torch.cuda.device_count(),
+        download_dir=HF_HOME, # sometimes the distributed model doesn't pay attention to the 
+        enforce_eager=True
+    )
     return model
 
 

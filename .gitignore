@@ -167,3 +167,5 @@ notebooks/all-coref-resolved
 notebooks/
 all-coref-resolved
 slurm*
+sources*
+archive

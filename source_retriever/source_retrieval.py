@@ -118,7 +118,7 @@ if __name__ == '__main__':
         {"id": "doc_4", "text": "Sorcerer of death's construction"},
     ]
 
-    dr = dr.index(
+    dr.index(
         collection=collection,  # File kind is automatically inferred
         batch_size=1, #args.batch_size_to_index,  # Default value
         show_progress=True,  # Default value

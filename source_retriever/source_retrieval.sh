@@ -7,8 +7,9 @@
 #SBATCH --cpus-per-gpu=10
 #SBATCH --partition=gpu
 
-conda env update -f env.yaml
+module load conda
 source conda activate CIR
+conda env update -f env.yaml
 pip install -r requirements.txt
 
 python3 source_retriever/source_retrieval.py

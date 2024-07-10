@@ -8,7 +8,6 @@
 #SBATCH --partition=gpu
 
 source conda activate CIR
-module load python/3.11
 conda install -c pytorch -c nvidia faiss-gpu=1.8.0
 pip install -r requirements.txt
 python3 source_retriever/source_retrieval.py

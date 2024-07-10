@@ -1,3 +1,4 @@
+#baseline LLM and data
 transformers
 torch
 datasets
@@ -5,3 +6,9 @@ pandas
 numpy
 huggingface_hub
 vllm
+
+#retriv
+tqdm
+#faiss-cpu
+faiss-gpu #gpu support
+retriv

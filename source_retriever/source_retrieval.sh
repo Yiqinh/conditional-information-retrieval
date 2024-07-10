@@ -7,7 +7,8 @@
 #SBATCH --cpus-per-gpu=10
 #SBATCH --partition=gpu
 
+conda env update -f env.yaml
 source conda activate CIR
-conda install -c pytorch -c nvidia faiss-gpu=1.8.0
 pip install -r requirements.txt
+
 python3 source_retriever/source_retrieval.py

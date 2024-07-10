@@ -7,8 +7,6 @@ numpy
 huggingface_hub
 vllm
 
-#retriv
+#retriv dependencies
 tqdm
-#faiss-cpu
-faiss-gpu #gpu support
 retriv

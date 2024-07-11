@@ -54,7 +54,7 @@ if __name__ == "__main__":
         one_article_text = all_articles.iloc[i]['article_text']
         one_article_url = all_articles.iloc[i]['article_url']
         prompt = f"""
-                        Summarize this article in one sentence. Do NOT contain any source information. Just provide the main idea of the article. Output ONE sentence only.
+                        Summarize this article in one sentence. Do NOT contain any source information. Just provide the main idea of the article. Only output the single summary sentence.
 
                         Here is the news article:
                         ```

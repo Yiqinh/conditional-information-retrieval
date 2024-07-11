@@ -53,19 +53,16 @@ if __name__ == "__main__":
     for i in range(len(all_articles)):
         one_article_text = all_articles.iloc[i]['article_text']
         one_article_url = all_articles.iloc[i]['article_url']
-        prompt = f"""
-                        Summarize this article in one sentence. Do NOT contain any source information. Just provide the main idea of the article. Only output the single summary sentence.
-
-                        Here is the news article:
-                        ```
-                        {one_article_text}
-                        ```
+        prompt = f"""Here is a news article. In ONE sentence only, infer the initial story lead, or why the journalist started investigating this topic. Don’t state the main findings of the article, state the preliminary questions. Output ONE sentence only.
+                    
+                    Article:
+                    {one_article_text}
                     """
         
         message = [
             {
                 "role": "system",
-                "content": "You are an experienced journalist that can summarize news articles.",
+                "content": "You are an experienced journalist",
             },
 
             {

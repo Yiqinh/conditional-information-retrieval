@@ -1,6 +1,5 @@
 from datasets import load_from_disk
 import pandas as pd
-import pandas as pd
 import numpy as np
 from tqdm.auto import tqdm
 
@@ -46,12 +45,14 @@ if __name__ == "__main__":
     a_urls_lookup = set(source_df['article_url'])
     filtered_article_d = article_d.filter(lambda x: x['article_url'] in a_urls_lookup, num_proc=10)
 
+    all_articles = filtered_article_d.to_pandas().merge(source_df, on='article_url')
+
     # store each message/prompt
     messages = []
     urls = []
-    for i in range(len(filtered_article_d)):
-        one_article_text = filtered_article_d[i]['article_text']
-        one_article_url = filtered_article_d[i]['article_url']
+    for i in range(len(all_articles)):
+        one_article_text = all_articles.iloc[i]['article_text']
+        one_article_url = all_articles.iloc[i]['article_url']
         prompt = f"""
                         Summarize the main point of this news article in one or two sentences:
 

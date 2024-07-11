@@ -1,5 +1,5 @@
 import torch
-#from vllm import LLM,  SamplingParams
+from vllm import LLM,  SamplingParams
 from transformers import AutoTokenizer
 import os
 
@@ -31,7 +31,6 @@ def load_model(model_id: str):
 
 
 def infer(model, messages, model_id, temperature=0.1, max_tokens=512):
-
     """
     Args:
     model: model returned by vllm.LLM()

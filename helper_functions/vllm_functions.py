@@ -15,7 +15,6 @@ os.environ['HF_TOKEN'] = API Token
 """
 
 def load_model(model_id: str):
-    return None
     """
     Args:
     model: Name of model as it appears on huggingface
@@ -32,7 +31,6 @@ def load_model(model_id: str):
 
 
 def infer(model, messages, model_id, temperature=0.1, max_tokens=512):
-    return [i for i in range(len(messages))]
 
     """
     Args:

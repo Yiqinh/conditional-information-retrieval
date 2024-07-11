@@ -120,7 +120,7 @@ if __name__ == '__main__':
     collection = []
 
     for file in summary_files:
-        file_path = os.path.join(os.path.dirname(here), 'source_summaries/json_summaries', file)
+        file_path = os.path.join(os.path.dirname(here), 'source_summaries', 'json_summaries', file)
         with open(file_path, 'r') as file:
             data = json.load(file)
             for article in data:

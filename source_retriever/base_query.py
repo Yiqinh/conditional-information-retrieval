@@ -93,6 +93,6 @@ if __name__ == "__main__":
         args.end_idx = len(urls)
 
     fname = f'article_sum__{args.start_idx}_{args.end_idx}.json'
-    fname = os.path.join(here, 'baseline_queries', fname)
+    fname = os.path.join(os.path.dirname(here), 'baseline_queries', fname)
     with open(fname, 'w') as json_file:
         json.dump(queries, json_file)

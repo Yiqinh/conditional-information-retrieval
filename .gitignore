@@ -170,4 +170,4 @@ slurm*
 sources*
 archive
 
-source_retriever/baseline_queries/*
+baseline_queries/*

@@ -163,7 +163,6 @@ cython_debug/
 
 config.json
 data
-notebooks/all-coref-resolved
 notebooks/2024-05-28__demo.ipynb
 all-coref-resolved
 slurm*

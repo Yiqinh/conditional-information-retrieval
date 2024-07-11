@@ -29,7 +29,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--embedding_model',
         type=str,
-        default="sentence-transformers/all-MiniLM-L6-v2",  # "sentence-transformers/all-MiniLM-L6-v2", #
+        default="Salesforce/SFR-Embedding-2_R",  # "sentence-transformers/all-MiniLM-L6-v2", #
         help="The model to use for generating embeddings"
     )
     parser.add_argument(
@@ -81,21 +81,22 @@ if __name__ == '__main__':
         help="Index to end at",
         default=-1,
     )
-
     args = parser.parse_args()
 
+    #set huggingface token
     config_data = json.load(open(args.hf_config))
     os.environ['HF_TOKEN'] = config_data["HF_TOKEN"]
 
+    #set the proper huggingface cache directory
     hf_cache_dir = args.huggingface_cache_dir
     os.environ['HF_HOME'] = hf_cache_dir
-
     logging.info(f"Setting environment variables: HF_HOME={hf_cache_dir}")
 
     # needs to be imported here to make sure the environment variables are set before
     # the retriv library sets certain defaults
     from dense_retriever import MyDenseRetriever
 
+    #sets the retriv base path
     retriv_cache_dir = args.retriv_cache_dir
     logging.info(f"Setting environment variables: RETRIV_BASE_PATH={retriv_cache_dir}")
     os.environ['RETRIV_BASE_PATH'] = retriv_cache_dir
@@ -111,21 +112,39 @@ if __name__ == '__main__':
         use_ann=True,
     )
 
-    collection = [
-        {"id": "doc_1","source": "blah", "text": "Generals gathered in their masses"},
-        {"id": "doc_2","source": "blah",  "text": "Just like witches at black masses"},
-        {"id": "doc_3","source": "bb", "text": "Evil minds that plot destruction"},
-        {"id": "doc_3","source": "as", "text": "Sorcerer of death's construction"},
-    ]
+    summary_files = ["sources_data_70b__0_10000.json", 
+                     "sources_data_70b__100000_110000.json", 
+                     "sources_data_70b__10000_20000.json", 
+                     "sources_data_70b__110000_120000.json", 
+                     "sources_data_70b__120000_130000.json",	
+                     "sources_data_70b__200000_200100.json",		
+                     "sources_data_70b__200000_205000.json",	
+                     "sources_data_70b__205000_210000.json",	
+                     "sources_data_70b__210000_220000.json",
+                     "sources_data_70b__220000_230000.json",
+                     "sources_data_70b__230000_240000.json",
+                     "sources_data_70b__240000_250000.json",		
+                     "sources_data_70b__310000_320000.json",
+                     "sources_data_70b__320000_330000.json",
+                     "sources_data_70b__330000_340000.json",
+                     "sources_data_70b__80000_90000.json",	
+                     "sources_data_70b__90000_100000.json"]
+    collection = []
+
+    for file in summary_files:
+        file_path = os.path.join(os.path.dirname(here), 'source_summaries/json_summaries', file)
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+            for article in data:
+                for id, summary in article['sources'].items():
+                    new_source_embedding = {"id": id, "text": summary}
+                    collection.append(new_source_embedding)
 
     dr.index(
         collection=collection,  # File kind is automatically inferred
-        batch_size=1, #args.batch_size_to_index,  # Default value
+        batch_size=args.batch_size_to_index,  # Default value
         show_progress=True,  # Default value
     )
-    print(type(dr))
 
-    print("here")
-    res = dr.search(query="witches masses")
-    print(res)
+
 

@@ -76,7 +76,7 @@ if __name__ == "__main__":
         messages.append(message)
         urls.append(one_article_url)
 
-    # load the model and infer
+    # load the model and infer to get article summaries. 
     my_model = load_model(args.model)
     response = infer(model=my_model, messages=messages, model_id=args.model)
 
@@ -88,6 +88,7 @@ if __name__ == "__main__":
         }
         queries.append(one_query)
 
+    # store each summary/query in a json
     if args.start_idx is None:
         args.start_idx = 0
     if args.end_idx is None:

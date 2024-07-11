@@ -69,18 +69,6 @@ if __name__ == '__main__':
         help="Batch size for indexing",
         default=1,
     )
-    parser.add_argument(
-        "--start_index",
-        type=int,
-        help="Index to start from",
-        default=0,
-    )
-    parser.add_argument(
-        "--end_index",
-        type=int,
-        help="Index to end at",
-        default=-1,
-    )
     args = parser.parse_args()
 
     #set huggingface token

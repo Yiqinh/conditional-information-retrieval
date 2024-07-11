@@ -17,7 +17,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--hf_config',
         type=str,
-        default=os.path.join('.', 'config.json'),
+        default=os.path.join(os.path.dirname(here), 'config.json'),
         help="The path to the json file containing HF_TOKEN"
     )
     parser.add_argument(

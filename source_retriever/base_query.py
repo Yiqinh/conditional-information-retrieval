@@ -38,7 +38,7 @@ if __name__ == "__main__":
     os.environ['HF_HOME'] = args.hf_home
 
     #load in the data
-    source_df = pd.read_json(os.path.join(args.data_dir, 'full-source-scored-data.jsonl.gz'), nrows=args.end_idx, lines=True).iloc[args.start_idx:]
+    source_df = pd.read_json(os.path.join(args.data_dir, 'full-source-scored-data.jsonl'), nrows=args.end_idx, lines=True).iloc[args.start_idx:]
     article_d = load_from_disk('all-coref-resolved')
 
     # process the data into right format: article with annotated sentences

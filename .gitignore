@@ -169,4 +169,3 @@ all-coref-resolved
 slurm*
 sources*
 archive
-source_retriever/baseline_queries

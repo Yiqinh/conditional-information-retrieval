@@ -8,6 +8,9 @@
 #SBATCH --cpus-per-gpu=10
 #SBATCH --partition=gpu
 
+cd
+cd /project/jonmay_231/spangher/Projects/conditional-information-retrieval
+
 module load conda
 source conda activate CIR
 conda env update -f env.yaml

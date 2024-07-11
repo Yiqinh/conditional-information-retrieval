@@ -7,8 +7,14 @@
 #SBATCH --mem=100G
 #SBATCH --partition=isi
 
-module load python/3.11
+cd
+cd /project/jonmay_231/spangher/Projects/conditional-information-retrieval
+
+module load conda
+source conda activate CIR
+conda env update -f env.yaml
 pip install -r requirements.txt
+
 python3 data_vllm_70b.py --start_idx 200_000 --end_idx 200_100
 python3 data_vllm_70b.py --start_idx 200_000 --end_idx 205_000
 python3 data_vllm_70b.py --start_idx 205_000 --end_idx 210_000

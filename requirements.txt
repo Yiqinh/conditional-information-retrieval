@@ -1,12 +1,11 @@
-#baseline LLM and data
 transformers
 torch
+torchvision
 datasets
 pandas
 numpy
 huggingface_hub
 vllm
 
-#retriv dependencies
 tqdm
 retriv

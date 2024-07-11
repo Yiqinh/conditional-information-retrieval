@@ -16,4 +16,4 @@ source conda activate CIR
 conda env update -f env.yaml
 pip install -r requirements.txt
 
-python3 source_retriever/source_retrieval.py
+python3 source_retriever/dr_indexer.py

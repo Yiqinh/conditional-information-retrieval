@@ -142,7 +142,7 @@ if __name__ == "__main__":
     with open(fname, 'w') as file:
         for url, output in zip( urls, outputs):
             response = output.outputs[0].text
-            if response:
+            if response and url:
                 file.write(url)
                 file.write('\n')
                 file.write('{')

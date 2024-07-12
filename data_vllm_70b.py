@@ -3,6 +3,7 @@ import pandas as pd
 import pandas as pd
 import numpy as np
 from tqdm.auto import tqdm
+import unicodedata
 
 import os
 import json
@@ -145,16 +146,17 @@ if __name__ == "__main__":
     for messages, urls in zip(tqdm(message_batches), url_batches):
         fname = f'sources_data_70b__{start_idx}_{end_idx}.txt'
         outputs = model.generate(messages, sampling_params)
-        with open(fname, 'w') as file:
+        with open(fname, 'wb') as file:
             for url, output in zip(urls, outputs):
                 response = output.outputs[0].text
+                response = unicodedata.normalize('NFKC', response)
                 if response and url:
                     file.write(url)
-                    file.write('\n')
-                    file.write('{')
-                    file.write(response)
-                    file.write('}')
-                    file.write('\n')
-                    file.write('\n')
+                    file.write(b'\n')
+                    file.write(b'{')
+                    file.write(response.encode('utf-8'))
+                    file.write(b'}')
+                    file.write(b'\n')
+                    file.write(b'\n')
         start_idx = end_idx
         end_idx = start_idx + BATCH_SIZE

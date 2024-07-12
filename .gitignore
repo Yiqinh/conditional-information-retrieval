@@ -161,9 +161,14 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+.DS_Store
 config.json
 data
-notebooks/all-coref-resolved
-notebooks/
+notebooks/2024-05-28__demo.ipynb
 all-coref-resolved
 slurm*
+sources*
+archive
+
+baseline_queries/*
+source_summaries/*

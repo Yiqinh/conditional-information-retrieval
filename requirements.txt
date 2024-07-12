@@ -1,7 +1,11 @@
 transformers
 torch
+torchvision
 datasets
 pandas
 numpy
 huggingface_hub
 vllm
+
+tqdm
+retriv

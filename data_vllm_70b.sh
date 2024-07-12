@@ -7,12 +7,10 @@
 #SBATCH --mem=400G
 #SBATCH --partition=isi
 
-source /home1/spangher/.bashrc
-conda activate CIR
-# conda clean --index-cache
-# conda env update -f env.yaml
-# pip install -r requirements.txt
 
+cd /project/jonmay_231/spangher/Projects/conditional-information-retrieval
+source /home1/spangher/.bashrc
+conda activate py311
 
 start_idx=$1
 step=$2

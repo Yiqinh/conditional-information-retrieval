@@ -23,6 +23,8 @@ config_data = json.load(open('config.json'))
 os.environ['HF_TOKEN'] = config_data["HF_TOKEN"]
 os.environ['HF_HOME'] = HF_HOME
 
+BATCH_SIZE = 100
+
 def load_model(model: str):
     torch.cuda.memory_summary(device=None, abbreviated=False)
     model = LLM(
@@ -33,15 +35,6 @@ def load_model(model: str):
         enforce_eager=True
     )
     return model
-
-
-def infer(model, messages):
-    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-70B-Instruct")
-    formatted_prompt =  tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-    sampling_params = SamplingParams(temperature=0.1, max_tokens=1024)
-    output = model.generate(formatted_prompt, sampling_params)
-
-    return output[0].outputs[0].text
 
 
 if __name__ == "__main__":
@@ -85,6 +78,10 @@ if __name__ == "__main__":
     tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
 
     # store each article_url, annoted_sentences pair
+    # hold the batches
+    message_batches = []
+    url_batches = []
+    # each batch 
     messages = []
     urls = []
     for url in sentences_with_quotes['article_url'].unique():
@@ -124,29 +121,40 @@ if __name__ == "__main__":
             },
         ]
         formatted_prompt = tokenizer.apply_chat_template(message, tokenize=False, add_generation_prompt=True)
-        messages.append(formatted_prompt)
 
+        messages.append(formatted_prompt)
         urls.append(url)
+
+        if len(messages) >= BATCH_SIZE:
+            message_batches.append(messages)
+            url_batches.append(urls)
+            messages = []
+            urls = []
 
     # load the model
     model = load_model(args.model)
     sampling_params = SamplingParams(temperature=0.1, max_tokens=1024)
-    outputs = model.generate(messages, sampling_params)
-
     if args.start_idx is None:
         args.start_idx = 0
     if args.end_idx is None:
         args.end_idx = len(urls)
 
-    fname = f'sources_data_70b__{args.start_idx}_{args.end_idx}.txt'
-    with open(fname, 'w') as file:
-        for url, output in zip( urls, outputs):
-            response = output.outputs[0].text
-            if response and url:
-                file.write(url)
-                file.write('\n')
-                file.write('{')
-                file.write(response)
-                file.write('}')
-                file.write('\n')
-                file.write('\n')
+    # generate the summaries
+    start_idx = args.start_idx
+    end_idx = start_idx + BATCH_SIZE
+    for messages, urls in zip(tqdm(message_batches), url_batches):
+        fname = f'sources_data_70b__{start_idx}_{end_idx}.txt'
+        outputs = model.generate(messages, sampling_params)
+        with open(fname, 'w') as file:
+            for url, output in zip(urls, outputs):
+                response = output.outputs[0].text
+                if response and url:
+                    file.write(url)
+                    file.write('\n')
+                    file.write('{')
+                    file.write(response)
+                    file.write('}')
+                    file.write('\n')
+                    file.write('\n')
+        start_idx = end_idx
+        end_idx = start_idx + BATCH_SIZE

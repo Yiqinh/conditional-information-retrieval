@@ -74,7 +74,7 @@ if __name__ == "__main__":
 
     # load the model and infer to get article summaries. 
     my_model = load_model(args.model)
-    response = infer(model=my_model, messages=messages, model_id=args.model)
+    response = infer(model=my_model, messages=messages, model_id=args.model, batch_size=100)
 
     queries = []
     for url, output in zip(urls, response):

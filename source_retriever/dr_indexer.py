@@ -100,18 +100,17 @@ if __name__ == '__main__':
         use_ann=True,
     )
 
-    source_files = [file_name for file_name in os.path.join(os.path.dirname(here), 'source_summaries', 'json_summaries') if 'obscure' not in file_name]
+    source_files = [file_name for file_name in os.listdir(os.path.join(os.path.dirname(here), 'source_summaries', 'json_summaries')) if 'obscure' not in file_name]
     collection = []
 
     for file in source_files:
         file_path = os.path.join(os.path.dirname(here), 'source_summaries', 'json_summaries', file)
-        if (os.path.exists(file_path)):
-            with open(file_path, 'r') as file:
-                data = json.load(file)
-                for article in data:
-                    for id, summary in article['sources'].items():
-                        new_source_embedding = {"id": id, "text": summary}
-                        collection.append(new_source_embedding)
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+            for article in data:
+                for id, summary in article['sources'].items():
+                    new_source_embedding = {"id": id, "text": summary}
+                    collection.append(new_source_embedding)
 
     dr.index(
         collection=collection,  # File kind is automatically inferred

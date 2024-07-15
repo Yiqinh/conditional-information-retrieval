@@ -100,10 +100,10 @@ if __name__ == '__main__':
         use_ann=True,
     )
 
+    source_files = [file_name for file_name in os.path.join(os.path.dirname(here), 'source_summaries', 'json_summaries') if 'obscure' not in file_name]
     collection = []
 
-    for i in range(0, 272800, 100):
-        file = f"sources_data_70b__{i}_{i+100}.json"
+    for file in source_files:
         file_path = os.path.join(os.path.dirname(here), 'source_summaries', 'json_summaries', file)
         if (os.path.exists(file_path)):
             with open(file_path, 'r') as file:

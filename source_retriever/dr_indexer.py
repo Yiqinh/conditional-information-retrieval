@@ -99,20 +99,23 @@ if __name__ == '__main__':
         device=args.device,
         use_ann=True,
     )
-
-    source_files = [file_name for file_name in os.listdir(os.path.join(os.path.dirname(here), 'source_summaries', 'json_summaries')) if 'obscure' not in file_name]
+    article_count = 0
     collection = []
-
-    for file in source_files:
+    for i in range(0, 272800, 100):
+        file = f"sources_data_70b__{i}_{i+100}.json"
         file_path = os.path.join(os.path.dirname(here), 'source_summaries', 'json_summaries', file)
-        with open(file_path, 'r') as file:
-            data = json.load(file)
-            for article in data:
-                for id, summary in article['sources'].items():
-                    new_source_embedding = {"id": id, "text": summary}
-                    collection.append(new_source_embedding)
+        if (os.path.exists(file_path)):
+            with open(file_path, 'r') as file:
+                data = json.load(file)
+                for article in data:
+                    article_count += 1
+                    for id, summary in article['sources'].items():
+                        new_source_embedding = {"id": id, "text": summary}
+                        collection.append(new_source_embedding)
+
+    print(article_count)
     print(len(collection))
-    
+
     dr.index(
         collection=collection,  # File kind is automatically inferred
         batch_size=args.batch_size_to_index,  # Default value

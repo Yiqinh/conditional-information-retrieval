@@ -53,7 +53,7 @@ if __name__ == "__main__":
     for i in range(len(all_articles)):
         one_article_text = all_articles.iloc[i]['article_text']
         one_article_url = all_articles.iloc[i]['article_url']
-        prompt = f"""Here is a news article. Please output one sentence only and nothing more. State the preliminary question the article answers. Infer the initial story lead and the reason why the journalist started investigating this topic.
+        prompt = f"""Output one sentence only. I have pasted a news article below. State the preliminary question the news article answers. Please output this one question only. Incorporate the initial story lead and the reason why the journalist started investigating this topic.
                     
                     {one_article_text}
                     """

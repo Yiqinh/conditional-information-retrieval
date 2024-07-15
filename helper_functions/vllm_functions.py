@@ -32,7 +32,7 @@ def load_model(model_id: str):
     return model
 
 
-def infer(model, messages, model_id, temperature=0.1, max_tokens=512, batch_size=100):
+def infer(model, messages, model_id, temperature=0, max_tokens=512, batch_size=100):
     """
     Args:
     model: model returned by vllm.LLM()
@@ -70,7 +70,7 @@ def infer(model, messages, model_id, temperature=0.1, max_tokens=512, batch_size
     sampling_params = SamplingParams(temperature=temperature, max_tokens=max_tokens)
     res = []
 
-    for batch in tqdm(message_batches):
+    for batch in tqdm(message_batches, desc="Message batches"):
         outputs = model.generate(batch, sampling_params)
         for output in outputs:
             generated_text = output.outputs[0].text

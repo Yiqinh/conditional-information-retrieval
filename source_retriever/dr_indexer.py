@@ -100,33 +100,18 @@ if __name__ == '__main__':
         use_ann=True,
     )
 
-    summary_files = ["sources_data_70b__0_10000.json", 
-                     "sources_data_70b__100000_110000.json", 
-                     "sources_data_70b__10000_20000.json", 
-                     "sources_data_70b__110000_120000.json", 
-                     "sources_data_70b__120000_130000.json",	
-                     "sources_data_70b__200000_200100.json",		
-                     "sources_data_70b__200000_205000.json",	
-                     "sources_data_70b__205000_210000.json",	
-                     "sources_data_70b__210000_220000.json",
-                     "sources_data_70b__220000_230000.json",
-                     "sources_data_70b__230000_240000.json",
-                     "sources_data_70b__240000_250000.json",		
-                     "sources_data_70b__310000_320000.json",
-                     "sources_data_70b__320000_330000.json",
-                     "sources_data_70b__330000_340000.json",
-                     "sources_data_70b__80000_90000.json",	
-                     "sources_data_70b__90000_100000.json"]
     collection = []
 
-    for file in summary_files:
+    for i in range(0, 272800, 100):
+        file = f"sources_data_70b__{i}_{i+100}.json"
         file_path = os.path.join(os.path.dirname(here), 'source_summaries', 'json_summaries', file)
-        with open(file_path, 'r') as file:
-            data = json.load(file)
-            for article in data:
-                for id, summary in article['sources'].items():
-                    new_source_embedding = {"id": id, "text": summary}
-                    collection.append(new_source_embedding)
+        if (os.path.exists(file_path)):
+            with open(file_path, 'r') as file:
+                data = json.load(file)
+                for article in data:
+                    for id, summary in article['sources'].items():
+                        new_source_embedding = {"id": id, "text": summary}
+                        collection.append(new_source_embedding)
 
     dr.index(
         collection=collection,  # File kind is automatically inferred

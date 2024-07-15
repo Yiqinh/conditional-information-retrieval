@@ -172,3 +172,4 @@ archive
 
 baseline_queries/*
 source_summaries/*
+source_retriever/collections/*

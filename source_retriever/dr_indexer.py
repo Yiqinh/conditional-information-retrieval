@@ -111,7 +111,8 @@ if __name__ == '__main__':
                 for id, summary in article['sources'].items():
                     new_source_embedding = {"id": id, "text": summary}
                     collection.append(new_source_embedding)
-
+    print(len(collection))
+    
     dr.index(
         collection=collection,  # File kind is automatically inferred
         batch_size=args.batch_size_to_index,  # Default value

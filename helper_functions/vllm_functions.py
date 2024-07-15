@@ -2,6 +2,7 @@ import torch
 from vllm import LLM,  SamplingParams
 from transformers import AutoTokenizer
 import os
+import unicodedata
 
 """
 Setting up the environment variables:
@@ -64,6 +65,7 @@ def infer(model, messages, model_id, temperature=0.1, max_tokens=512):
     res = []
     for output in outputs:
         generated_text = output.outputs[0].text
+        generated_text = unicodedata.normalize('NFKC', generated_text)
         res.append(generated_text)
-
+        
     return res

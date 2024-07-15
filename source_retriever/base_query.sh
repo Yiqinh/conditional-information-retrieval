@@ -10,7 +10,10 @@
 cd
 cd /project/jonmay_231/spangher/Projects/conditional-information-retrieval
 
-source conda activate CIR
+module purge
+eval "$(conda shell.bash hook)"
+
+conda activate CIR
 conda env update -f env.yaml
 pip install -r requirements.txt
 

@@ -151,7 +151,7 @@ if __name__ == "__main__":
                 response = output.outputs[0].text
                 response = unicodedata.normalize('NFKC', response)
                 if response and url:
-                    file.write(url)
+                    file.write(url.encode('utf-8')
                     file.write(b'\n')
                     file.write(b'{')
                     file.write(response.encode('utf-8'))

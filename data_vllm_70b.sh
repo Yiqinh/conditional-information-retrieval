@@ -8,9 +8,10 @@
 #SBATCH --partition=isi
 
 
-cd /project/jonmay_231/spangher/Projects/conditional-information-retrieval
 source /home1/spangher/.bashrc
 conda activate py311
+# conda env update -f env.yaml
+# pip install -r requirements.txt
 
 start_idx=$1
 step=$2

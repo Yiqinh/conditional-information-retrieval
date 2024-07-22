@@ -8,6 +8,7 @@
 #SBATCH --partition=isi
 
 source /home1/spangher/.bashrc
+
 cd
 cd /project/jonmay_231/spangher/Projects/conditional-information-retrieval
 
@@ -18,4 +19,6 @@ conda activate vllm-py310
 #conda env update -f env.yaml
 #pip install -r requirements.txt
 
-python source_retriever/base_query.py --start_idx 0 --end_idx 272900 --model meta-llama/Meta-Llama-3-70B-Instruct
+start=$1
+end=$2
+python source_retriever/base_query.py --start_idx ${start} --end_idx ${end} --model meta-llama/Meta-Llama-3-70B-Instruct

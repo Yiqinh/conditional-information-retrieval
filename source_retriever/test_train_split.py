@@ -29,7 +29,21 @@ if __name__ == "__main__":
                             print(curr_count, "/", article_count)
                             return file
     
-    split = get_eighty(0)
+    split = get_eighty()
     print(split)
+
+    """
+    This returns:
+    64121 / 80150
+    <_io.TextIOWrapper name='/project/jonmay_231/spangher/Projects/conditional-information-retrieval/source_summaries/json_summaries/sources_data_70b__252600_252700.json' mode='r' encoding='UTF-8'>
+
+    rounding up, the test set is all files with index >= 252700
+
+    the first file belonging to the test set is:
+        sources_data_70b__252700_252800.json
+    
+        anything after this file also belongs to the test set
+
+    """
             
 

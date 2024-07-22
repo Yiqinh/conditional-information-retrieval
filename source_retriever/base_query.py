@@ -36,6 +36,7 @@ if __name__ == "__main__":
     config_data = json.load(open(args.hf_config))
     os.environ['HF_TOKEN'] = config_data["HF_TOKEN"]
     os.environ['HF_HOME'] = args.hf_home
+    os.environ['VLLM_WORKER_MULTIPROC_METHOD'] = 'spawn'
 
     #load in the data
     source_df = pd.read_json(os.path.join(args.data_dir, 'full-source-scored-data.jsonl'), nrows=args.end_idx, lines=True).iloc[args.start_idx:]

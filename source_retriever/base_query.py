@@ -81,7 +81,7 @@ if __name__ == "__main__":
     for url, output in zip(urls, response):
         one_query = {
              'url': url,
-             'summary': output
+             'query': output
         }
         queries.append(one_query)
 

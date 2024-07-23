@@ -110,7 +110,7 @@ if __name__ == '__main__':
                 for article in data:
                     article_count += 1
                     for id, summary in article['sources'].items():
-                        new_source_embedding = {"id": id, "text": summary}
+                        new_source_embedding = {"id": article['article_url'] + id, "text": summary}
                         collection.append(new_source_embedding)
 
     print(article_count)

@@ -27,7 +27,7 @@ if __name__ == "__main__":
     url_to_query = {}
 
     for i in range(0, 300000, 30000):
-        f = os.path.join('llm_output', f"article_sum__{i}_{i+30000}.json")
+        f = os.path.join(here, 'llm_output', f"article_sum__{i}_{i+30000}.json")
         with open(f, 'r') as file:
             articles = json.load(file)
             for article in articles:
@@ -73,10 +73,10 @@ if __name__ == "__main__":
     logging.info(f"Num Articles in Training Set: {len(training_set)}")
     logging.info(f"Total Articles: {total}")
 
-    with open(os.path.join('test_set', "test_articles.json"), 'w') as file:
+    with open(os.path.join(here, 'test_set', "test_articles.json"), 'w') as file:
         json.dump(test_set, file)
 
-    with open(os.path.join('training_set', "training_articles.json"), 'w') as file:
+    with open(os.path.join(here, 'training_set', "training_articles.json"), 'w') as file:
         json.dump(training_set, file)
         
 

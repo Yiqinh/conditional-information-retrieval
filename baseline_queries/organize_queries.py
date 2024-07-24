@@ -44,6 +44,8 @@ if __name__ == "__main__":
             with open(file_path, 'r') as file:
                 articles = json.load(file)
                 for article in articles:
+                    if not url_to_query.get(article["article_url"], 0):
+                        continue
                     curr = {}
                     url_plus_source_name = {article['article_url'] + key: value for key, value in article['sources'].items()}
                     curr["sources"] = url_plus_source_name

@@ -78,5 +78,12 @@ if __name__ == "__main__":
 
     with open(os.path.join(here, 'training_set', "training_articles.json"), 'w') as file:
         json.dump(training_set, file)
+    
+    """
+    07/24/2024 14:37:07 - INFO - 59 - Test Set / Total Split = 15839 / 79192
+    07/24/2024 14:37:07 - INFO - 72 - Num Articles in Test Set: 15840
+    07/24/2024 14:37:07 - INFO - 73 - Num Articles in Training Set: 63352
+    07/24/2024 14:37:07 - INFO - 74 - Total Articles: 79192
+    """
         
 

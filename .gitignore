@@ -174,5 +174,6 @@ baseline_queries/article_sum*
 baseline_queries/llm_output/*
 baseline_queries/test_set/*
 baseline_queries/training_set/*
-source_summaries/*
+source_summaries/json_summaries/*
+source_summaries/text_summaries/*
 source_retriever/collections/*

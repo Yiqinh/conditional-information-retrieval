@@ -177,3 +177,4 @@ baseline_queries/training_set/*
 source_summaries/json_summaries/*
 source_summaries/text_summaries/*
 source_retriever/collections/*
+g++

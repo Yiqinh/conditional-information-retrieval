@@ -42,6 +42,7 @@ if __name__ == "__main__":
         file_path = os.path.join(os.path.dirname(here), 'source_summaries', 'json_summaries', file)
         if (os.path.exists(file_path)):
             with open(file_path, 'r') as file:
+                articles = json.load(file)
                 for article in articles:
                     curr = {}
                     url_plus_source_name = {article['article_url'] + key: value for key, value in article['sources'].items()}

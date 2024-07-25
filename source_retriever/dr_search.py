@@ -63,7 +63,7 @@ if __name__ == "__main__":
     f = os.path.join(os.path.dirname(here), 'baseline_queries', 'test_set', 'test_articles.json')
     with open(f, 'r') as file:
         articles = json.load(file)
-        for article in articles:
+        for url, article in articles.items():
             my_query = article['query']
             break
     

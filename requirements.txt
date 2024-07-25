@@ -6,6 +6,7 @@ pandas
 numpy
 huggingface_hub
 vllm==0.5.1
+scikit-learn
 
 tqdm
 retriv

@@ -2,6 +2,8 @@ import json
 import os
 import logging
 import argparse
+import numpy as np
+from sklearn.metrics import f1_score
 here = os.path.dirname(os.path.abspath(__file__))
     
 logging.basicConfig(
@@ -59,49 +61,59 @@ if __name__ == "__main__":
 
     dr = MyDenseRetriever.load(args.index_name)
 
-    #get search queries
+    id_to_label_index = {}
+    included_documents = [] #a list of document ids that need to be included
+
+    #get included documents
     f = os.path.join(os.path.dirname(here), 'baseline_queries', 'test_set', 'test_articles.json')
+    label_index = 0
+    with open(f, 'r') as file:
+        articles = json.load(file)
+        for url, article in articles.items():
+            for id, text in article["sources"].items():
+                included_documents.append(id)
+                id_to_label_index[id] = label_index
+                label_index += 1
+
+
+    res = {}
+    y_true = []
+    y_pred = []
+
+    #get search queries
     with open(f, 'r') as file:
         articles = json.load(file)
         for url, article in articles.items():
             print(url)
             print(article)
             my_query = article['query']
+            dr_result = dr.search(
+                    query=my_query,
+                    return_docs=True,
+                    include_id_list=included_documents,
+                    cutoff=10)
+            
+            #loop through and update labels, 1 -> document is relevant | document is retrieved, 0 -> document is not relevant | document is not retrieved
+            ground_truth = [0 for _ in range(len(included_documents))]
+            retriever = [0 for _ in range(len(included_documents))]
+
+            for source in dr_result:
+                label = id_to_label_index[source['id']]
+                retriever[label] = 1
+            
+            for id, text in article["sources"].items():
+                label = id_to_label_index[id]
+                ground_truth[label] = 1
+            
+            y_true.append(ground_truth)
+            y_pred.append(retriever)
+
+            tmp = {}
+            tmp["dr"] = dr_result
+            tmp["truth"] = article["sources"]
+            res[url] = tmp
             break
     
-    included_documents = [] #a list of document ids that need to be included
-
-    res = dr.search(
-                query=my_query,
-                return_docs=True,
-                cutoff=12)
-    
-    print(type(res))
     print(res)
-
-    """
-    [
-        {
-        "id": "doc_2",
-        "text": "Just like witches at black masses",
-        "score": 0.9536403
-        },
-        {
-        "id": "doc_1",
-        "text": "Generals gathered in their masses",
-        "score": 0.6931472
-        }
-    ]
-    """
-
-    """
-    Use Sklearn to calculate scores:
-    y_true = [0, 1, 2, 0, 1, 2]
-    y_pred = [0, 2, 1, 0, 0, 1]
-    """
-
-    id_to_label_index = {}
-
-    #loop through and update labels, 1 -> document is relevant | document is retrieved, 0 -> document is not relevant | document is not retrieved
-    ground_truth = []
-    retrieved = []
+    a = f1_score(y_true, y_pred, average='macro')
+    print(f"f1 score is {a}")

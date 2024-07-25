@@ -64,6 +64,8 @@ if __name__ == "__main__":
     with open(f, 'r') as file:
         articles = json.load(file)
         for url, article in articles.items():
+            print(url)
+            print(article)
             my_query = article['query']
             break
     
@@ -72,7 +74,7 @@ if __name__ == "__main__":
     res = dr.search(
                 query=my_query,
                 return_docs=True,
-                cutoff=10)
+                cutoff=12)
     
     print(type(res))
     print(res)

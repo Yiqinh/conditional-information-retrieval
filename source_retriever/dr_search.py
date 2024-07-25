@@ -57,11 +57,11 @@ if __name__ == "__main__":
     logging.info(f"Setting environment variables: RETRIV_BASE_PATH={retriv_cache_dir}")
     os.environ['RETRIV_BASE_PATH'] = retriv_cache_dir
 
+    dr = MyDenseRetriever.load(args.index_name)
 
-    dr = MyDenseRetriever.load("all_baseline-sources")
-
+    #get search queries
     f = os.path.join(os.path.dirname(here), 'baseline_queries', 'test_set', 'test_articles.json')
-    with open(here, 'r') as file:
+    with open(f, 'r') as file:
         articles = json.load(file)
         for article in articles:
             my_query = article['query']

@@ -83,8 +83,6 @@ if __name__ == "__main__":
     with open(f, 'r') as file:
         articles = json.load(file)
         for url, article in articles.items():
-            print(url)
-            print(article)
             my_query = article['query']
             dr_result = dr.search(
                     query=my_query,

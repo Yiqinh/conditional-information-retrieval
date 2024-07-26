@@ -3,7 +3,7 @@ import os
 import logging
 import argparse
 import numpy as np
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, precision_score, recall_score
 here = os.path.dirname(os.path.abspath(__file__))
     
 logging.basicConfig(
@@ -75,7 +75,6 @@ if __name__ == "__main__":
                 id_to_label_index[id] = label_index
                 label_index += 1
 
-
     res = {}
     y_true = []
     y_pred = []
@@ -111,9 +110,17 @@ if __name__ == "__main__":
             tmp = {}
             tmp["dr"] = dr_result
             tmp["truth"] = article["sources"]
+            tmp["query"] = my_query
             res[url] = tmp
-            break
+
+    fname = os.path.join(os.path.dirname(here), 'baseline_queries', 'baseline_results', 'retrieved_sources_test_set.json')
+    with open(fname, 'w') as json_file:
+        json.dump(res, json_file)
     
-    print(res)
-    a = f1_score(y_true, y_pred, average='macro')
-    print(f"f1 score is {a}")
+    f1 = f1_score(y_true, y_pred, average='macro')
+    precision = precision_score(y_true, y_pred, average='macro')
+    recall = recall_score(y_true, y_pred, average='macro')
+
+    logging.info(f"f1 score is {f1}")
+    logging.info(f"precision score is {precision}")
+    logging.info(f"recall score is {recall}")

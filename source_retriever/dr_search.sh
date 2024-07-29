@@ -7,6 +7,8 @@
 #SBATCH --cpus-per-gpu=10
 #SBATCH --partition=isi
 
+source /home1/spangher/.bashrc
+
 cd
 cd /project/jonmay_231/spangher/Projects/conditional-information-retrieval
 

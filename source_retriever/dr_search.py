@@ -4,7 +4,6 @@ import logging
 import argparse
 import numpy as np
 from sklearn.metrics import f1_score, precision_score, recall_score
-import tqdm
 here = os.path.dirname(os.path.abspath(__file__))
     
 logging.basicConfig(
@@ -83,7 +82,7 @@ if __name__ == "__main__":
     #get search queries
     with open(f, 'r') as file:
         articles = json.load(file)
-        for url, article in tqdm(articles.items(), desc="article queries processed"):
+        for url, article in articles.items():
             my_query = article['query']
             dr_result = dr.search(
                     query=my_query,

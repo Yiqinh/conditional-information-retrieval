@@ -2,7 +2,7 @@
 #SBATCH -N 1
 #SBATCH -n 1
 #SBATCH --time=100:00:00
-#SBATCH --gres=gpu:a100:1
+#SBATCH --gres=gpu:a40:1
 #SBATCH --mem=100GB
 #SBATCH --cpus-per-gpu=10
 #SBATCH --partition=isi

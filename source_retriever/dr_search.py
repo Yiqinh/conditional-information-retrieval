@@ -4,6 +4,7 @@ import logging
 import argparse
 import numpy as np
 from sklearn.metrics import f1_score, precision_score, recall_score
+import tqdm
 here = os.path.dirname(os.path.abspath(__file__))
     
 logging.basicConfig(
@@ -82,7 +83,7 @@ if __name__ == "__main__":
     #get search queries
     with open(f, 'r') as file:
         articles = json.load(file)
-        for url, article in articles.items():
+        for url, article in tqdm(articles.items(), desc="article queries processed"):
             my_query = article['query']
             dr_result = dr.search(
                     query=my_query,
@@ -97,6 +98,7 @@ if __name__ == "__main__":
             for source in dr_result:
                 label = id_to_label_index[source['id']]
                 retriever[label] = 1
+                source["score"] = str(source["score"]) #convert to string to write to json file.
             
             for id, text in article["sources"].items():
                 label = id_to_label_index[id]

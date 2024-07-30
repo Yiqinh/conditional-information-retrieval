@@ -9,7 +9,7 @@ articlesDictTraining = json.load(articlesJsonTraining)
 #sourcesDictTraining = json.load(sourcesJsonTraining)
 sourcesDictTraining = {}
 for url, article in articlesDictTraining.items():
-    for id, source_text in article["sources"]:
+    for id, source_text in article["sources"].items():
         sourcesDictTraining[id] = source_text
 
 articlesJsonTesting = open(os.path.join(os.path.dirname(here), "baseline_queries", "test_set", "test_articles.json"))
@@ -18,7 +18,7 @@ articlesDictTesting = json.load(articlesJsonTesting)
 #sourcesDictTesting = json.load(sourcesJsonTesting)
 sourcesDictTesting = {}
 for url, article in articlesDictTesting.items():
-    for id, source_text in article["sources"]:
+    for id, source_text in article["sources"].items():
         sourcesDictTesting[id] = source_text
 
 def dataLoader(articles, sources):

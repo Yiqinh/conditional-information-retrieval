@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -N 1
 #SBATCH -n 1
-#SBATCH --time=100:00:00
+#SBATCH --time=40:00:00
 #SBATCH --gres=gpu:a100:2
 #SBATCH --constraint=a100-80gb
 #SBATCH --mem=100GB

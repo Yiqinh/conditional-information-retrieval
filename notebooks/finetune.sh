@@ -17,4 +17,4 @@ source conda activate CIR
 pip install farm-haystack[colab,inference,metrics]
 
 python3 notebooks/dataLoader.py
-python3 notebooks/dataTraining.py
+python3 notebooks/dprTraining.py

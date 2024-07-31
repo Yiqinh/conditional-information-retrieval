@@ -23,7 +23,7 @@ for url, article in articlesDictTesting.items():
 
 def dataLoader(articles, sources):
     hayStackData = []
-    listSources = list(sources.items)
+    listSources = list(sources.items())
     for key in articles:
         datapoint = {}
         datapoint["dataset"] = str(key)

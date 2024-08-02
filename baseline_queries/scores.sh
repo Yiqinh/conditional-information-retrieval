@@ -2,7 +2,6 @@
 #SBATCH -N 1
 #SBATCH -n 1
 #SBATCH --time=40:00:00
-#SBATCH --cpus-per-gpu=10
 #SBATCH --mem=16G
 #SBATCH --partition=isi
 

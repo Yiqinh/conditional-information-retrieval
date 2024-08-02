@@ -4,12 +4,10 @@ import statistics
 
 here = os.path.dirname(os.path.abspath(__file__))    
 
-
 def get_scores(path: str):
     precision_list = []
     recall_list = []
     f1_list = []
-    num_zero_score = 0
 
     with open(path, 'r') as file:
         articles = json.load(file)
@@ -32,14 +30,14 @@ def get_scores(path: str):
             precision = n / len(y_pred)
 
             if (recall + precision) == 0:
-                num_zero_score += 1
                 f1 = 0
+
             else:
                 f1 = (2 * precision * recall) / (precision + recall)
             
-                recall_list.append(recall)
-                precision_list.append(precision)
-                f1_list.append(f1)
+            recall_list.append(recall)
+            precision_list.append(precision)
+            f1_list.append(f1)
     
     avg_prec = statistics.mean(precision_list)
     avg_rec = statistics.mean(recall_list)
@@ -48,7 +46,6 @@ def get_scores(path: str):
     print("average precision:", avg_prec)
     print("average recall:", avg_rec)
     print("average f1:", avg_f1)
-    print("number of zero correct articles:", num_zero_score)
 
 if __name__ == "__main__":
     get_scores(os.path.join(here, "baseline_results", "retrieved_sources_test_set.json"))

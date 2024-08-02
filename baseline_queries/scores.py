@@ -21,6 +21,9 @@ def get_scores(path: str):
             for id, text in dict['truth'].items():
                 y_true.add(id)
             
+            if len(y_true) == 0:
+                continue
+            
             true_pos = set.intersection(y_pred, y_true)
             n = len(true_pos)
 

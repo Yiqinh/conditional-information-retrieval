@@ -89,7 +89,7 @@ if __name__ == "__main__":
                     query=my_query,
                     return_docs=True,
                     include_id_list=included_documents,
-                    cutoff=10)
+                    cutoff=100)
             
             #loop through and update labels, 1 -> document is relevant | document is retrieved, 0 -> document is not relevant | document is not retrieved
             ground_truth = [0 for _ in range(len(included_documents))]
@@ -113,7 +113,7 @@ if __name__ == "__main__":
             tmp["query"] = my_query
             res[url] = tmp
 
-    fname = os.path.join(os.path.dirname(here), 'baseline_queries', 'baseline_results', 'retrieved_sources_test_set.json')
+    fname = os.path.join(os.path.dirname(here), 'baseline_queries', 'baseline_results', 'retrieved_sources_test_set2.json')
     with open(fname, 'w') as json_file:
         json.dump(res, json_file)
     

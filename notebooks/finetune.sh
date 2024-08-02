@@ -14,7 +14,5 @@ cd /project/jonmay_231/spangher/Projects/conditional-information-retrieval
 module load conda
 source conda activate CIR
 
-pip install farm-haystack[colab,inference,metrics]
-
 python3 notebooks/dataLoader.py
 python3 notebooks/dprTraining.py

@@ -26,7 +26,11 @@ def get_scores(path: str):
 
             recall = n / len(y_true)
             precision = n / len(y_pred)
-            f1 = (2 * precision * recall) / (precision + recall)
+
+            if (recall + precision) == 0:
+                f1 = 0
+            else:
+                f1 = (2 * precision * recall) / (precision + recall)
             
             recall_list.append(recall)
             precision_list.append(precision)

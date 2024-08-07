@@ -44,37 +44,35 @@ if __name__ == "__main__":
 
             retrieved_str = ""
             dr_list = article["dr"]
+            index = 0
             for source_dict in dr_list:
-                source_name = source_dict['id'].replace(url, "")
                 source_text = source_dict['text']
-
-                retrieved_str += source_name
-                retrieved_str += ' : '
+                retrieved_str += f"Source {index} :"
                 retrieved_str += source_text
                 retrieved_str += '\n'
+                index += 1
 
-            prompt = f"""I am a journalist and you are my helpful assistant. We are working on a story proposed by my editor. We need to think about sources to interview to complete the article. 
-
-                        I am providing you with the initial query we asked ourselves when looking for sources to interview. I am also providing you with the sources we interviewed and what information they provided to the story. 
-
-                        Mimicking the format, I want you to write a new query to help us think about the next informational needs of the story. Please format this query in one sentence. 
-                        Think about this step by step:
+    
+            prompt = ("I am a journalist and you are my helpful assistant. We are working on a story proposed by my editor. " 
+                        "We need to think about sources to interview to complete the article. I am providing you with the initial query we asked ourselves when looking for sources to interview. " 
+                        "I am also providing you with the sources we interviewed and what information they provided to the story. "
+                        "Mimicking the format, I want you to write a new query to help us think about the next informational needs of the story. Please format this query in one sentence. "
+                        "Think about this step by step: \n"
                         
-                        What are these sources that we have already interviewed providing to the story?
-                        What are we missing from the story?
-                        What kinds of sources would complete our informational needs if we interviewed them?
+                        "- What are these sources that we have already interviewed providing to the story? \n"
+                        "- What are we missing from the story? \n"
+                        "- What kinds of sources would complete our informational needs if we interviewed them? \n"
 
-                        You may include your thinking in the output.
+                        "You may include your thinking in the output. \n"
 
-                        We are working on this story : 
-                        {my_query}
+                        "We are working on this story: \n" 
+                        f"{my_query} \n"
 
-                        We have already interviewed these sources:
-                        {retrieved_str}
+                        "We have already interviewed these sources: \n"
+                        f"{retrieved_str} \n"
 
-                        Please write the 1 sentence query under the label “QUERY 2” below your thinking. 
-
-                    """
+                        "Please write the 1 sentence query under the label “QUERY 2” below your thinking."
+            )
 
             print(prompt)
         
@@ -93,16 +91,16 @@ if __name__ == "__main__":
 
             break
 
-  
-
     # load the model and infer to get article summaries. 
     my_model = load_model(args.model)
     response = infer(model=my_model, messages=messages, model_id=args.model, batch_size=100)
 
+    res = {}
     for url, output in zip(urls, response):
-        articles[url]['query2'] = output
+        res[url] = {}
+        res[url]['query2'] = output
         print(output)
 
     fname = os.path.join(here, 'llm_output', 'query2.json')
     with open(fname, 'w') as json_file:
-        json.dump(articles, json_file)
+        json.dump(res, json_file)

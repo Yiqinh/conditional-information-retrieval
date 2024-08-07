@@ -47,7 +47,7 @@ if __name__ == "__main__":
             index = 0
             for source_dict in dr_list:
                 source_text = source_dict['text']
-                retrieved_str += f"Source {index} :"
+                retrieved_str += f"Source {index}: "
                 retrieved_str += source_text
                 retrieved_str += '\n'
                 index += 1
@@ -74,7 +74,6 @@ if __name__ == "__main__":
                         "Please write the 1 sentence query under the label “QUERY 2” below your thinking."
             )
 
-            print(prompt)
         
             message = [
                 {
@@ -89,7 +88,6 @@ if __name__ == "__main__":
             ]
             messages.append(message)
 
-            break
 
     # load the model and infer to get article summaries. 
     my_model = load_model(args.model)
@@ -99,7 +97,6 @@ if __name__ == "__main__":
     for url, output in zip(urls, response):
         res[url] = {}
         res[url]['query2'] = output
-        print(output)
 
     fname = os.path.join(here, 'llm_output', 'query2.json')
     with open(fname, 'w') as json_file:

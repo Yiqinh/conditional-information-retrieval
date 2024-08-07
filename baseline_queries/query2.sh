@@ -9,6 +9,8 @@
 
 source /home1/spangher/.bashrc
 
+conda activate /home1/spangher/miniconda3/envs/vllm-py310
+
 cd
 cd /project/jonmay_231/spangher/Projects/conditional-information-retrieval
 
@@ -17,6 +19,5 @@ cd /project/jonmay_231/spangher/Projects/conditional-information-retrieval
 
 #conda env update -f env.yaml
 #pip install -r requirements.txt
-conda activate p2q
 
 python3 baseline_queries/query2.py

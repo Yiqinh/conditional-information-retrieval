@@ -3,7 +3,6 @@
 import os
 import json
 import statistics
-import logging
 
 from sentence_transformers import SentenceTransformer
 from scipy.optimize import linear_sum_assignment
@@ -41,14 +40,9 @@ def cos_similarity(path: str):
             total = cost[row_ind, col_ind].sum() #calculate the total cost of the matching
 
             cos_scores.append(total / min(len(y_true), len(y_pred))) #divide by the number of edges to get average cosine similarity. Append this to the list of cosine scores
-            break
     
     return statistics.mean(cos_scores) #return the mean cosine similarity
 
-
 if __name__ == "__main__":
     a = cos_similarity(os.path.join(here, "baseline_results", "retrieved_sources_test_set.json"))
-    logging.info(f"The average cosine similarity is {a}")
-    print(a)
-    print("here")
     print(f"The average cosine similarity is {a}") 

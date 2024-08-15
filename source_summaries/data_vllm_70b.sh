@@ -9,9 +9,7 @@
 
 
 source /home1/spangher/.bashrc
-conda activate py311
-# conda env update -f env.yaml
-# pip install -r requirements.txt
+conda activate /home1/spangher/miniconda3/envs/vllm-py310
 
 start_idx=$1
 step=$2

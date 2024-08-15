@@ -13,4 +13,6 @@ cd /project/jonmay_231/spangher/Projects/conditional-information-retrieval
 module load conda
 source conda activate CIR
 
+pip install -U sentence-transformers
+
 python3 baseline_queries/cosine_sim.py

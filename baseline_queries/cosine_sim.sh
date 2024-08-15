@@ -13,4 +13,4 @@ cd /project/jonmay_231/spangher/Projects/conditional-information-retrieval
 module load conda
 source conda activate CIR
 
-python3 cosine_sim.py
+python3 baseline_queries/cosine_sim.py

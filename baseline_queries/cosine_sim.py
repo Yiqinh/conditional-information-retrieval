@@ -49,3 +49,6 @@ def cos_similarity(path: str):
 if __name__ == "__main__":
     a = cos_similarity(os.path.join(here, "baseline_results", "retrieved_sources_test_set.json"))
     logging.info(f"The average cosine similarity is {a}")
+    print(a)
+    print("here")
+    print(f"The average cosine similarity is {a}") 

@@ -78,8 +78,6 @@ if __name__ == "__main__":
         ]
         messages.append(message)
         urls.append(one_article_url)
-        
-        break
 
 
     # load the model and infer to get article summaries. 

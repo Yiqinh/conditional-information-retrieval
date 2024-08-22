@@ -79,7 +79,6 @@ if __name__ == "__main__":
         messages.append(message)
         urls.append(one_article_url)
 
-        break
 
     # load the model and infer to get article summaries. 
     my_model = load_model(args.model)
@@ -88,8 +87,8 @@ if __name__ == "__main__":
     data = [["article_url", "pr_summary"]]
 
     for url, output in zip(urls, response):
-        output = output.split('\n\n')[-1]
         if output != "":
+            output = output.split('\n\n')[-1]
             data.append([url, output])
 
     # store each summary/query in a csv

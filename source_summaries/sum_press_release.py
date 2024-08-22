@@ -51,7 +51,6 @@ if __name__ == "__main__":
     filtered_pr_d = article_d.filter(lambda x: x['article_url'] in pr_url_set, num_proc=10)
     filtered_pr_df = filtered_pr_d.to_pandas()
 
-
     # store each message/prompt
     messages = []
     urls = []
@@ -60,12 +59,12 @@ if __name__ == "__main__":
         one_article_url = filtered_pr_df.iloc[i]['article_url']
 
 
-        prompt = ("I am a journalist and you are my helpful assistant. I will paste the text from a news press release below. Concisely summarize the main points from this press release" 
+        prompt = ("A press release is a communication announcing a story to the public, which is deliberately sent to journalists or media publishers in the hope they will publish the news contained in it."
+                  "I will paste a press release below. In a well formed paragraph, provide a concise and comprehensive summary of the given press release." 
                   
                   "Here is the press release: \n" 
                   f"{one_article_text} \n")
                   
-        
         message = [
             {
                 "role": "system",
@@ -89,7 +88,9 @@ if __name__ == "__main__":
     data = [["article_url", "pr_summary"]]
 
     for url, output in zip(urls, response):
-        data.append([url, output])
+        output = output.split('\n\n')[-1]
+        if output != "":
+            data.append([url, output])
 
     # store each summary/query in a csv
     save_path = os.path.join(here, 'pr_summary.csv')

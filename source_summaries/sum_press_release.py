@@ -93,7 +93,7 @@ if __name__ == "__main__":
 
     # store each summary/query in a csv
     save_path = os.path.join(data_dir, 'pr_summary.csv')
-    with open(save_path, 'w', newline='') as file:
+    with open(save_path, 'w', newline='', encoding='utf-8') as file:
         # Create a CSV writer object
         writer = csv.writer(file)
         # Write the data rows

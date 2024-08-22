@@ -78,6 +78,8 @@ if __name__ == "__main__":
         ]
         messages.append(message)
         urls.append(one_article_url)
+        
+        break
 
 
     # load the model and infer to get article summaries. 
@@ -92,7 +94,7 @@ if __name__ == "__main__":
             data.append([url, output])
 
     # store each summary/query in a csv
-    save_path = os.path.join(here, 'pr_summary.csv')
+    save_path = os.path.join(data_dir, 'pr_summary.csv')
     with open(save_path, 'w', newline='') as file:
         # Create a CSV writer object
         writer = csv.writer(file)

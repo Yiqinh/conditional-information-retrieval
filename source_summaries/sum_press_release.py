@@ -54,7 +54,11 @@ if __name__ == "__main__":
     # store each message/prompt
     messages = []
     urls = []
+    temp = 0
     for i in range(len(filtered_pr_df)):
+        temp += 1
+        if temp == 20:
+            break
         one_article_text = "".join(filtered_pr_df.iloc[i]['sent_lists'])
         one_article_url = filtered_pr_df.iloc[i]['article_url']
 

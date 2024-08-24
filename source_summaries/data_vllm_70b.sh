@@ -9,7 +9,7 @@
 
 
 source /home1/spangher/.bashrc
-conda activate py311
+conda activate vllm-py310
 # conda env update -f env.yaml
 # pip install -r requirements.txt
 
@@ -19,7 +19,16 @@ iterations=$3
 end_idx=$((start_idx + step))
 
 for ((i=0; i<iterations; i++)); do
-    python3 data_vllm_70b.py --start_idx ${start_idx} --end_idx ${end_idx}
+    python data_vllm_70b.py \
+      --start_idx ${start_idx} \
+      --end_idx ${end_idx} \
+      --id_col  doc_id \
+      --source_col  head \
+      --sent_col  sent \
+      --output_file  annotated_sources_summarized.txt \
+      --input_data_file  full-training-df.csv
+
+
     start_idx=${end_idx}
     end_idx=$((start_idx + step))
 done

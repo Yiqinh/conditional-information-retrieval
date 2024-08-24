@@ -222,3 +222,19 @@ args.end_idx = None
 
 
 """
+
+"""
+original prompt:
+
+    Here is a news article, with each sentence annotated according to the source of it's information:
+    ```
+    {json_str}
+    ```
+
+    Please summarize each source, based on our source annotations. 
+    Tell me in one paragraph per source: (1) who the source is (2) what informational content they provide to the article. 
+    Only rely on the annotations I have provided, don't identify additional sources. 
+    Generate only ONE summary per source. Group sources that are clearly the same but named slightly differently.
+    That is, summarize the SAME source if it occurs in multiple source annotations. 
+
+"""

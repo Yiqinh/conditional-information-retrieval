@@ -10,8 +10,6 @@
 
 source /home1/spangher/.bashrc
 conda activate vllm-py310
-# conda env update -f env.yaml
-# pip install -r requirements.txt
 
 start_idx=$1
 step=$2

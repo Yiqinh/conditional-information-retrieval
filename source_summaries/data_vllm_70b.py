@@ -65,6 +65,20 @@ Here is a news article, with each sentence annotated according to the source of 
 #
 # (3) Information: Restate the informational content they provide to the article.  Be specific about the facts provided. Make sure you includ to include all the information attributable to that source. (3-4 sentences).
 
+def format_prompt(prompt: str, json_str: str) -> str:
+    message = [
+        {
+            "role": "system",
+            "content": "You are an experienced journalist.",
+        },
+
+        {
+            "role": "user",
+            "content": prompt.format(json_str=json_str)
+        },
+    ]
+    formatted_prompt = tokenizer.apply_chat_template(message, tokenize=False, add_generation_prompt=True)
+    return formatted_prompt
 
 def load_model(model: str):
     torch.cuda.memory_summary(device=None, abbreviated=False)
@@ -75,7 +89,52 @@ def load_model(model: str):
         download_dir=HF_HOME, # sometimes the distributed model doesn't pay attention to the 
         enforce_eager=True
     )
-    return model
+    tokenizer = AutoTokenizer.from_pretrained(model)
+    return tokenizer, model
+
+
+def load_full_dataset_from_disk(args):
+    # load in the data
+    source_df = pd.read_json(
+        f'{args.data_dir}/full-source-scored-data.jsonl', nrows=args.end_idx, lines=True
+    ).iloc[args.start_idx:]
+    article_d = load_from_disk('all-coref-resolved')
+
+    # process the data into right format: article with annotated sentences
+    a_urls_lookup = set(source_df['article_url'])
+    filtered_article_d = article_d.filter(lambda x: x['article_url'] in a_urls_lookup, num_proc=10)
+    disallowed_quote_types = set(['Other', 'Background/Narrative', 'No Quote'])
+    disallowed_sources = set(['journalist', 'passive-voice'])
+    sentences_with_quotes = (
+        filtered_article_d
+        .to_pandas()
+        .merge(source_df, on='article_url')
+        [['article_url', 'attributions', 'quote_type', 'sent_lists', ]]
+        .explode(['attributions', 'quote_type', 'sent_lists'])
+    )
+
+    sentences_with_quotes = (
+        sentences_with_quotes.assign(attributions=lambda df: df.apply(lambda x:
+             x['attributions'] if (
+                     (len(x['attributions']) < 50) or
+                     (x['quote_type'] not in disallowed_quote_types) or
+                     (x['attributions'] not in disallowed_sources)) else np.nan, axis=1)
+             )
+    )
+    return sentences_with_quotes
+
+
+def write_to_file(fname, urls, outputs):
+    with open(fname, 'wb') as file:
+        for url, output in zip(urls, outputs):
+            response = output.outputs[0].text
+            response = unicodedata.normalize('NFKC', response)
+            if response and url:
+                output = {}
+                output['url'] = str(url)
+                output['response'] = str(response)
+                file.write(json.dumps(output).encode('utf-8'))
+                file.write(b'\n')
 
 
 if __name__ == "__main__":
@@ -93,46 +152,16 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.input_data_file is None:
-        #load in the data
-        source_df = pd.read_json(
-            f'{args.data_dir}/full-source-scored-data.jsonl', nrows=args.end_idx, lines=True
-        ).iloc[args.start_idx:]
-        article_d = load_from_disk('all-coref-resolved')
-
-        # process the data into right format: article with annotated sentences
-        a_urls_lookup = set(source_df['article_url'])
-        filtered_article_d = article_d.filter(lambda x: x['article_url'] in a_urls_lookup, num_proc=10)
-        disallowed_quote_types = set(['Other', 'Background/Narrative', 'No Quote'])
-        disallowed_sources = set(['journalist', 'passive-voice'])
-        sentences_with_quotes = (
-            filtered_article_d
-                .to_pandas()
-                .merge(source_df, on='article_url')
-                [['article_url', 'attributions', 'quote_type', 'sent_lists',]]
-                .explode(['attributions', 'quote_type', 'sent_lists'])
-        )
-
-        sentences_with_quotes = (sentences_with_quotes
-            .assign(attributions=lambda df:
-                df.apply(lambda x:
-                           x['attributions'] if (
-                                   (len(x['attributions']) < 50) or
-                                   (x['quote_type'] not in disallowed_quote_types) or
-                                   (x['attributions'] not in disallowed_sources)) else np.nan, axis=1)
-            )
-        )
+        sentences_with_quotes = load_full_dataset_from_disk(args)
     else:
         sentences_with_quotes = pd.read_csv(args.input_data_file, index_col=0)
 
-    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
-
+    tokenizer, model = load_model(args.model)
     # store each article_url, annoted_sentences pair
     # hold the batches
-    message_batches = []
-    url_batches = []
-    # each batch 
-    messages = []
-    urls = []
+    url_batches, message_batches = [], []
+    # each batch
+    urls, info_messages, narr_messages = [], [], []
     for url in sentences_with_quotes[args.id_col].unique():
         one_article = (
             sentences_with_quotes
@@ -146,30 +175,17 @@ if __name__ == "__main__":
             .to_json(lines=True, orient='records')
         )
 
-        message = [
-            {
-                "role": "system",
-                "content": "You are an experienced journalist.",
-            },
-
-            {
-                "role": "user",
-                "content": PROMPT.format(json_str=json_str)
-            },
-        ]
-        formatted_prompt = tokenizer.apply_chat_template(message, tokenize=False, add_generation_prompt=True)
-
-        messages.append(formatted_prompt)
+        info_messages.append(format_prompt(INFO_PROMPT, json_str))
+        narr_messages.append(format_prompt(NARRATIVE_PROMPT, json_str))
         urls.append(url)
 
-        if len(messages) >= BATCH_SIZE:
-            message_batches.append(messages)
+        if len(info_messages) >= BATCH_SIZE:
+            message_batches.append((info_messages, narr_messages))
             url_batches.append(urls)
-            messages = []
+            info_messages, narr_messages = [], []
             urls = []
 
     # load the model
-    model = load_model(args.model)
     sampling_params = SamplingParams(temperature=0.1, max_tokens=1024)
     if args.start_idx is None:
         args.start_idx = 0
@@ -179,20 +195,17 @@ if __name__ == "__main__":
     # generate the summaries
     start_idx = args.start_idx
     end_idx = start_idx + BATCH_SIZE
-    for messages, urls in zip(tqdm(message_batches), url_batches):
+    for (info_messages, narr_messages), urls in zip(tqdm(message_batches), url_batches):
         fname, fext = os.path.splitext(args.output_file)
-        fname = f'{fname}_{start_idx}_{end_idx}{fext}'
-        outputs = model.generate(messages, sampling_params)
-        with open(fname, 'wb') as file:
-            for url, output in zip(urls, outputs):
-                response = output.outputs[0].text
-                response = unicodedata.normalize('NFKC', response)
-                if response and url:
-                    output = {}
-                    output['url'] = str(url)
-                    output['response'] = str(response)
-                    file.write(json.dumps(output).encode('utf-8'))
-                    file.write(b'\n')
+        info_fname = f'{fname}__info__{start_idx}_{end_idx}{fext}'
+        narr_fname = f'{fname}__narr__{start_idx}_{end_idx}{fext}'
+        # generate the informational summaries
+        info_outputs = model.generate(info_messages, sampling_params)
+        write_to_file(info_fname, urls, info_outputs)
+        # generate the narrative summaries
+        narr_outputs = model.generate(narr_messages, sampling_params)
+        write_to_file(narr_fname, urls, narr_outputs)
+        # update the indices
         start_idx = end_idx
         end_idx = start_idx + BATCH_SIZE
 

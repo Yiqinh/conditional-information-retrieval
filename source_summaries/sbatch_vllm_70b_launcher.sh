@@ -11,6 +11,6 @@
 # for a total of step*iterations rows.
 
 # Launch multiple jobs (modify as needed)
-sbatch data_vllm_70b__run_all_source_summaries.sh 0 10000 10
-sbatch data_vllm_70b__run_all_source_summaries.sh 110000 10000 10
-sbatch data_vllm_70b__run_all_source_summaries.sh 220000 10000 10
+sbatch data_vllm_70b__run_all_source_summaries.sh 0 5000 5
+sbatch data_vllm_70b__run_all_source_summaries.sh 25000 5000 5
+sbatch data_vllm_70b__run_all_source_summaries.sh 50000 5000 4

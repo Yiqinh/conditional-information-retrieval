@@ -14,6 +14,7 @@ conda activate vllm-py310
 start_idx=$1
 step=$2
 iterations=$3
+iterations=$((iterations + 1))
 end_idx=$((start_idx + step))
 
 for ((i=0; i<iterations; i++)); do

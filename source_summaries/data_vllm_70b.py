@@ -151,7 +151,7 @@ if __name__ == "__main__":
     parser.add_argument('--end_idx', type=int, default=None)
     parser.add_argument('--input_data_file', type=str, default=None)
     parser.add_argument('--id_col', type=str, default='article_url')
-    parser.add_argument('--source_col', type=str, default='source')
+    parser.add_argument('--source_col', type=str, default='attributions')
     parser.add_argument('--sent_col', type=str, default='sent_lists')
     parser.add_argument('--output_file', type=str, default='sources_data_70b.txt')
     args = parser.parse_args()

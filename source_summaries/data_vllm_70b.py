@@ -99,7 +99,7 @@ def load_full_dataset_from_disk(args):
     source_df = pd.read_json(
         f'{args.data_dir}/full-source-scored-data.jsonl', nrows=args.end_idx, lines=True
     ).iloc[args.start_idx:]
-    article_d = load_from_disk('all-coref-resolved')
+    article_d = load_from_disk(f'{args.data_dir}/all-coref-resolved')
 
     # process the data into right format: article with annotated sentences
     a_urls_lookup = set(source_df['article_url'])
@@ -142,7 +142,7 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3-70B-Instruct")
-    parser.add_argument('--data_dir', type=str, default='./data')
+    parser.add_argument('--data_dir', type=str, default=f'{proj_dir}/data')
     parser.add_argument('--start_idx', type=int, default=None)
     parser.add_argument('--end_idx', type=int, default=None)
     parser.add_argument('--input_data_file', type=str, default=None)

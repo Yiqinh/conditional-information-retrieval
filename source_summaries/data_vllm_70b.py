@@ -20,7 +20,8 @@ from vllm import LLM,  SamplingParams
 from transformers import AutoTokenizer
 import os
 HF_HOME = "/project/jonmay_231/spangher/huggingface_cache"
-config_data = json.load(open('config.json'))
+proj_dir = '/project/jonmay_231/spangher/Projects/conditional-information-retrieval'
+config_data = json.load(open(f'{proj_dir}/config.json'))
 os.environ['HF_TOKEN'] = config_data["HF_TOKEN"]
 os.environ['HF_HOME'] = HF_HOME
 os.environ['VLLM_WORKER_MULTIPROC_METHOD'] = 'spawn'

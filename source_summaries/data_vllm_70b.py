@@ -81,16 +81,16 @@ def format_prompt(prompt: str, json_str: str) -> str:
     formatted_prompt = tokenizer.apply_chat_template(message, tokenize=False, add_generation_prompt=True)
     return formatted_prompt
 
-def load_model(model: str):
+def load_model(model_name: str):
     torch.cuda.memory_summary(device=None, abbreviated=False)
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = LLM(
-        model,
+        model_name,
         dtype=torch.float16,
         tensor_parallel_size=torch.cuda.device_count(),
         download_dir=HF_HOME, # sometimes the distributed model doesn't pay attention to the 
         enforce_eager=True
     )
-    tokenizer = AutoTokenizer.from_pretrained(model)
     return tokenizer, model
 
 

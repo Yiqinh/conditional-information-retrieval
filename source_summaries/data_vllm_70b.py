@@ -97,7 +97,7 @@ def load_model(model: str):
 def load_full_dataset_from_disk(args):
     # load in the data
     source_df = pd.read_json(
-        f'{args.data_dir}/full-source-scored-data.jsonl', nrows=args.end_idx, lines=True
+        f'{args.data_dir}/{args.source_data_file}', nrows=args.end_idx, lines=True
     ).iloc[args.start_idx:]
     article_d = load_from_disk(f'{args.data_dir}/all-coref-resolved')
 
@@ -105,7 +105,8 @@ def load_full_dataset_from_disk(args):
     a_urls_lookup = set(source_df['article_url'])
     filtered_article_d = article_d.filter(lambda x: x['article_url'] in a_urls_lookup, num_proc=10)
     disallowed_quote_types = set(['Other', 'Background/Narrative', 'No Quote'])
-    disallowed_sources = set(['journalist', 'passive-voice'])
+    # disallowed_sources = set(['journalist', 'passive-voice'])
+    # disallowed_sources = set(['passive-voice'])
     sentences_with_quotes = (
         filtered_article_d
         .to_pandas()
@@ -115,12 +116,14 @@ def load_full_dataset_from_disk(args):
     )
 
     sentences_with_quotes = (
-        sentences_with_quotes.assign(attributions=lambda df: df.apply(lambda x:
-             x['attributions'] if (
-                     (len(x['attributions']) < 50) or
-                     (x['quote_type'] not in disallowed_quote_types) or
-                     (x['attributions'] not in disallowed_sources)) else np.nan, axis=1)
-             )
+        sentences_with_quotes.assign(
+            attributions=lambda df: df.apply(lambda x:
+                x['attributions'] if (
+                    (len(x['attributions']) < 50)
+                    or (x['quote_type'] not in disallowed_quote_types)
+                    # or (x['attributions'] not in disallowed_sources)
+            ) else np.nan, axis=1)
+        )
     )
     return sentences_with_quotes
 
@@ -143,6 +146,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3-70B-Instruct")
     parser.add_argument('--data_dir', type=str, default=f'{proj_dir}/data')
+    parser.add_argument('--source_data_file', type=str, default='full-source-scored-data.jsonl')
     parser.add_argument('--start_idx', type=int, default=None)
     parser.add_argument('--end_idx', type=int, default=None)
     parser.add_argument('--input_data_file', type=str, default=None)

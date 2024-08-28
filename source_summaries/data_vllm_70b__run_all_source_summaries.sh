@@ -3,8 +3,8 @@
 #SBATCH -n 1
 #SBATCH --time=40:00:00
 #SBATCH --gres=gpu:4
-#SBATCH --cpus-per-gpu=10
-#SBATCH --mem=400G
+#SBATCH --cpus-per-gpu=5
+#SBATCH --mem=150G
 #SBATCH --partition=isi
 
 

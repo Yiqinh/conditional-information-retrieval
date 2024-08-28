@@ -204,12 +204,14 @@ if __name__ == "__main__":
         fname, fext = os.path.splitext(args.output_file)
         info_fname = f'{fname}__info__{start_idx}_{end_idx}{fext}'
         narr_fname = f'{fname}__narr__{start_idx}_{end_idx}{fext}'
-        # generate the informational summaries
-        info_outputs = model.generate(info_messages, sampling_params)
-        write_to_file(info_fname, urls, info_outputs)
-        # generate the narrative summaries
-        narr_outputs = model.generate(narr_messages, sampling_params)
-        write_to_file(narr_fname, urls, narr_outputs)
+        if not os.path.exists(info_fname):
+            # generate the informational summaries
+            info_outputs = model.generate(info_messages, sampling_params)
+            write_to_file(info_fname, urls, info_outputs)
+        if not os.path.exists(narr_fname):
+            # generate the narrative summaries
+            narr_outputs = model.generate(narr_messages, sampling_params)
+            write_to_file(narr_fname, urls, narr_outputs)
         # update the indices
         start_idx = end_idx
         end_idx = start_idx + BATCH_SIZE

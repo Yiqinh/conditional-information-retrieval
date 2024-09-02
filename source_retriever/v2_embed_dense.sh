@@ -4,7 +4,7 @@
 #SBATCH --time=40:00:00
 #SBATCH --gres=gpu:4
 #SBATCH --cpus-per-gpu=10
-#SBATCH --mem=200G
+#SBATCH --mem=100G
 #SBATCH --partition=isi
 
 source /home1/spangher/.bashrc

@@ -53,30 +53,31 @@ if __name__ == '__main__':
     logging.info(f"Setting environment variables: RETRIV_BASE_PATH={retriv_cache_dir}")
     os.environ['RETRIV_BASE_PATH'] = retriv_cache_dir
 
+    info_dir = os.path.join(os.path.dirname(here), "source_summaries", "v2_info_parsed")
 
-    f = open("v2_test_set.json")
+    f = open(os.path.join(info_dir, "v2_test_set.json"))
     test_data = json.load(f)
 
     test_sources = []
     for article in test_data:
         for source in article['sources']:
-            formatted_source = {"id": article['url'] + source['Name'], "text": source['Information']}
+            formatted_source = {"id": article['url'] + "#" + source['Name'], "text": source['Information']}
             test_sources.append(formatted_source)
     
-    f = open("v2_train_set.json")
+    f = open(os.path.join(info_dir, "v2_train_set.json"))
     train_data = json.load(f)
 
     train_sources = []
     for article in train_data:
         for source in article['sources']:
-            formatted_source = {"id": article['url'] + source['Name'], "text": source['Information']}
+            formatted_source = {"id": article['url'] + "#" + source['Name'], "text": source['Information']}
             train_sources.append(formatted_source)
 
 
     from retriv import SparseRetriever
 
     test_sr = SparseRetriever(
-        index_name="v2-test-index",
+        index_name="v2-test-sparse-index",
         model="bm25",
         min_df=1,
         tokenizer="whitespace",
@@ -89,13 +90,14 @@ if __name__ == '__main__':
         do_punctuation_removal=True,
         )
     
+    print("indexing test set")
     test_sr.index(
         collection=test_sources,  # File kind is automatically inferred
         show_progress=True,         # Default value       
     )
 
     train_sr = SparseRetriever(
-        index_name="v2-train-index",
+        index_name="v2-train-sparse-index",
         model="bm25",
         min_df=1,
         tokenizer="whitespace",
@@ -108,6 +110,7 @@ if __name__ == '__main__':
         do_punctuation_removal=True,
         )
     
+    print("indexing train set")
     train_sr.index(
         collection=train_sources,  # File kind is automatically inferred
         show_progress=True,         # Default value       

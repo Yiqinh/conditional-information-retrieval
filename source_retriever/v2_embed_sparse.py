@@ -62,12 +62,10 @@ if __name__ == '__main__':
 
     for article in test_data:
         for source in article['sources']:
-            try:
-                if type(source['Information']) == str and type(source['Name']) == str:
-                    formatted_source = {"id": article['url'] + "#" + source['Name'], "text": source['Information']}
-                    test_sources.append(formatted_source)
-            except:
-                continue
+            if type(source['Information']) == str and type(source['Name']) == str:
+                formatted_source = {"id": article['url'] + "#" + source['Name'], "text": source['Information']}
+                test_sources.append(formatted_source)
+
     
     f = open(os.path.join(info_dir, "v2_train_set.json"))
     train_data = json.load(f)
@@ -76,12 +74,9 @@ if __name__ == '__main__':
 
     for article in train_data:
         for source in article['sources']:
-            try:
-                if type(source['Information']) == str and type(source['Name']) == str:
-                    formatted_source = {"id": article['url'] + "#" + source['Name'], "text": source['Information']}
-                    train_sources.append(formatted_source)
-            except:
-                continue
+            if type(source['Information']) == str and type(source['Name']) == str:
+                formatted_source = {"id": article['url'] + "#" + source['Name'], "text": source['Information']}
+                train_sources.append(formatted_source)
 
 
     from retriv import SparseRetriever

@@ -83,7 +83,7 @@ if __name__ == '__main__':
     for article in all_articles:
         for source in article['sources']:
             if type(source['Information']) != str or type(source['Name']) != str:
-                article.remove(source)
+                article['sources'].remove(source)
                     
 
     split = train_test_split(all_articles, shuffle=False, test_size=0.2)

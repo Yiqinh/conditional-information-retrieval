@@ -47,30 +47,28 @@ def robust_parser(f_path: str, seen_urls: set):
                 source = temp
                 index = 0
                 one_parsed_source = {}
-                skip = False
                 for key, value in source.items():
                     if index == 0:
-                        if type(value) != str:
-                            skip = True
-                            break
                         one_parsed_source['Name'] = value
-                    elif index == 1:
+                    if index == 1:
                         one_parsed_source['Original Name'] = value
-                    elif index == 2:
+                    if index == 2:
                         one_parsed_source['Information'] = value
-                        if type(value) != str:
-                            skip = True
-                            break
                     index += 1
                 
-                if not skip:
-                    parsed_sources.append(one_parsed_source)
+                parsed_sources.append(one_parsed_source)
 
         if len(parsed_sources) > 0:
             parsed_article = {}
             parsed_article['url'] = article['url']
             parsed_article['sources'] = parsed_sources
             res.append(parsed_article)
+
+    #check for none type
+    for article in res:
+        for source in article['sources']:
+            if (type(source.get('Information', None)) != str) or (type(source.get('Name', None)) != str):
+                article['sources'].remove(source)
 
     return res
 

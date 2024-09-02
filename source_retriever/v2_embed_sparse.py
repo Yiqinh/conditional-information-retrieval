@@ -59,19 +59,27 @@ if __name__ == '__main__':
     test_data = json.load(f)
 
     test_sources = []
+
     for article in test_data:
         for source in article['sources']:
-            formatted_source = {"id": article['url'] + "#" + source['Name'], "text": source['Information']}
-            test_sources.append(formatted_source)
+            try:
+                formatted_source = {"id": article['url'] + "#" + source['Name'], "text": source['Information']}
+                test_sources.append(formatted_source)
+            except:
+                continue
     
     f = open(os.path.join(info_dir, "v2_train_set.json"))
     train_data = json.load(f)
 
     train_sources = []
+
     for article in train_data:
         for source in article['sources']:
-            formatted_source = {"id": article['url'] + "#" + source['Name'], "text": source['Information']}
-            train_sources.append(formatted_source)
+            try:
+                formatted_source = {"id": article['url'] + "#" + source['Name'], "text": source['Information']}
+                train_sources.append(formatted_source)
+            except:
+                continue
 
 
     from retriv import SparseRetriever
@@ -91,6 +99,7 @@ if __name__ == '__main__':
         )
     
     print("indexing test set")
+    print("len test set: ", len(test_sources))
     test_sr.index(
         collection=test_sources,  # File kind is automatically inferred
         show_progress=True,         # Default value       
@@ -111,6 +120,8 @@ if __name__ == '__main__':
         )
     
     print("indexing train set")
+    print("len train set: ", len(train_sources))
+
     train_sr.index(
         collection=train_sources,  # File kind is automatically inferred
         show_progress=True,         # Default value       

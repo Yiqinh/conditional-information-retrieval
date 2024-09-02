@@ -48,8 +48,6 @@ def robust_parser(f_path: str, seen_urls: set):
                 index = 0
                 one_parsed_source = {}
                 for key, value in source.items():
-                    if type(value) == list:
-                        value = value[0]
                     if index == 0:
                         one_parsed_source['Name'] = value
                     elif index == 1:

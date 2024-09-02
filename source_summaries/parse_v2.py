@@ -79,6 +79,13 @@ if __name__ == '__main__':
             res = robust_parser(file_path, article_set)
             all_articles.extend(res)
 
+    # check each article sources for null
+    for article in all_articles:
+        for source in article['sources']:
+            if type(source['Information']) != str or type(source['Name']) != str:
+                article.remove(source)
+                    
+
     split = train_test_split(all_articles, shuffle=False, test_size=0.2)
 
     train_articles = split[0]

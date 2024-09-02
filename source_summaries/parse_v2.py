@@ -82,7 +82,7 @@ if __name__ == '__main__':
     # check each article sources for null
     for article in all_articles:
         for source in article['sources']:
-            if type(source.get('Information', None)) != str or type(source.get('Name', None)) != str:
+            if (type(source.get('Information', None)) != str) or (type(source.get('Name', None)) != str) or (source.get('Information') == None):
                 article['sources'].remove(source)
                     
 

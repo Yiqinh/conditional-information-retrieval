@@ -47,7 +47,11 @@ def robust_parser(f_path: str, seen_urls: set):
                 source = temp
                 index = 0
                 one_parsed_source = {}
+                skip = False
                 for key, value in source.items():
+                    if type(value) != str:
+                        skip = True
+                        break
                     if index == 0:
                         one_parsed_source['Name'] = value
                     elif index == 1:
@@ -55,8 +59,9 @@ def robust_parser(f_path: str, seen_urls: set):
                     elif index == 2:
                         one_parsed_source['Information'] = value
                     index += 1
-                    
-                parsed_sources.append(one_parsed_source)
+                
+                if not skip:
+                    parsed_sources.append(one_parsed_source)
 
         if len(parsed_sources) > 0:
             parsed_article = {}
@@ -78,12 +83,6 @@ if __name__ == '__main__':
         if os.path.isfile(file_path):
             res = robust_parser(file_path, article_set)
             all_articles.extend(res)
-
-    # check each article sources for null
-    for article in all_articles:
-        for source in article['sources']:
-            if (type(source.get('Information', None)) != str) or (type(source.get('Name', None)) != str) or (source.get('Information') == None):
-                article['sources'].remove(source)
                     
 
     split = train_test_split(all_articles, shuffle=False, test_size=0.2)

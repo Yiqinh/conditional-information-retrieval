@@ -63,8 +63,9 @@ if __name__ == '__main__':
     for article in test_data:
         for source in article['sources']:
             try:
-                formatted_source = {"id": article['url'] + "#" + source['Name'], "text": source['Information']}
-                test_sources.append(formatted_source)
+                if type(source['Information']) == str and type(source['Name']) == str:
+                    formatted_source = {"id": article['url'] + "#" + source['Name'], "text": source['Information']}
+                    test_sources.append(formatted_source)
             except:
                 continue
     
@@ -76,8 +77,9 @@ if __name__ == '__main__':
     for article in train_data:
         for source in article['sources']:
             try:
-                formatted_source = {"id": article['url'] + "#" + source['Name'], "text": source['Information']}
-                train_sources.append(formatted_source)
+                if type(source['Information']) == str and type(source['Name']) == str:
+                    formatted_source = {"id": article['url'] + "#" + source['Name'], "text": source['Information']}
+                    train_sources.append(formatted_source)
             except:
                 continue
 

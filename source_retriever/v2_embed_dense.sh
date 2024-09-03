@@ -10,6 +10,7 @@
 source /home1/spangher/.bashrc
 conda activate retriv-py39
 
+pip install einops datasets
 cd /project/jonmay_231/spangher/Projects/conditional-information-retrieval
 
 python3 source_retriever/v2_embed_dense.py

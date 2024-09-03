@@ -8,8 +8,10 @@
 #SBATCH --cpus-per-gpu=10
 #SBATCH --partition=gpu
 
-source /home1/spangher/.bashrc
-conda activate retriv-py39
+module load conda
+source conda activate CIR
+conda env update -f env.yaml
+pip install -r requirements.txt
 
 cd /project/jonmay_231/spangher/Projects/conditional-information-retrieval
 pip install einops datasets

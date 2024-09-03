@@ -76,7 +76,7 @@ if __name__ == '__main__':
 
     # needs to be imported here to make sure the environment variables are set before
     # the retriv library sets certain defaults
-    from retriv import DenseRetriever
+    from dense_retriever import MyDenseRetriever
 
     #sets the retriv base path
     retriv_cache_dir = args.retriv_cache_dir
@@ -109,19 +109,23 @@ if __name__ == '__main__':
                 train_sources.append(formatted_source)
 
     # set up index
-    test_dr = DenseRetriever(
+    test_dr = MyDenseRetriever(
         index_name="v2-test-dense-index",
         model=args.embedding_model,
         normalize=True,
         max_length=args.max_seq_length,
+        embedding_dim=args.embedding_dim,
+        device=args.device,
         use_ann=True,
     )
 
-    train_dr = DenseRetriever(
+    train_dr = MyDenseRetriever(
         index_name="v2-train-dense-index",
         model=args.embedding_model,
         normalize=True,
         max_length=args.max_seq_length,
+        embedding_dim=args.embedding_dim,
+        device=args.device,
         use_ann=True,
     )
 
@@ -130,7 +134,6 @@ if __name__ == '__main__':
         collection=test_sources,  # File kind is automatically inferred
         batch_size=args.batch_size_to_index,  # Default value
         show_progress=True,  # Default value
-        use_gpu=True,
     )
 
     print("currently indexing train sources. len:", len(train_sources))
@@ -138,5 +141,4 @@ if __name__ == '__main__':
         collection=train_sources,  # File kind is automatically inferred
         batch_size=args.batch_size_to_index,  # Default value
         show_progress=True,  # Default value
-        use_gpu=True,
     )

@@ -91,8 +91,11 @@ if __name__ == '__main__':
 
     print("total articles: ", len(all_articles))
 
-    test = json.load(os.path.join(here, "v2_info_parsed", "v2_test_set.json"))
-    train = json.load(os.path.join(here, "v2_info_parsed", "v2_train_set.json"))
+    with open(os.path.join(here, "v2_info_parsed", "v2_test_set.json"), 'r') as file:
+        test = json.load(file)
+    
+    with open(os.path.join(here, "v2_info_parsed", "v2_train_set.json"), 'r') as file:
+        train = json.load(file)
 
     test_urls = set()
     train_urls = set()

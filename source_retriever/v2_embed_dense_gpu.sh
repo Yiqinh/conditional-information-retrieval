@@ -8,12 +8,7 @@
 #SBATCH --cpus-per-gpu=10
 #SBATCH --partition=gpu
 
-module load conda
 source conda activate CIR
-conda env update -f env.yaml
-pip install -r requirements.txt
-
 cd /project/jonmay_231/spangher/Projects/conditional-information-retrieval
-pip install einops datasets
 
 python3 source_retriever/v2_embed_dense.py

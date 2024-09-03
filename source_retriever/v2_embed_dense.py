@@ -23,7 +23,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--embedding_model',
         type=str,
-        default="nvidia/NV-Embed-v2",  # "sentence-transformers/all-MiniLM-L6-v2", #
+        default="Salesforce/SFR-Embedding-2_R",  # "sentence-transformers/all-MiniLM-L6-v2", #
         help="The model to use for generating embeddings"
     )
     parser.add_argument(

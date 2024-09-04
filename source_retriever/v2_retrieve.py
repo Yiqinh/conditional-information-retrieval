@@ -125,10 +125,13 @@ if __name__ == "__main__":
 
     res = []
 
+    import random
+
     #get search queries
     counter = 0
     with open(f, 'r') as file:
         articles = json.load(file)
+        random.shuffle(articles)
         for article in articles:
             my_query = article['query']
 
@@ -150,7 +153,7 @@ if __name__ == "__main__":
             res.append(one_article)
             counter += 1
 
-            if counter == 10:
+            if counter == 50:
                 break # small sample test n=1000
   
     fname = os.path.join(here, 'v2_search_res', 'v2_search_test_1000.json')

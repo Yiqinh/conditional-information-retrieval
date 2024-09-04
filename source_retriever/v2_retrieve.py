@@ -102,6 +102,9 @@ if __name__ == "__main__":
                     include_id_list=included_documents,
                     cutoff=10)
 
+            for source in dr_result:
+                source["score"] = str(source["score"]) #convert to string to write to json file.
+
             article['dr_sources'] = dr_result
             counter += 1
 

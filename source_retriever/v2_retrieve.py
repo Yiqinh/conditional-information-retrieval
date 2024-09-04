@@ -88,6 +88,7 @@ if __name__ == "__main__":
                 label_index += 1
 
 
+    res = []
 
     #get search queries
     counter = 0
@@ -104,13 +105,18 @@ if __name__ == "__main__":
 
             for source in dr_result:
                 source["score"] = str(source["score"]) #convert to string to write to json file.
+            
+            one_article = {}
+            one_article['url'] = article['url']
+            one_article['sources'] = article['sources']
+            one_article['dr_sources'] = dr_result
 
-            article['dr_sources'] = dr_result
+            res.append(one_article)
             counter += 1
 
             if counter == 2:
                 break # small sample test n=1000
     
-    fname = os.path.join(here, 'v2_search_res', 'v2_search_test.json')
+    fname = os.path.join(here, 'v2_search_res', 'v2_search_test_1000.json')
     with open(fname, 'w') as json_file:
-        json.dump(articles, json_file)
+        json.dump(res, json_file)

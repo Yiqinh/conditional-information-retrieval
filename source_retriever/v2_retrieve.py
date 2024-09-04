@@ -4,23 +4,58 @@ import logging
 import argparse
 import numpy as np
 from sklearn.metrics import f1_score, precision_score, recall_score
-import tqdm
+import statistics
+
 here = os.path.dirname(os.path.abspath(__file__))
 
-import json
-import os
-import logging
-import argparse
-import numpy as np
-from sklearn.metrics import f1_score, precision_score, recall_score
-import tqdm
-here = os.path.dirname(os.path.abspath(__file__))
-    
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(lineno)d - %(message)s",
     datefmt="%m/%d/%Y %H:%M:%S",
     level=logging.INFO,
 )
+def get_scores(path: str):
+    precision_list = []
+    recall_list = []
+    f1_list = []
+
+    with open(path, 'r') as file:
+        articles = json.load(file)
+        for article in articles:
+            y_pred = set()
+            y_true = set()
+
+            for source in article['dr_sources']:
+                id = source['id']
+                y_pred.add(id)
+            for source in article['sources']:
+                y_true.add(article['url']+"#"+source['Name'])
+            
+            if len(y_true) == 0:
+                continue
+            
+            true_pos = set.intersection(y_pred, y_true)
+            n = len(true_pos)
+
+            recall = n / len(y_true)
+            precision = n / len(y_pred)
+
+            if (recall + precision) == 0:
+                f1 = 0
+
+            else:
+                f1 = (2 * precision * recall) / (precision + recall)
+            
+            recall_list.append(recall)
+            precision_list.append(precision)
+            f1_list.append(f1)
+    
+    avg_prec = statistics.mean(precision_list)
+    avg_rec = statistics.mean(recall_list)
+    avg_f1 = statistics.mean(f1_list)
+
+    print("average precision:", avg_prec)
+    print("average recall:", avg_rec)
+    print("average f1:", avg_f1)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -69,7 +104,7 @@ if __name__ == "__main__":
     logging.info(f"Setting environment variables: RETRIV_BASE_PATH={retriv_cache_dir}")
     os.environ['RETRIV_BASE_PATH'] = retriv_cache_dir
 
-    test_dr = MyDenseRetriever.load(args.index_name)
+    test_dr = MyDenseRetriever.load("v2-test-dense-index")
 
     id_to_label_index = {}
     included_documents = [] #a list of document ids that need to be included
@@ -110,13 +145,16 @@ if __name__ == "__main__":
             one_article['url'] = article['url']
             one_article['sources'] = article['sources']
             one_article['dr_sources'] = dr_result
+            one_article['query'] = my_query
 
             res.append(one_article)
             counter += 1
 
-            if counter == 2:
+            if counter == 10:
                 break # small sample test n=1000
-    
+  
     fname = os.path.join(here, 'v2_search_res', 'v2_search_test_1000.json')
     with open(fname, 'w') as json_file:
         json.dump(res, json_file)
+    
+    get_scores(fname)

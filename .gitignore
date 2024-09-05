@@ -185,3 +185,5 @@ source_summaries/v2*
 
 source_retriever/collections/*
 g++
+
+source_retriever/v2_search_res/*

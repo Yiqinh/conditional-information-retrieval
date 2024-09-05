@@ -66,12 +66,15 @@ def infer(model, messages, model_id, temperature=0, max_tokens=512, batch_size=1
             
         formatted_prompt = tokenizer.apply_chat_template(message, tokenize=False, add_generation_prompt=True)
         formatted_messages.append(formatted_prompt)
+    
+    message_batches.append(formatted_messages)
 
     sampling_params = SamplingParams(temperature=temperature, max_tokens=max_tokens)
     res = []
 
     for batch in tqdm(message_batches, desc="Message batches"):
         outputs = model.generate(batch, sampling_params)
+        print("lenght of outputs is", len(output))
         for output in outputs:
             generated_text = output.outputs[0].text
             generated_text = unicodedata.normalize('NFKC', generated_text)

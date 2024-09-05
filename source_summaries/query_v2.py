@@ -25,8 +25,8 @@ here = os.path.dirname(os.path.abspath(__file__))
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    #parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3-70B-Instruct")
-    parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3-8B-Instruct")
+    parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3-70B-Instruct")
+    #parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3-8B-Instruct")
     parser.add_argument("--hf_home", type=str, default="/project/jonmay_231/spangher/huggingface_cache")
     parser.add_argument('--hf_config', type=str, default=os.path.join(os.path.dirname(here), 'config.json'))
     parser.add_argument('--data_dir', type=str, default=os.path.join(os.path.dirname(here), 'data'))
@@ -39,7 +39,7 @@ if __name__ == "__main__":
     os.environ['VLLM_WORKER_MULTIPROC_METHOD'] = 'spawn'
 
     #load in the data
-    source_df = pd.read_json(os.path.join(args.data_dir, 'full-source-scored-data.jsonl'), lines=True, nrows=100)
+    source_df = pd.read_json(os.path.join(args.data_dir, 'full-source-scored-data.jsonl'), lines=True)
     article_d = load_from_disk(os.path.join(args.data_dir, 'all-coref-resolved'))
 
     # process the data into right format: article with annotated sentences
@@ -48,20 +48,29 @@ if __name__ == "__main__":
 
     all_articles = filtered_article_d.to_pandas().merge(source_df, on='article_url')
 
+    #find urls/articles in test set
+    info_dir = os.path.join(here, "v2_info_parsed")
+    f = open(os.path.join(info_dir, "v2_test_set.json"))
+    test_data = json.load(f)
+
+    test_urls = set()
+    for article in test_data:
+        test_urls.add(article['url'])
+
     # store each message/prompt
     messages = []
     urls = []
 
-    counter = 0
     for i in range(len(all_articles)):
-        counter += 1
-        if counter == 4:
+        if len(messages) == 501:
             break
-        one_article_text = all_articles.iloc[i]['article_text'].replace("\n", "")
-        if i == 2:
-            one_article_text = one_article_text + one_article_text + one_article_text + one_article_text + one_article_text
 
+        one_article_text = all_articles.iloc[i]['article_text'].replace("\n", "")
         one_article_url = all_articles.iloc[i]['article_url']
+
+        if one_article_url not in test_urls:
+            continue
+
         prompt = f"""
                     Output one sentence only. I have pasted a news article below. State the preliminary question the news article answers. 
                     Incorporate the initial story lead and the reason why the journalist started investigating this topic. Please output this one question only.
@@ -90,6 +99,9 @@ if __name__ == "__main__":
     response = infer(model=my_model, messages=messages, model_id=args.model, batch_size=100)
 
     queries = []
+    print("num urls:", len(urls))
+    print("num responses:", len(response))
+
     for url, output in zip(urls, response):
         one_query = {
              'url': url,
@@ -98,7 +110,7 @@ if __name__ == "__main__":
         queries.append(one_query)
 
 
-    fname = f'article_query_sample.json'
+    fname = f'article_query_500sample.json'
     fname = os.path.join(here, 'v2_queries', fname)
     with open(fname, 'w') as json_file:
         json.dump(queries, json_file)

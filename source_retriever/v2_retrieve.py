@@ -5,6 +5,7 @@ import argparse
 import numpy as np
 from sklearn.metrics import f1_score, precision_score, recall_score
 import statistics
+from tqdm.auto import tqdm
 
 here = os.path.dirname(os.path.abspath(__file__))
 
@@ -129,9 +130,8 @@ if __name__ == "__main__":
     #get search queries
     with open(f, 'r') as file:
         articles = json.load(file)
-        for article in articles:
+        for article in tqdm(articles, desc="article source search"):
             my_query = article['query']
-
             dr_result = test_dr.search(
                     query=my_query,
                     return_docs=True,

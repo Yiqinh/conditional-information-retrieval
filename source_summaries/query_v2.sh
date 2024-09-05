@@ -18,4 +18,4 @@ conda activate vllm-py310
 #conda env update -f env.yaml
 #pip install -r requirements.txt
 
-python source_retriever/query_v2.py
+python source_summaries/query_v2.py

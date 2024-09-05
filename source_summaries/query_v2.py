@@ -25,7 +25,8 @@ here = os.path.dirname(os.path.abspath(__file__))
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3-70B-Instruct")
+    #parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3-70B-Instruct")
+    parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3-8B-Instruct")
     parser.add_argument("--hf_home", type=str, default="/project/jonmay_231/spangher/huggingface_cache")
     parser.add_argument('--hf_config', type=str, default=os.path.join(os.path.dirname(here), 'config.json'))
     parser.add_argument('--data_dir', type=str, default=os.path.join(os.path.dirname(here), 'data'))
@@ -38,7 +39,7 @@ if __name__ == "__main__":
     os.environ['VLLM_WORKER_MULTIPROC_METHOD'] = 'spawn'
 
     #load in the data
-    source_df = pd.read_json(os.path.join(args.data_dir, 'full-source-scored-data.jsonl'), lines=True)
+    source_df = pd.read_json(os.path.join(args.data_dir, 'full-source-scored-data.jsonl'), lines=True, nrows=100)
     article_d = load_from_disk(os.path.join(args.data_dir, 'all-coref-resolved'))
 
     # process the data into right format: article with annotated sentences
@@ -57,8 +58,8 @@ if __name__ == "__main__":
         if counter == 4:
             break
         one_article_text = all_articles.iloc[i]['article_text'].replace("\n", "")
-        if i == 1:
-            one_article_text = one_article_text + one_article_text + one_article_text
+        if i == 2:
+            one_article_text = one_article_text + one_article_text + one_article_text + one_article_text + one_article_text
 
         one_article_url = all_articles.iloc[i]['article_url']
         prompt = f"""

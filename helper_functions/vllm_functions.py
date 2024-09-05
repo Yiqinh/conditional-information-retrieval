@@ -74,7 +74,7 @@ def infer(model, messages, model_id, temperature=0, max_tokens=512, batch_size=1
 
     for batch in tqdm(message_batches, desc="Message batches"):
         outputs = model.generate(batch, sampling_params)
-        print("lenght of outputs is", len(output))
+        print("lenght of outputs is", len(outputs))
         for output in outputs:
             generated_text = output.outputs[0].text
             generated_text = unicodedata.normalize('NFKC', generated_text)

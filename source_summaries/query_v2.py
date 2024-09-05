@@ -25,8 +25,8 @@ here = os.path.dirname(os.path.abspath(__file__))
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3-70B-Instruct")
-    #parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3-8B-Instruct")
+    #parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3-70B-Instruct")
+    parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3-8B-Instruct")
     parser.add_argument("--hf_home", type=str, default="/project/jonmay_231/spangher/huggingface_cache")
     parser.add_argument('--hf_config', type=str, default=os.path.join(os.path.dirname(here), 'config.json'))
     parser.add_argument('--data_dir', type=str, default=os.path.join(os.path.dirname(here), 'data'))

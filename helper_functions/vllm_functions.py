@@ -55,7 +55,6 @@ def infer(model, messages, model_id, temperature=0, max_tokens=512, batch_size=1
 
     message_batches = []
     formatted_messages = []
-    message_batches.append(formatted_messages)
 
     tokenizer = AutoTokenizer.from_pretrained(model_id)
 

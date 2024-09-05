@@ -73,13 +73,15 @@ if __name__ == "__main__":
             continue
 
         prompt = f"""
-                    Output one sentence only. I have pasted a news article below. State the preliminary question the news article answers. 
-                    Incorporate the initial story lead and the reason why the journalist started investigating this topic. Please output this one question only.
-                    Do not output "here is..."
-                    
-                    {one_article_text}
+                    Here is a news article:
 
-                """
+                    ```{one_article_text}```
+
+                    Identify the initial reason why the journalist started investigating this topic (i.e. the story lead) and the angle they started with.
+                    Don't include any information the journalist learned after investigating further. 
+                    State your entire response from the viewpoint of the journalist in 2-3 sentences. Be specific. Ask a question.
+                                        
+                    """
         
         message = [
             {
@@ -111,7 +113,7 @@ if __name__ == "__main__":
         queries.append(one_query)
 
 
-    fname = f'query_test_prompt1_v2.json'
+    fname = f'query_test_prompt2_v2.json'
     fname = os.path.join(here, 'v2_queries', fname)
     with open(fname, 'w') as json_file:
         json.dump(queries, json_file)

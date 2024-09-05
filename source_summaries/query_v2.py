@@ -39,7 +39,7 @@ if __name__ == "__main__":
 
     #load in the data
     source_df = pd.read_json(os.path.join(args.data_dir, 'full-source-scored-data.jsonl'), lines=True)
-    article_d = load_from_disk('all-coref-resolved')
+    article_d = load_from_disk(os.path.join(args.data_dir, 'all-coref-resolved'))
 
     # process the data into right format: article with annotated sentences
     a_urls_lookup = set(source_df['article_url'])

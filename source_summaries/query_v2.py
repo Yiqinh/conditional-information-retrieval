@@ -48,14 +48,14 @@ if __name__ == "__main__":
 
     all_articles = filtered_article_d.to_pandas().merge(source_df, on='article_url')
 
-    #find urls/articles in test set
+    #find urls/articles in test/train set
     info_dir = os.path.join(here, "v2_info_parsed")
-    f = open(os.path.join(info_dir, "v2_test_set.json"))
-    test_data = json.load(f)
+    f = open(os.path.join(info_dir, "v2_train_set.json"))
+    train_data = json.load(f)
 
-    test_urls = set()
-    for article in test_data:
-        test_urls.add(article['url'])
+    train_urls = set()
+    for article in train_data:
+        train_urls.add(article['url'])
 
     # store each message/prompt
     messages = []
@@ -69,7 +69,7 @@ if __name__ == "__main__":
         one_article_text = all_articles.iloc[i]['article_text'].replace("\n", "")
         one_article_url = all_articles.iloc[i]['article_url']
 
-        if one_article_url not in test_urls:
+        if one_article_url not in train_urls:
             continue
 
         prompt = f"""
@@ -111,7 +111,7 @@ if __name__ == "__main__":
         queries.append(one_query)
 
 
-    fname = f'query_test_prompt1_v2.json'
+    fname = f'query_train_prompt1_v2.json'
     fname = os.path.join(here, 'v2_queries', fname)
     with open(fname, 'w') as json_file:
         json.dump(queries, json_file)

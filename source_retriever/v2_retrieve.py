@@ -111,7 +111,7 @@ if __name__ == "__main__":
     included_documents = [] #a list of document ids that need to be included
 
     #get included documents
-    f = os.path.join(os.path.dirname(here), 'source_summaries', 'v2_info_parsed', 'combined_test500_v2.json')
+    f = os.path.join(os.path.dirname(here), 'source_summaries', 'v2_info_parsed', 'combined_test_prompt1_v2.json')
 
     label_index = 0
     with open(f, 'r') as file:
@@ -150,7 +150,7 @@ if __name__ == "__main__":
             res.append(one_article)
 
   
-    fname = os.path.join(here, 'v2_search_res', 'v2_search_test_500.json')
+    fname = os.path.join(here, 'v2_search_res', 'v2_search_test_prompt1_all.json')
     with open(fname, 'w') as json_file:
         json.dump(res, json_file)
     

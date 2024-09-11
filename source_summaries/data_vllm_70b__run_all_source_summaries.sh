@@ -21,8 +21,9 @@ for ((i=0; i<iterations; i++)); do
     python data_vllm_70b.py \
       --start_idx ${start_idx} \
       --end_idx ${end_idx} \
-      --output_file v2_all_sources_summarized.jsonl
-      # --source_data_file sources_in_articles.jsonl
+      --source_data_file sources_in_articles.jsonl \
+      --do_error_prompt
+#      --output_file v2_all_sources_summarized.jsonl
 
     start_idx=${end_idx}
     end_idx=$((start_idx + step))

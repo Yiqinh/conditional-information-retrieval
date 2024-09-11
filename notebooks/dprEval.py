@@ -1,20 +1,22 @@
 from haystack.nodes import DensePassageRetriever
 from haystack.document_stores import InMemoryDocumentStore
+from tqdm import tqdm
+import os
 import json
 
 
-save_dir = "../saved_models/dpr"
-dev_filename = "testingData.json"
-
+save_dir = "../trained_model"
+dev_filename = "../source_summaries/v2_info_parsed/combined_test_prompt1_v2.json"
+os.environ['KMP_DUPLICATE_LIB_OK']='True'
 reloaded_retriever = DensePassageRetriever.load(load_dir=save_dir)
-
+print("finished loading the retriever")
 
 with open(dev_filename, 'r') as f:
     articles = json.load(f)
 
 results = {}
-for article in articles:
-    question = article['question']
+for article in tqdm(articles):
+    question = article['query']
     results[question] = reloaded_retriever.retrieve(question)
 
 

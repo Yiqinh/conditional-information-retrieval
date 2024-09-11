@@ -59,8 +59,24 @@ Here is a news article, with each sentence annotated according to the source of 
         (3) Narrative function: What is their narrative function in the article? (1-2 sentences)
         (4) Perspective: What is their perspective on the main events of the article? Choose from "Authoritative", "Informative", "Supportive", "Skeptical", "Against", "Neutral".
         (5) Centrality: How central is this source to the main events of the article? Choose from "High", "Medium", "Low".
-        (6) JUSTIFY your choice for (4) and (5) in 1-2 sentences. 
+        (6) Is_Error: Did we annotate this source in error? This can happen for many reasons, including if a sentence from the webpage was included in the story unintentionally.
+        (7) JUSTIFY your choice for (4) and (5) in 1-2 sentences. 
     Output the summary in a list of python dictionaries with one key per number. Output only the python dictionary.
+"""
+
+ERROR_PROMPT = """
+Here is a news article, with each sentence annotated according to the source of it‛s information:
+    ```{json_str}```
+
+    For each source, determine if it contributes information to the story, or if it was annotated in error. 
+    Include unnamed sources (e.g. "witnesses") if they contribute information.
+    Generate only ONE summary per source. Group sources that are clearly the same but named slightly differently. For example: "Andrew Dresden" and "Dresden" should be grouped together as one source. "Lao Diplomats" and "Laotian Diplomats" should be grouped together as one source.
+    Split source annotations that refer to multiple sources into separate summaries. For example: if the annotation is "John and Jane", generate two separate summaries, one for "John" and one for "Jane". 
+    
+    For each source, provide the following information:
+        (1) Name: who the source is.
+        (2) Original Name: What their original name(s) are in our annotations.
+        (3) Is_Error: Did we annotate this source in error? This can happen for many reasons, including if a sentence from the webpage was included in the story unintentionally.
 """
 
 #
@@ -89,7 +105,8 @@ def load_model(model_name: str):
         dtype=torch.float16,
         tensor_parallel_size=torch.cuda.device_count(),
         download_dir=HF_HOME, # sometimes the distributed model doesn't pay attention to the 
-        enforce_eager=True
+        enforce_eager=True,
+        max_model_len=60_000
     )
     return tokenizer, model
 
@@ -154,6 +171,9 @@ if __name__ == "__main__":
     parser.add_argument('--source_col', type=str, default='attributions')
     parser.add_argument('--sent_col', type=str, default='sent_lists')
     parser.add_argument('--output_file', type=str, default='sources_data_70b.txt')
+    parser.add_argument('--do_info_prompt', action='store_true')
+    parser.add_argument('--do_narr_prompt', action='store_true')
+    parser.add_argument('--do_error_prompt', action='store_true')
     args = parser.parse_args()
 
     if args.input_data_file is None:
@@ -166,7 +186,7 @@ if __name__ == "__main__":
     # hold the batches
     url_batches, message_batches = [], []
     # each batch
-    urls, info_messages, narr_messages = [], [], []
+    urls, info_messages, narr_messages, error_messages = [], [], [], []
     for url in sentences_with_quotes[args.id_col].unique():
         one_article = (
             sentences_with_quotes
@@ -182,6 +202,7 @@ if __name__ == "__main__":
 
         info_messages.append(format_prompt(INFO_PROMPT, json_str))
         narr_messages.append(format_prompt(NARRATIVE_PROMPT, json_str))
+        error_messages.append(format_prompt(ERROR_PROMPT, json_str))
         urls.append(url)
 
         if len(info_messages) >= BATCH_SIZE:
@@ -204,14 +225,19 @@ if __name__ == "__main__":
         fname, fext = os.path.splitext(args.output_file)
         info_fname = f'{fname}__info__{start_idx}_{end_idx}{fext}'
         narr_fname = f'{fname}__narr__{start_idx}_{end_idx}{fext}'
-        if not os.path.exists(info_fname):
+        err_fname = f'{fname}__err__{start_idx}_{end_idx}{fext}'
+        if args.do_info_prompt and not os.path.exists(info_fname):
             # generate the informational summaries
             info_outputs = model.generate(info_messages, sampling_params)
             write_to_file(info_fname, urls, info_outputs)
-        if not os.path.exists(narr_fname):
+        if args.do_naar_prompt and not os.path.exists(narr_fname):
             # generate the narrative summaries
             narr_outputs = model.generate(narr_messages, sampling_params)
             write_to_file(narr_fname, urls, narr_outputs)
+        if args.do_error_prompt and not os.path.exists(err_fname):
+            # generate the error summaries
+            err_outputs = model.generate(error_messages, sampling_params)
+            write_to_file(err_fname, urls, err_outputs)
         # update the indices
         start_idx = end_idx
         end_idx = start_idx + BATCH_SIZE

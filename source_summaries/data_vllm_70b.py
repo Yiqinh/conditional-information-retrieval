@@ -25,6 +25,7 @@ config_data = json.load(open(f'{proj_dir}/config.json'))
 os.environ['HF_TOKEN'] = config_data["HF_TOKEN"]
 os.environ['HF_HOME'] = HF_HOME
 os.environ['VLLM_WORKER_MULTIPROC_METHOD'] = 'spawn'
+os.environ['VLLM_ALLOW_LONG_MAX_MODEL_LEN'] = 1
 
 BATCH_SIZE = 50
 INFO_PROMPT = """
@@ -161,7 +162,7 @@ def write_to_file(fname, urls, outputs):
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3-70B-Instruct")
+    parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3.1-70B-Instruct")
     parser.add_argument('--data_dir', type=str, default=f'{proj_dir}/data')
     parser.add_argument('--source_data_file', type=str, default='full-source-scored-data.jsonl')
     parser.add_argument('--start_idx', type=int, default=None)

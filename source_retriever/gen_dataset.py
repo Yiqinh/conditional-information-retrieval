@@ -2,10 +2,10 @@ import json
 import os
 import logging
 import argparse
-import numpy as np
 import pdb
 from tqdm.auto import tqdm
 import random
+from retriv import SparseRetriever
 
 here = os.path.dirname(os.path.abspath(__file__))
 
@@ -14,6 +14,119 @@ logging.basicConfig(
     datefmt="%m/%d/%Y %H:%M:%S",
     level=logging.INFO,
 )
+
+
+def main(f):
+    print("processing", f)
+    
+    sr = SparseRetriever(
+        index_name="ft-search",
+        model="bm25",
+        min_df=1,
+        tokenizer="whitespace",
+        stemmer="english",
+        stopwords="english",
+        do_lowercasing=True,
+        do_ampersand_normalization=True,
+        do_special_chars_normalization=True,
+        do_acronyms_normalization=True,
+        do_punctuation_removal=True,
+        )
+
+    source_set = set()
+    collection = []
+
+    with open(f, 'r') as file:
+        articles = json.load(file)
+        for article in articles:
+            for source in article['sources']:
+                source_set.add(source['Name'])  # title, text, score, title_score, passage_id
+                id = article['url'] + "#" + source['Name']
+                collection.append({
+                    "id": id,
+                    "text": source['Information'],
+                    "title": source['Name'],
+                    "passage_id": article['url'],
+                    "title_score": 0
+                })
+    with open('train_collection.jsonl', 'w') as outfile:
+        for entry in collection:
+            json.dump(entry, outfile)
+            outfile.write('\n')
+    
+    sr = sr.index_file(
+        path="train_collection.jsonl",
+        show_progress=True,         
+        )
+                
+    res = []
+
+    with open(f, 'r') as file:
+        articles = json.load(file)
+        for article in tqdm(articles, desc="article source search"):
+            my_query = article['query']
+            positive_ctxs = []
+            for source in article['sources']:
+                positive_ctxs.append({
+                    "title": source['Name'],
+                    "text": source['Information'],
+                    "score": 100,
+                    "passage_id": article['url'],
+                    "title_score": 1
+                })
+            dr_result = sr.search(
+                    query=my_query,
+                    return_docs=True,
+                    cutoff=30)
+            hard_negative_ctxs_set = set()
+            hard_negative_ctxs = []
+            
+            # pdb.set_trace()
+            positive_ctxs_set = set([s['Name'] for s in article['sources']])
+            hard_negative_ctxs_set = set([s['title'] for s in dr_result])
+            hard_negative_ctxs_set = hard_negative_ctxs_set - positive_ctxs_set
+
+            for source in dr_result:
+                if source['title'] not in hard_negative_ctxs_set:
+                    continue
+                hard_negative_ctxs.append({
+                    "title": source['title'],
+                    "text": source['text'],
+                    "score": str(source['score']),
+                    "passage_id": source['passage_id'],
+                    "title_score": source['title_score']
+                })
+            
+            one_article = {}
+            one_article['dataset'] = ""
+            one_article['question'] = my_query
+            one_article['answers'] = ""
+            one_article['positive_ctxs'] = positive_ctxs
+            
+            # pdb.set_trace()
+            negative_ctxs_set = source_set - hard_negative_ctxs_set - positive_ctxs_set
+            negative_ctxs_collection = [c for c in collection if c['title'] in negative_ctxs_set]
+
+            negative_ctxs = random.sample(negative_ctxs_collection, 50)
+            # some adjustment
+            for neg in negative_ctxs:
+                if 'id' not in neg:
+                    continue
+                neg.pop('id')
+                neg['score'] = 0
+
+            # pdb.set_trace()
+            one_article['hard_negative_ctxs'] = hard_negative_ctxs[:max(10, len(hard_negative_ctxs))] + negative_ctxs
+            one_article['negative_ctxs'] = []
+
+            res.append(one_article)
+
+  
+  
+    fname = os.path.basename(f)
+    with open(f"/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/ft_{fname}", 'w') as json_file:
+        json.dump(res, json_file)
+    
 
 
 if __name__ == "__main__":
@@ -65,91 +178,7 @@ if __name__ == "__main__":
     os.environ['RETRIV_BASE_PATH'] = retriv_cache_dir
     os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
-    # test_dr = MyDenseRetriever.load("v2-train-sparse-index")
-
-    id_to_label_index = {}
-    included_documents = [] #a list of document ids that need to be included
-
     #get included documents
     # f = os.path.join(os.path.dirname(here), 'source_summaries', 'v2_info_parsed', 'combined_train_prompt1_v2.json')
-
-    f = "./combined_test_prompt1_v2.json"
-    # Note: the SparseRetriever has an alias called SearchEngine, if you prefer
-    from retriv import SparseRetriever
-
-    sr = SparseRetriever(
-        index_name="ft-search",
-        model="bm25",
-        min_df=1,
-        tokenizer="whitespace",
-        stemmer="english",
-        stopwords="english",
-        do_lowercasing=True,
-        do_ampersand_normalization=True,
-        do_special_chars_normalization=True,
-        do_acronyms_normalization=True,
-        do_punctuation_removal=True,
-        )
-
-    source_set = set()
-    collection = []
-    label_index = 0
-
-    with open(f, 'r') as file:
-        articles = json.load(file)
-        for article in articles:
-            for source in article['sources']:
-                source_set.add(source['Information'])
-                id = article['url'] + "#" + source['Name']
-                included_documents.append(id)
-                collection.append({
-                    "id": id,
-                    "text": source['Information']
-                })
-    with open('train_collection.jsonl', 'w') as outfile:
-        for entry in collection:
-            json.dump(entry, outfile)
-            outfile.write('\n')
-    
-    sr = sr.index_file(
-        path="train_collection.jsonl",
-        show_progress=True,         
-        )
-                
-
-    res = []
-
-    #get search queries
-    with open(f, 'r') as file:
-        articles = json.load(file)
-        for article in tqdm(articles, desc="article source search"):
-            my_query = article['query']
-            dr_result = sr.search(
-                    query=my_query,
-                    return_docs=True,
-                    cutoff=30)
-            hard_negative_ctxs = set()
-            for source in dr_result:
-                source["score"] = str(source["score"]) #convert to string to write to json file.
-                hard_negative_ctxs.add(source['text'])
-            
-            positive_ctxs = set([s['Information'] for s in article['sources']])
-            
-            one_article = {}
-            one_article['query'] = my_query
-            one_article['url'] = article['url']
-            one_article['positive_ctxs'] = list(positive_ctxs)
-            hard_negative_ctxs = hard_negative_ctxs - positive_ctxs
-            one_article['hard_negative_ctxs'] = list(hard_negative_ctxs)[:max(10, len(hard_negative_ctxs))]
-            # pdb.set_trace()
-            negative_ctxs = random.sample(list(source_set - hard_negative_ctxs - positive_ctxs), 50)
-            one_article['negative_ctxs'] = negative_ctxs
-
-
-            res.append(one_article)
-
-  
-    fname = 'train.json'
-    with open(fname, 'w') as json_file:
-        json.dump(res, json_file)
-    
+    main("/project/jonmay_231/spangher/Projects/conditional-information-retrieval/source_summaries/v2_info_parsed/combined_train_prompt1_v2.json")
+    main("/project/jonmay_231/spangher/Projects/conditional-information-retrieval/source_summaries/v2_info_parsed/combined_test_prompt1_v2.json")

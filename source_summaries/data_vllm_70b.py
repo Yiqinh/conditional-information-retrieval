@@ -66,9 +66,18 @@ Here is a news article, with each sentence annotated according to the source of 
 """
 
 NARRATIVE_KEYWORD_PROMPT = """
-You will receive a news article with each source annotated. 
-Your task is to identify a generalizable label that can characterize the narrative role of each source.
-The label must be as generalizable as possible and should not be topic-specific. Here are some examples, in short-hand:
+You will receive a news article with each source annotated. For each source, you will answer a series of questions.
+Include unnamed sources (e.g. "witnesses") if they contribute information.
+Generate only ONE summary per source. Group sources that are clearly the same but named slightly differently. For example: "Andrew Dresden" and "Dresden" should be grouped together as one source. "Lao Diplomats" and "Laotian Diplomats" should be grouped together as one source.
+Split source annotations that refer to multiple sources into separate summaries. For example: if the annotation is "John and Jane", generate two separate summaries, one for "John" and one for "Jane". 
+
+For each source, provide the following information:
+    (1) Name: who the source is.
+    (2) Original Name: What their original name(s) are in our annotations.
+    (3) Narrative Function: Give a generic keyword label to categorize the narrative role the source playes in the article. Infer why the author used them, don't just summarize their identity. Return in the format: "LABEL": DESCRIPTION.
+    (4) Is_Error: Did we annotate this source in error? This can happen for disclaimers, website artifacts, author bios, links, etc. Answer with "Yes" or "No".
+
+Here are examples, in short-hand, for "(3) Narrative Function". Again, your main task here is to identify a generalizable label that can characterize the narrative role of each source and why the author used them. 
 
 [Examples]
 Example 1:
@@ -91,22 +100,13 @@ Your response:
 "More Context": This source provides more context for events happening at the time so we can better understand the impacts.
 
 [Instructions]
-For each source, describe the role each source plays and determine if it contributes information to the story, or if it was annotated in error.  Include unnamed sources (e.g. "witnesses") if they contribute information.
-Generate only ONE summary per source. Group sources that are clearly the same but named slightly differently. For example: "Andrew Dresden" and "Dresden" should be grouped together as one source. "Lao Diplomats" and "Laotian Diplomats" should be grouped together as one source.
-Split source annotations that refer to multiple sources into separate summaries. For example: if the annotation is "John and Jane", generate two separate summaries, one for "John" and one for "Jane". 
-
-For each source, provide the following information:
-    (1) Name: who the source is.
-    (2) Original Name: What their original name(s) are in our annotations.
-    (3) Narrative function: Come up with generic keyword label to categorize the narrative function the source playes in the article, and describe it. Return in the format: "LABEL": DESCRIPTION.
-    (3) Is_Error: Did we annotate this source in error? This can happen for many reasons, including if a sentence from the webpage was included in the story unintentionally. Answer with "Yes" or "No".
 
 Here's an news article with all of it's sources:
 
 [Article]
 ```{json_str}```
 
-Your response:
+Answer the questions above:
 """
 
 ERROR_PROMPT = """

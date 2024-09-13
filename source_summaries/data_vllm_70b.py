@@ -60,25 +60,53 @@ Here is a news article, with each sentence annotated according to the source of 
         (3) Narrative function: What is their narrative function in the article? (1-2 sentences)
         (4) Perspective: What is their perspective on the main events of the article? Choose from "Authoritative", "Informative", "Supportive", "Skeptical", "Against", "Neutral".
         (5) Centrality: How central is this source to the main events of the article? Choose from "High", "Medium", "Low".
-        (6) Is_Error: Did we annotate this source in error? This can happen for many reasons, including if a sentence from the webpage was included in the story unintentionally.
+        (6) Is_Error: Did we annotate this source in error? This can happen for many reasons, including if a sentence from the webpage was included in the story unintentionally. Answer with "Yes" or "No".
         (7) JUSTIFY your choice for (4) and (5) in 1-2 sentences. 
     Output the summary in a list of python dictionaries with one key per number. Output only the python dictionary.
 """
 
 NARRATIVE_KEYWORD_PROMPT = """
-Here is a news article, with each sentence annotated according to the source of it‛s information:
-    ```{json_str}```
+You will receive a news article with each source annotated. 
+Your task is to identify a generalizable label that can characterize the narrative role of each source.
+The label must be as generalizable as possible and should not be topic-specific. Here are some examples, in short-hand:
 
-    For each source, describe the role each source plays and determine if it contributes information to the story, or if it was annotated in error. 
-    Include unnamed sources (e.g. "witnesses") if they contribute information.
-    Generate only ONE summary per source. Group sources that are clearly the same but named slightly differently. For example: "Andrew Dresden" and "Dresden" should be grouped together as one source. "Lao Diplomats" and "Laotian Diplomats" should be grouped together as one source.
-    Split source annotations that refer to multiple sources into separate summaries. For example: if the annotation is "John and Jane", generate two separate summaries, one for "John" and one for "Jane". 
-    
-    For each source, provide the following information:
-        (1) Name: who the source is.
-        (2) Original Name: What their original name(s) are in our annotations.
-        (3) Narrative function: Come up with generic keyword label to categorize the narrative function the source playes in the article, and describe it. Return in the format: "LABEL": DESCRIPTION.
-        (3) Is_Error: Did we annotate this source in error? This can happen for many reasons, including if a sentence from the webpage was included in the story unintentionally.
+[Examples]
+Example 1:
+
+Summary: "Is Bumble's initial public offering worth the buzz, and can it compete with industry leader Match Group?"
+Source: "Match Group: Match Group is a $45 billion dating conglomerate that runs Match.com, Tinder, and Hinge. The company is valued at $46 billion, or roughly eight times Bumble's current valuation. This source provides a comparison to Bumble and information about the dating app industry."
+Your response: 
+"Counterpoint": This source is used to compare to the main actor in the news article and provide grounding.
+
+Example 2:
+Summary: "What is the significance of Emirates' massive order of 150 Boeing 777X aircraft and how will it impact the airline industry?"
+Source: "Dubai Airshow: The deal, worth $56bn (PS33bn) at list prices, was agreed at the Dubai Airshow in November. This source provides context for the deal agreement."
+Your response:
+"More Context": This source is used to further expand the context offered and offer a visual setting.
+
+Example 3:
+Summary: "What major companies were affected by the collapse of Silicon Valley Bank and how much of their assets were tied up with the failed lender?"
+Source: "Regulators: Took the unusual step of guaranteeing all deposits at Silicon Valley Bank on Sunday, allowing companies to transfer deposits out of the bank. This source takes action to guarantee deposits"
+Your response:
+"More Context": This source provides more context for events happening at the time so we can better understand the impacts.
+
+[Instructions]
+For each source, describe the role each source plays and determine if it contributes information to the story, or if it was annotated in error.  Include unnamed sources (e.g. "witnesses") if they contribute information.
+Generate only ONE summary per source. Group sources that are clearly the same but named slightly differently. For example: "Andrew Dresden" and "Dresden" should be grouped together as one source. "Lao Diplomats" and "Laotian Diplomats" should be grouped together as one source.
+Split source annotations that refer to multiple sources into separate summaries. For example: if the annotation is "John and Jane", generate two separate summaries, one for "John" and one for "Jane". 
+
+For each source, provide the following information:
+    (1) Name: who the source is.
+    (2) Original Name: What their original name(s) are in our annotations.
+    (3) Narrative function: Come up with generic keyword label to categorize the narrative function the source playes in the article, and describe it. Return in the format: "LABEL": DESCRIPTION.
+    (3) Is_Error: Did we annotate this source in error? This can happen for many reasons, including if a sentence from the webpage was included in the story unintentionally. Answer with "Yes" or "No".
+
+Here's an news article with all of it's sources:
+
+[Article]
+```{json_str}```
+
+Your response:
 """
 
 ERROR_PROMPT = """
@@ -93,7 +121,7 @@ Here is a news article, with each sentence annotated according to the source of 
     For each source, provide the following information:
         (1) Name: who the source is.
         (2) Original Name: What their original name(s) are in our annotations.
-        (3) Is_Error: Did we annotate this source in error? This can happen for many reasons, including if a sentence from the webpage was included in the story unintentionally.
+        (3) Is_Error: Did we annotate this source in error? This can happen for many reasons, including if a sentence from the webpage was included in the story unintentionally. Answer with "Yes" or "No".
 """
 
 #
@@ -215,6 +243,7 @@ if __name__ == "__main__":
         json_str = (
             one_article[[args.sent_col, args.source_col]]
             .rename(columns={args.sent_col: 'sentence', args.source_col: 'source'})
+            .explode(['sentence', 'source'])
             .to_json(lines=True, orient='records')
         )
 

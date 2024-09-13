@@ -65,6 +65,22 @@ Here is a news article, with each sentence annotated according to the source of 
     Output the summary in a list of python dictionaries with one key per number. Output only the python dictionary.
 """
 
+NARRATIVE_KEYWORD_PROMPT = """
+Here is a news article, with each sentence annotated according to the source of it‛s information:
+    ```{json_str}```
+
+    For each source, describe the role each source plays and determine if it contributes information to the story, or if it was annotated in error. 
+    Include unnamed sources (e.g. "witnesses") if they contribute information.
+    Generate only ONE summary per source. Group sources that are clearly the same but named slightly differently. For example: "Andrew Dresden" and "Dresden" should be grouped together as one source. "Lao Diplomats" and "Laotian Diplomats" should be grouped together as one source.
+    Split source annotations that refer to multiple sources into separate summaries. For example: if the annotation is "John and Jane", generate two separate summaries, one for "John" and one for "Jane". 
+    
+    For each source, provide the following information:
+        (1) Name: who the source is.
+        (2) Original Name: What their original name(s) are in our annotations.
+        (3) Narrative function: Come up with generic keyword label to categorize the narrative function the source playes in the article, and describe it. Return in the format: "LABEL": DESCRIPTION.
+        (3) Is_Error: Did we annotate this source in error? This can happen for many reasons, including if a sentence from the webpage was included in the story unintentionally.
+"""
+
 ERROR_PROMPT = """
 Here is a news article, with each sentence annotated according to the source of it‛s information:
     ```{json_str}```
@@ -174,6 +190,7 @@ if __name__ == "__main__":
     parser.add_argument('--output_file', type=str, default='sources_data_70b.txt')
     parser.add_argument('--do_info_prompt', action='store_true')
     parser.add_argument('--do_narr_prompt', action='store_true')
+    parser.add_argument('--do_narr_key_prompt', action='store_true')
     parser.add_argument('--do_error_prompt', action='store_true')
     args = parser.parse_args()
 
@@ -187,7 +204,7 @@ if __name__ == "__main__":
     # hold the batches
     url_batches, message_batches = [], []
     # each batch
-    urls, info_messages, narr_messages, error_messages = [], [], [], []
+    urls, info_messages, narr_messages, narr_keyword_messages, error_messages = [], [], [], [], []
     for url in sentences_with_quotes[args.id_col].unique():
         one_article = (
             sentences_with_quotes
@@ -203,11 +220,17 @@ if __name__ == "__main__":
 
         info_messages.append(format_prompt(INFO_PROMPT, json_str))
         narr_messages.append(format_prompt(NARRATIVE_PROMPT, json_str))
+        narr_keyword_messages.append(format_prompt(NARRATIVE_KEYWORD_PROMPT, json_str))
         error_messages.append(format_prompt(ERROR_PROMPT, json_str))
         urls.append(url)
 
         if len(info_messages) >= BATCH_SIZE:
-            message_batches.append((info_messages, narr_messages))
+            message_batches.append((
+                info_messages, 
+                narr_messages,
+                narr_keyword_messages,
+                error_messages
+            ))
             url_batches.append(urls)
             info_messages, narr_messages = [], []
             urls = []
@@ -222,26 +245,36 @@ if __name__ == "__main__":
     # generate the summaries
     start_idx = args.start_idx
     end_idx = start_idx + BATCH_SIZE
-    for (info_messages, narr_messages), urls in zip(tqdm(message_batches), url_batches):
+    for (info_messages, narr_messages, narr_keyword_messages, error_messages), urls in zip(tqdm(message_batches), url_batches):
         dirname = os.path.dirname(args.output_file)
         if not os.path.exists(dirname):
             os.makedirs(dirname, recursive=True)
         fname, fext = os.path.splitext(args.output_file)
         info_fname = f'{fname}__info__{start_idx}_{end_idx}{fext}'
         narr_fname = f'{fname}__narr__{start_idx}_{end_idx}{fext}'
+        narr_key_fname = f'{fname}__narr-key__{start_idx}_{end_idx}{fext}'
         err_fname = f'{fname}__err__{start_idx}_{end_idx}{fext}'
+
+        # generate the informational summaries
         if args.do_info_prompt and not os.path.exists(info_fname):
-            # generate the informational summaries
             info_outputs = model.generate(info_messages, sampling_params)
             write_to_file(info_fname, urls, info_outputs)
-        if args.do_naar_prompt and not os.path.exists(narr_fname):
-            # generate the narrative summaries
+        
+        # generate the narrative summaries            
+        if args.do_narr_prompt and not os.path.exists(narr_fname):
             narr_outputs = model.generate(narr_messages, sampling_params)
             write_to_file(narr_fname, urls, narr_outputs)
+        
+        # generate the narrative keyword summaries
+        if args.do_narr_keyword_prompt and not os.path.exists(narr_key_fname):
+            narr_key_outputs = model.generate(narr_keyword_messages, sampling_params)
+            write_to_file(narr_key_fname, urls, narr_key_outputs)
+        
+        # generate the error summaries
         if args.do_error_prompt and not os.path.exists(err_fname):
-            # generate the error summaries
             err_outputs = model.generate(error_messages, sampling_params)
             write_to_file(err_fname, urls, err_outputs)
+        
         # update the indices
         start_idx = end_idx
         end_idx = start_idx + BATCH_SIZE

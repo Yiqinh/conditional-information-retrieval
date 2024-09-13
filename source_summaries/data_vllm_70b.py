@@ -248,7 +248,7 @@ if __name__ == "__main__":
     for (info_messages, narr_messages, narr_keyword_messages, error_messages), urls in zip(tqdm(message_batches), url_batches):
         dirname = os.path.dirname(args.output_file)
         if not os.path.exists(dirname):
-            os.makedirs(dirname, recursive=True)
+            os.makedirs(dirname)
         fname, fext = os.path.splitext(args.output_file)
         info_fname = f'{fname}__info__{start_idx}_{end_idx}{fext}'
         narr_fname = f'{fname}__narr__{start_idx}_{end_idx}{fext}'

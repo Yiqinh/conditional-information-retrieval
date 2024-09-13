@@ -266,7 +266,7 @@ if __name__ == "__main__":
             write_to_file(narr_fname, urls, narr_outputs)
         
         # generate the narrative keyword summaries
-        if args.do_narr_keyword_prompt and not os.path.exists(narr_key_fname):
+        if args.do_narr_key_prompt and not os.path.exists(narr_key_fname):
             narr_key_outputs = model.generate(narr_keyword_messages, sampling_params)
             write_to_file(narr_key_fname, urls, narr_key_outputs)
         

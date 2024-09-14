@@ -261,8 +261,7 @@ if __name__ == "__main__":
                 error_messages
             ))
             url_batches.append(urls)
-            info_messages, narr_messages = [], []
-            urls = []
+            urls, info_messages, narr_messages, narr_keyword_messages, error_messages = [], [], [], [], []
 
     # load the model
     sampling_params = SamplingParams(temperature=0.1, max_tokens=1024)
@@ -278,6 +277,7 @@ if __name__ == "__main__":
         dirname = os.path.dirname(args.output_file)
         if not os.path.exists(dirname):
             os.makedirs(dirname)
+
         fname, fext = os.path.splitext(args.output_file)
         info_fname = f'{fname}__info__{start_idx}_{end_idx}{fext}'
         narr_fname = f'{fname}__narr__{start_idx}_{end_idx}{fext}'

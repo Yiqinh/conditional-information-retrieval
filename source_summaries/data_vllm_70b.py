@@ -27,7 +27,7 @@ os.environ['HF_HOME'] = HF_HOME
 os.environ['VLLM_WORKER_MULTIPROC_METHOD'] = 'spawn'
 os.environ['VLLM_ALLOW_LONG_MAX_MODEL_LEN'] = '1'
 
-BATCH_SIZE = 50
+BATCH_SIZE = 500
 INFO_PROMPT = """
 Here is a news article, with each sentence annotated according to the source of it‛s information:
     ```{json_str}```

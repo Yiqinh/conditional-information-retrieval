@@ -12,7 +12,7 @@ save_dir = "../trained_model"
 dev_filename = "../source_summaries/v2_info_parsed/combined_test_prompt1_v2.json"
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
-reloaded_retriever = DensePassageRetriever.load(load_dir=save_dir)
+reloaded_retriever = DensePassageRetriever.load(load_dir=save_dir, document_store=InMemoryDocumentStore)
 print("finished loading the retriever")
 
 with open(dev_filename, 'r') as f:

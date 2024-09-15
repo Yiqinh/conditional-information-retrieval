@@ -25,9 +25,9 @@ config_data = json.load(open(f'{proj_dir}/config.json'))
 os.environ['HF_TOKEN'] = config_data["HF_TOKEN"]
 os.environ['HF_HOME'] = HF_HOME
 os.environ['VLLM_WORKER_MULTIPROC_METHOD'] = 'spawn'
-os.environ['VLLM_ALLOW_LONG_MAX_MODEL_LEN'] = 1
+os.environ['VLLM_ALLOW_LONG_MAX_MODEL_LEN'] = '1'
 
-BATCH_SIZE = 50
+BATCH_SIZE = 500
 INFO_PROMPT = """
 Here is a news article, with each sentence annotated according to the source of it‛s information:
     ```{json_str}```
@@ -60,9 +60,53 @@ Here is a news article, with each sentence annotated according to the source of 
         (3) Narrative function: What is their narrative function in the article? (1-2 sentences)
         (4) Perspective: What is their perspective on the main events of the article? Choose from "Authoritative", "Informative", "Supportive", "Skeptical", "Against", "Neutral".
         (5) Centrality: How central is this source to the main events of the article? Choose from "High", "Medium", "Low".
-        (6) Is_Error: Did we annotate this source in error? This can happen for many reasons, including if a sentence from the webpage was included in the story unintentionally.
+        (6) Is_Error: Did we annotate this source in error? This can happen for many reasons, including if a sentence from the webpage was included in the story unintentionally. Answer with "Yes" or "No".
         (7) JUSTIFY your choice for (4) and (5) in 1-2 sentences. 
     Output the summary in a list of python dictionaries with one key per number. Output only the python dictionary.
+"""
+
+NARRATIVE_KEYWORD_PROMPT = """
+You will receive a news article with each source annotated. For each source, you will answer a series of questions.
+Include unnamed sources (e.g. "witnesses") if they contribute information.
+Generate only ONE summary per source. Group sources that are clearly the same but named slightly differently. For example: "Andrew Dresden" and "Dresden" should be grouped together as one source. "Lao Diplomats" and "Laotian Diplomats" should be grouped together as one source.
+Split source annotations that refer to multiple sources into separate summaries. For example: if the annotation is "John and Jane", generate two separate summaries, one for "John" and one for "Jane". 
+
+For each source, provide the following information:
+    (1) Name: who the source is.
+    (2) Original Name: What their original name(s) are in our annotations.
+    (3) Narrative Function: Give a generic keyword label to categorize the narrative role the source playes in the article. Infer why the author used them, don't just summarize their identity. Return in the format: "LABEL": DESCRIPTION.
+    (4) Is_Error: Did we annotate this source in error? This can happen for disclaimers, website artifacts, author bios, links, etc. Answer with "Yes" or "No".
+
+Here are examples, in short-hand, for "(3) Narrative Function". Again, your main task here is to identify a generalizable label that can characterize the narrative role of each source and why the author used them. 
+
+[Examples]
+Example 1:
+
+Summary: "Is Bumble's initial public offering worth the buzz, and can it compete with industry leader Match Group?"
+Source: "Match Group: Match Group is a $45 billion dating conglomerate that runs Match.com, Tinder, and Hinge. The company is valued at $46 billion, or roughly eight times Bumble's current valuation. This source provides a comparison to Bumble and information about the dating app industry."
+Your response: 
+"Counterpoint": This source is used to compare to the main actor in the news article and provide grounding.
+
+Example 2:
+Summary: "What is the significance of Emirates' massive order of 150 Boeing 777X aircraft and how will it impact the airline industry?"
+Source: "Dubai Airshow: The deal, worth $56bn (PS33bn) at list prices, was agreed at the Dubai Airshow in November. This source provides context for the deal agreement."
+Your response:
+"More Context": This source is used to further expand the context offered and offer a visual setting.
+
+Example 3:
+Summary: "What major companies were affected by the collapse of Silicon Valley Bank and how much of their assets were tied up with the failed lender?"
+Source: "Regulators: Took the unusual step of guaranteeing all deposits at Silicon Valley Bank on Sunday, allowing companies to transfer deposits out of the bank. This source takes action to guarantee deposits"
+Your response:
+"More Context": This source provides more context for events happening at the time so we can better understand the impacts.
+
+[Instructions]
+
+Here's an news article with all of it's sources:
+
+[Article]
+```{json_str}```
+
+Answer the questions above:
 """
 
 ERROR_PROMPT = """
@@ -77,7 +121,7 @@ Here is a news article, with each sentence annotated according to the source of 
     For each source, provide the following information:
         (1) Name: who the source is.
         (2) Original Name: What their original name(s) are in our annotations.
-        (3) Is_Error: Did we annotate this source in error? This can happen for many reasons, including if a sentence from the webpage was included in the story unintentionally.
+        (3) Is_Error: Did we annotate this source in error? This can happen for many reasons, including if a sentence from the webpage was included in the story unintentionally. Answer with "Yes" or "No".
 """
 
 #
@@ -174,6 +218,7 @@ if __name__ == "__main__":
     parser.add_argument('--output_file', type=str, default='sources_data_70b.txt')
     parser.add_argument('--do_info_prompt', action='store_true')
     parser.add_argument('--do_narr_prompt', action='store_true')
+    parser.add_argument('--do_narr_key_prompt', action='store_true')
     parser.add_argument('--do_error_prompt', action='store_true')
     args = parser.parse_args()
 
@@ -187,7 +232,7 @@ if __name__ == "__main__":
     # hold the batches
     url_batches, message_batches = [], []
     # each batch
-    urls, info_messages, narr_messages, error_messages = [], [], [], []
+    urls, info_messages, narr_messages, narr_keyword_messages, error_messages = [], [], [], [], []
     for url in sentences_with_quotes[args.id_col].unique():
         one_article = (
             sentences_with_quotes
@@ -198,19 +243,25 @@ if __name__ == "__main__":
         json_str = (
             one_article[[args.sent_col, args.source_col]]
             .rename(columns={args.sent_col: 'sentence', args.source_col: 'source'})
+            .explode(['sentence', 'source'])
             .to_json(lines=True, orient='records')
         )
 
         info_messages.append(format_prompt(INFO_PROMPT, json_str))
         narr_messages.append(format_prompt(NARRATIVE_PROMPT, json_str))
+        narr_keyword_messages.append(format_prompt(NARRATIVE_KEYWORD_PROMPT, json_str))
         error_messages.append(format_prompt(ERROR_PROMPT, json_str))
         urls.append(url)
 
         if len(info_messages) >= BATCH_SIZE:
-            message_batches.append((info_messages, narr_messages))
+            message_batches.append((
+                info_messages, 
+                narr_messages,
+                narr_keyword_messages,
+                error_messages
+            ))
             url_batches.append(urls)
-            info_messages, narr_messages = [], []
-            urls = []
+            urls, info_messages, narr_messages, narr_keyword_messages, error_messages = [], [], [], [], []
 
     # load the model
     sampling_params = SamplingParams(temperature=0.1, max_tokens=1024)
@@ -222,26 +273,37 @@ if __name__ == "__main__":
     # generate the summaries
     start_idx = args.start_idx
     end_idx = start_idx + BATCH_SIZE
-    for (info_messages, narr_messages), urls in zip(tqdm(message_batches), url_batches):
+    for (info_messages, narr_messages, narr_keyword_messages, error_messages), urls in zip(tqdm(message_batches), url_batches):
         dirname = os.path.dirname(args.output_file)
         if not os.path.exists(dirname):
-            os.makedirs(dirname, recursive=True)
+            os.makedirs(dirname)
+
         fname, fext = os.path.splitext(args.output_file)
         info_fname = f'{fname}__info__{start_idx}_{end_idx}{fext}'
         narr_fname = f'{fname}__narr__{start_idx}_{end_idx}{fext}'
+        narr_key_fname = f'{fname}__narr-key__{start_idx}_{end_idx}{fext}'
         err_fname = f'{fname}__err__{start_idx}_{end_idx}{fext}'
+
+        # generate the informational summaries
         if args.do_info_prompt and not os.path.exists(info_fname):
-            # generate the informational summaries
             info_outputs = model.generate(info_messages, sampling_params)
             write_to_file(info_fname, urls, info_outputs)
-        if args.do_naar_prompt and not os.path.exists(narr_fname):
-            # generate the narrative summaries
+        
+        # generate the narrative summaries            
+        if args.do_narr_prompt and not os.path.exists(narr_fname):
             narr_outputs = model.generate(narr_messages, sampling_params)
             write_to_file(narr_fname, urls, narr_outputs)
+        
+        # generate the narrative keyword summaries
+        if args.do_narr_key_prompt and not os.path.exists(narr_key_fname):
+            narr_key_outputs = model.generate(narr_keyword_messages, sampling_params)
+            write_to_file(narr_key_fname, urls, narr_key_outputs)
+        
+        # generate the error summaries
         if args.do_error_prompt and not os.path.exists(err_fname):
-            # generate the error summaries
             err_outputs = model.generate(error_messages, sampling_params)
             write_to_file(err_fname, urls, err_outputs)
+        
         # update the indices
         start_idx = end_idx
         end_idx = start_idx + BATCH_SIZE

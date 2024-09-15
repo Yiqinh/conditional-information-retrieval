@@ -23,7 +23,7 @@ for ((i=0; i<iterations; i++)); do
       --end_idx ${end_idx} \
       --source_data_file sources_in_articles.jsonl \
       --output_file v2_err_raw/v2_sources_summarized.jsonl \
-      --do_error_prompt
+      --do_narr_key_prompt
 #      --output_file v2_all_sources_summarized.jsonl
 
     start_idx=${end_idx}

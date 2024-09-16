@@ -14,7 +14,7 @@
 # Run the script with desired parameters
 python train_sentence_similarity_model.py \
     --model_name 'microsoft/mpnet-base' \
-    --data_file '../data/similarity_training_data/source-triplets.jsonl' \
+    --data_file 'similarity_training_data/source-triplets.jsonl' \
     --output_dir 'models/mpnet-base-all-nli-triplet' \
     --num_train_epochs 1 \
     --train_batch_size 16 \

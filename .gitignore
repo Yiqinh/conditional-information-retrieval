@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 *.jsonl
+*.gz
+*.csv
+.idea/
 
 # Distribution / packaging
 .Python

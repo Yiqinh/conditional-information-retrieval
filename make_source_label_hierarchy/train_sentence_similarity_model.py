@@ -11,15 +11,6 @@ from sentence_transformers.evaluation import TripletEvaluator
 
 
 def main(args):
-    # Map batch_sampler argument to BatchSamplers enum
-    batch_sampler_mapping = {
-        'DEFAULT': BatchSamplers.DEFAULT,
-        'NO_DUPLICATES': BatchSamplers.NO_DUPLICATES,
-        'CLASS': BatchSamplers.CLASS,
-        'STRATIFIED': BatchSamplers.STRATIFIED
-    }
-    batch_sampler = batch_sampler_mapping[args.batch_sampler]
-
     # 1. Load a model to finetune with
     model = SentenceTransformer(args.model_name)
 
@@ -43,7 +34,7 @@ def main(args):
         warmup_ratio=args.warmup_ratio,
         fp16=args.fp16,
         bf16=args.bf16,
-        batch_sampler=batch_sampler,
+        batch_sampler=BatchSamplers.NO_DUPLICATES,
         eval_strategy=args.eval_strategy,
         eval_steps=args.eval_steps,
         save_strategy=args.save_strategy,
@@ -106,9 +97,6 @@ if __name__ == "__main__":
                         help='Use fp16 training.')
     parser.add_argument('--bf16', action='store_true',
                         help='Use bf16 training.')
-    parser.add_argument('--batch_sampler', type=str, default='NO_DUPLICATES',
-                        choices=['DEFAULT', 'NO_DUPLICATES', 'CLASS', 'STRATIFIED'],
-                        help='Batch sampler type.')
 
     # Dataset parameters
     parser.add_argument('--test_size', type=float, default=0.1,

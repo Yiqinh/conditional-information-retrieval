@@ -21,12 +21,12 @@ with open(dev_filename, 'r') as f:
 results = {}
 for article in tqdm(articles):
     question = article['query']
-    results[question] = reloaded_retriever.retrieve(question)
+    results[question] = reloaded_retriever.retrieve(question, top_k=10)
 
 print(results)
 
 
    
-with open(f"/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result.json", 'w') as json_file:
+with open(f"/scratch1/spangher/conditional-information-retrieval/fine_tuning/test_result.json", 'w') as json_file:
         json.dump(results, json_file)
 

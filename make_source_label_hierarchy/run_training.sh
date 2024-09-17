@@ -23,12 +23,11 @@ python train_sentence_similarity_model.py \
     --warmup_ratio 0.1 \
     --fp16 \
     --eval_strategy 'steps' \
-    --eval_steps 100 \
+    --eval_steps 2000 \
     --save_strategy 'steps' \
-    --save_steps 100 \
+    --save_steps 10000 \
     --save_total_limit 2 \
     --logging_steps 100 \
     --run_name 'mpnet-base-all-nli-triplet' \
     --test_size 0.1 \
-    --train_subset_size 100000 \
     --do_initial_evaluation

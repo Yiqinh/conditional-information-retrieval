@@ -23,6 +23,8 @@ for article in tqdm(articles):
     question = article['query']
     results[question] = reloaded_retriever.retrieve(question)
 
+print(results)
+
 
    
 with open(f"/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result.json", 'w') as json_file:

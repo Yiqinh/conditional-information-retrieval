@@ -21,7 +21,8 @@ with open(dev_filename, 'r') as f:
 results = {}
 for article in tqdm(articles):
     question = article['query']
-    if question is None:
+    # print(question)
+    if question == "":
          print("This question is empty")
          continue
     results[question] = reloaded_retriever.retrieve(question, top_k=10)

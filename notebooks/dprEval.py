@@ -9,7 +9,8 @@ import json
 
 
 save_dir = "../trained_model"
-dev_filename = "/scratch1/spangher/liheng/combined_test_prompt1_v2.json"
+# dev_filename = "/scratch1/spangher/liheng/combined_test_prompt1_v2.json"
+dev_filename = "../combined_test_prompt1_v2.json"
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 reloaded_retriever = DensePassageRetriever.load(load_dir=save_dir, document_store=InMemoryDocumentStore())
@@ -21,6 +22,9 @@ with open(dev_filename, 'r') as f:
 results = {}
 for article in tqdm(articles):
     question = article['query']
+    if question is None:
+         print("This question is empty")
+         continue
     results[question] = reloaded_retriever.retrieve(question, top_k=10)
 
 print(results)

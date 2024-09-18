@@ -2,9 +2,11 @@
 
 import pdb
 import os
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 import time
 import sys
 import torch
+
 from torch.utils.tensorboard import SummaryWriter
 import logging
 import json
@@ -18,7 +20,7 @@ from src import data, beir_utils, slurm, dist_utils, utils, contriever, finetuni
 import train
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
-os.environ['KMP_DUPLICATE_LIB_OK'] = True
+
 
 logger = logging.getLogger(__name__)
 

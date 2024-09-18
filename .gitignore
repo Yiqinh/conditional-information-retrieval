@@ -190,3 +190,4 @@ source_retriever/collections/*
 g++
 
 source_retriever/v2_search_res/*
+narrative_function/info*

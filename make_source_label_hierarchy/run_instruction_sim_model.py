@@ -29,7 +29,7 @@ if __name__ == "__main__":
     parser.add_argument('--csv_file', type=str, required=True, help='Path to the CSV file containing queries')
     parser.add_argument('--column_name', type=str, required=True, help='Column name in the CSV file containing queries')
     parser.add_argument('--output_file', type=str, required=True, help='Path to the output file')
-    parser.add_argument('--model_name', type=str, required=True, default="Salesforce/SFR-Embedding-2_R", help='Name of the model to use')    
+    parser.add_argument('--model_name', type=str, default="Salesforce/SFR-Embedding-2_R", help='Name of the model to use')    
     parser.add_argument('--nrows', type=int, default=None, help='Number of rows to process from the CSV file')
     
     args = parser.parse_args()
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     df = pd.read_csv(args.csv_file)
     if args.nrows is not None:
         df = df.head(args.nrows)
-        
+
     queries = df[args.column_name].tolist()
     queries = list(map(lambda x: get_detailed_instruct(task, x), queries))
 
@@ -61,3 +61,12 @@ if __name__ == "__main__":
 
     # save embeddings to file
     torch.save(embeddings, args.output_file)
+
+
+""" example command
+    python run_instruction_sim_model.py \
+        --csv_file similarity_training_data/source-df-to-label-df.csv \
+        --column_name "Narrative Function" \
+        --nrows 100 \
+        --output_file similarity_training_data/source_label_hierarchy_train_embeddings.pt
+"""    

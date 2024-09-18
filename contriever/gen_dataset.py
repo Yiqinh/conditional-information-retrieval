@@ -5,6 +5,9 @@ import argparse
 import pdb
 from tqdm.auto import tqdm
 import random
+
+os.environ['KMP_DUPLICATE_LIB_OK']='True'
+
 from retriv import SparseRetriever
 
 here = os.path.dirname(os.path.abspath(__file__))
@@ -47,13 +50,15 @@ def main(f):
                     "text": source['Information'],
                     "title": source['Name']
                 })
-    with open('train_collection.jsonl', 'w') as outfile:
+    collection_name = f"{os.path.basename(f).split('.')[0]}_collection.jsonl"
+    print(collection_name)
+    with open(collection_name, 'w') as outfile:
         for entry in collection:
             json.dump(entry, outfile)
             outfile.write('\n')
     
     sr = sr.index_file(
-        path="train_collection.jsonl",
+        path=collection_name,
         show_progress=True,         
         )
                 
@@ -103,7 +108,6 @@ def main(f):
                     continue
                 neg.pop('id')
 
-            # pdb.set_trace()
             one_article['negative_ctxs'] = hard_negative_ctxs[:max(10, len(hard_negative_ctxs))] + negative_ctxs
 
             res.append(one_article)
@@ -111,9 +115,10 @@ def main(f):
   
   
     fname = os.path.basename(f)
-    with open(f"/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/ft_contriever_{fname}", 'w') as json_file:
+    # with open(f"/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/ft_contriever_{fname}", 'w') as json_file:
+    #     json.dump(res, json_file)
+    with open(f"ft_contriever_{fname}", 'w') as json_file:
         json.dump(res, json_file)
-    
 
 
 if __name__ == "__main__":
@@ -154,17 +159,14 @@ if __name__ == "__main__":
     os.environ['HF_HOME'] = hf_cache_dir
     logging.info(f"Setting environment variables: HF_HOME={hf_cache_dir}")
 
-    # needs to be imported here to make sure the environment variables are set before
-    # the retriv library sets certain defaults
-    # from dense_retriever import MyDenseRetriever
-
 
     #sets the retriv base path
     retriv_cache_dir = args.retriv_cache_dir
     logging.info(f"Setting environment variables: RETRIV_BASE_PATH={retriv_cache_dir}")
     os.environ['RETRIV_BASE_PATH'] = retriv_cache_dir
-    os.environ['KMP_DUPLICATE_LIB_OK']='True'
+    
 
     # main("/project/jonmay_231/spangher/Projects/conditional-information-retrieval/source_summaries/v2_info_parsed/combined_train_prompt1_v2.json")
-    main("/project/jonmay_231/spangher/Projects/conditional-information-retrieval/source_summaries/v2_info_parsed/combined_test_prompt1_v2.json")
-    # main("../combined_test_prompt1_v2.json")
+    # main("/project/jonmay_231/spangher/Projects/conditional-information-retrieval/source_summaries/v2_info_parsed/combined_test_prompt1_v2.json")
+    main("../combined_test_prompt1_v2.json")
+    main("../combined_train_prompt1_v2.json")

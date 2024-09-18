@@ -1,6 +1,7 @@
 import os
 import statistics
 import pandas as pd
+from tqdm.auto import tqdm
 
 from sentence_transformers import SentenceTransformer
 
@@ -17,9 +18,9 @@ meds = []
 lows = []
 highs = []
 
-for i in range(len(df)):
-    source.append(df.iloc[i]['Information'])
-    query.append(df.iloc[i]['V1 Query'])
+for i in tqdm(range(len(df)), desc="Num Sources"):
+    source.append(str(df.iloc[i]['Information']))
+    query.append(str(df.iloc[i]['V1 Query']))
     embeddings1 = model.encode(source)
     embeddings2 = model.encode(query)
     # Compute cosine similarities

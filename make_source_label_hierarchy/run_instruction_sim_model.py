@@ -80,7 +80,7 @@ if __name__ == "__main__":
 """ example command
     python run_instruction_sim_model.py \
         --csv_file similarity_training_data/source-df-to-label-df.csv \
-        --column_name "Narrative Function" \
+        --text_column_name "Narrative Function" \
         --nrows 100 \
         --output_file similarity_training_data/source_label_hierarchy_train_embeddings.pt
 """    

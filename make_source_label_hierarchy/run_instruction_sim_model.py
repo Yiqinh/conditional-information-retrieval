@@ -45,10 +45,9 @@ if __name__ == "__main__":
     if args.nrows is not None:
         df = df.head(args.nrows)
 
-    queries = df[args.column_name].tolist()
+    queries = df[args.text_column_name].tolist()
     queries = list(map(lambda x: get_detailed_instruct(task, x), queries))
-
-
+    
     # load model and tokenizer
     tokenizer = AutoTokenizer.from_pretrained(args.model_name)
     model = AutoModel.from_pretrained(args.model_name, device_map=args.device)

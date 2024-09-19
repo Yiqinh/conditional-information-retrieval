@@ -2,7 +2,7 @@ import os
 os.environ['OPENBLAS_NUM_THREADS'] = '1'
 
 from haystack.nodes import DensePassageRetriever
-from haystack.document_stores import InMemoryDocumentStore
+from haystack.document_stores import InMemoryDocumentStore, FAISSDocumentStore
 from haystack.utils import convert_files_to_docs
 from tqdm import tqdm
 import json
@@ -17,25 +17,29 @@ os.environ['KMP_DUPLICATE_LIB_OK']='True'
 with open(dev_filename, 'r') as f:
     articles = json.load(f)
 
-document_store = InMemoryDocumentStore()
-documents = []
-error_count = 0
-for article in tqdm(articles, desc="creating source txt folder"):
-    for source in article['sources']:
-        source_name = source['Name']
-        source_text = source['Information']
-        file_name = source_name.replace(" ", "_")
-        file_name = source_name.replace("/", "_")
-        try:
-            with open(f"{data_dir}/{file_name}.txt", 'w') as source_file:
-                source_file.write(source_name + " : " + source_text)
-        except Exception as e:
-            print(f"An error occurred while writing the file: {e}")
-            error_count += 1
+# document_store = InMemoryDocumentStore()
+document_store = FAISSDocumentStore(sql_url="sqlite:///", faiss_index_factory_str="Flat")
+# documents = []
+# error_count = 0
+# for article in tqdm(articles, desc="creating source txt folder"):
+#     for source in article['sources']:
+#         source_name = source['Name']
+#         source_text = source['Information']
+#         file_name = source_name.replace(" ", "_")
+#         file_name = source_name.replace("/", "_")
+#         try:
+#             with open(f"{data_dir}/{file_name}.txt", 'w') as source_file:
+#                 source_file.write(source_name + " : " + source_text)
+#         except Exception as e:
+#             print(f"An error occurred while writing the file: {e}")
+#             error_count += 1
 
-print("error count", error_count)
+# print("error count", error_count)
+
+
 print("converting files to docs...")
 docs = convert_files_to_docs(dir_path=data_dir)
+print("updating document store...")
 document_store.write_documents(docs)
 
 

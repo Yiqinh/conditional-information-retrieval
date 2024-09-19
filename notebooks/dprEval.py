@@ -26,29 +26,23 @@ for article in articles:
         documents.append(content)
 
 document_store.write_documents(documents)
-        
-     
-
-
 
 reloaded_retriever = DensePassageRetriever.load(load_dir=save_dir, document_store=InMemoryDocumentStore())
 print("finished loading the retriever")
-
-
 
 results = {}
 for article in tqdm(articles):
     question = article['query']
     # print(question)
     if question == "":
-         print("This question is empty")
-         continue
+        print("This question is empty")
+        continue
     results[question] = reloaded_retriever.retrieve(question, top_k=10)
 
 print(results)
 
 
    
-with open(f"/scratch1/spangher/conditional-information-retrieval/fine_tuning/test_result.json", 'w') as json_file:
+with open(f"/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result.json", 'w') as json_file:
         json.dump(results, json_file)
 

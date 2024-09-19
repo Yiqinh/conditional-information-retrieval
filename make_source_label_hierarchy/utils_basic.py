@@ -79,15 +79,21 @@ def process_source_data(df=None, data_dir=None):
     """
     Process the DataFrame to extract and structure source data.
     """
+    print("Starting process_source_data function")
+
     if df is None:
+        print("Reading keyword files from data directory")
         df = read_keyword_files(data_dir)
 
+    print("Parsing sources from DataFrame")
     source_df = (
         df
         .assign(parsed_sources=lambda df: df['response'].apply(parse_sources))
         .explode('parsed_sources')
         .dropna()
     )
+
+    print("Structuring parsed sources into DataFrame")
     source_df = (
         source_df[['url', 'parsed_sources']]
         .pipe(lambda df: pd.concat([
@@ -95,7 +101,13 @@ def process_source_data(df=None, data_dir=None):
             pd.DataFrame(df['parsed_sources'].tolist())
         ], axis=1))
     )
+
+    print("Filtering columns to keep")
     cols_to_keep = ['url', 'Name', 'Original Name', 'Narrative Function', 'Is_Error']
     source_df = source_df[cols_to_keep]
-    source_df['Is_Error'] = source_df['Is_Error'].str.replace('*', '').str.strip().str.startswith('Yes')
+
+    print("Processing 'Is_Error' column")
+    source_df['Is_Error'] = source_df['Is_Error'].str.replace('*', '').str.strip().str.startswith('Yes').pipe(lambda s: s.fillna(False))
+
+    print("Finished processing source data")
     return source_df

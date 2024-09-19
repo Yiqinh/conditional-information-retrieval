@@ -88,7 +88,8 @@ def process_source_data(df=None, data_dir=None):
         .explode('parsed_sources')
         .dropna()
     )
-    source_df = (source_df[['url', 'parsed_sources']]
+    source_df = (
+        source_df[['url', 'parsed_sources']]
         .pipe(lambda df: pd.concat([
             df['url'].reset_index(drop=True),
             pd.DataFrame(df['parsed_sources'].tolist())
@@ -96,4 +97,5 @@ def process_source_data(df=None, data_dir=None):
     )
     cols_to_keep = ['url', 'Name', 'Original Name', 'Narrative Function', 'Is_Error']
     source_df = source_df[cols_to_keep]
+    source_df['Is_Error'] = source_df['Is_Error'].str.replace('*', '').str.strip().str.startswith('Yes')
     return source_df

@@ -114,28 +114,21 @@ def main():
     # Process source data
     source_df = process_source_data(data_dir=args.data_dir)
 
+    # 
+    # Step 1: create data for training
+    # 
     # Compute embeddings
     embeddings, idx_of_df = compute_embeddings(source_df, args.embedding_model_name)
-
-    # Compute high similarity pairs
-    high_sim_sample = compute_high_similarity_pairs(
-        embeddings, idx_of_df, args.sim_threshold, args.sample_size
-    )
-
-    # Create high similarity samples to evaluate
+    high_sim_sample = compute_high_similarity_pairs(embeddings, idx_of_df, args.sim_threshold, args.sample_size)
     high_sim_samples = create_high_similarity_samples(source_df, high_sim_sample)
 
+
     # 
-    # Generate prompts for prompting an LLM to label the data
+    # Step 2: Generate prompts for prompting an LLM to label the data
     #
     all_prompts = generate_prompts(high_sim_samples, k=args.k)
-    # batch process with OpenAI
-    batch_files = write_prompts_to_files(
-        all_prompts, args.output_dir, batch_size=args.batch_size, model_name=args.model_name
-    )
-    batch_ids = process_batches_with_openai(
-        batch_files, args.openai_api_key, args.model_name, completion_window=args.completion_window
-    )
+    batch_files = write_prompts_to_files(all_prompts, args.output_dir, batch_size=args.batch_size, model_name=args.model_name)
+    batch_ids = process_batches_with_openai(batch_files, args.openai_api_key, args.model_name, completion_window=args.completion_window)
     all_data = download_and_process_outputs(batch_ids, args.output_dir, args.openai_api_key)
     input_files = batch_files
     output_files = [os.path.join(args.output_dir, f"{batch_id}_output.jsonl") for batch_id in batch_ids]

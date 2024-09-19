@@ -8,5 +8,5 @@
 
 source /home1/spangher/.bashrc
 source activate hay
-cd /scratch1/spangher/conditional-information-retrieval/notebooks
+cd /project/jonmay_231/spangher/Projects/conditional-information-retrieval/notebooks
 python dprEval.py

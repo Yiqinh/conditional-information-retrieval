@@ -1,13 +1,10 @@
 import os
 os.environ['OPENBLAS_NUM_THREADS'] = '1'
 
-from haystack.nodes import DensePassageRetriever, EmbeddingRetriever
+from haystack.nodes import DensePassageRetriever
 from haystack.document_stores import InMemoryDocumentStore
-from haystack import Document
-from haystack.components.writers import DocumentWriter
 from haystack.utils import convert_files_to_docs
 from tqdm import tqdm
-
 import json
 
 

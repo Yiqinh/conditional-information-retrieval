@@ -13,123 +13,12 @@ from tqdm.auto import tqdm
 from sklearn.metrics.pairwise import cosine_similarity
 from sentence_transformers import SentenceTransformer
 import openai  # Ensure you have installed the OpenAI library
+from utils_client import write_prompts_to_files, process_batches_with_openai, download_and_process_outputs, process_input_output_data_from_openai_files
+from utils_basic import batchify, process_source_data
 
 # Set environment variable
 os.environ['TOKENIZERS_PARALLELISM'] = 'false'
 
-def parse_sources(input_string):
-    """
-    Parse the sources from a given input string.
-    """
-    import re
-    # Remove any starting text before the first 'Name:'
-    match = re.search(r'\bName:', input_string)
-    if match:
-        input_string = input_string[match.start():]
-    else:
-        # No 'Name:' found, return empty list
-        return []
-        
-    # Split the input string into blocks separated by two or more newlines
-    blocks = re.split(r'\n\s*\n', input_string)
-    source_list = []
-    for block in blocks:
-        block = block.strip()
-        if not block:
-            continue
-            
-        # Initialize a dictionary to store fields
-        source_dict = {}
-        current_field = None
-        # Split the block into lines
-        lines = block.split('\n')
-        for line in lines:
-            line = line.strip()
-            if not line:
-                continue
-                
-            # Match any line that looks like 'Field Name: Value'
-            m = re.match(r'^([^:]+):\s*(.*)', line)
-            if m:
-                field_name = m.group(1).strip()
-                field_name = re.sub(r'\s*(\(?\d+\)?[:.\s]*)', '', field_name).strip()
-                field_name = re.sub(r'-|\**|Grouped', '', field_name).strip()
-                field_value = m.group(2).strip()
-                field_value = re.sub(r'\(.*\)', '', field_value).strip()
-                source_dict[field_name] = field_value
-                current_field = field_name
-            else:
-                # If the line doesn't start with a field name, it's part of the previous field
-                if current_field:
-                    source_dict[current_field] += ' ' + line
-        # Only add the source if it contains at least one field
-        if source_dict:
-            source_list.append(source_dict)
-    return source_list
-
-def batchify(iterable, n=1):
-    """
-    Yield successive n-sized chunks from an iterable.
-    """
-    l = len(iterable)
-    for ndx in range(0, l, n):
-        yield iterable[ndx:min(ndx + n, l)]
-
-def format_batch_prompt(prompts, model_name):
-    """
-    Format a batch of prompts for the OpenAI API.
-    """
-    output_ps = []
-    for i, p in enumerate(prompts):
-        message_body = {
-            "custom_id": f"request-{i}", 
-            "method": "POST", 
-            "url": "/v1/chat/completions", 
-            "body": {
-                "model": model_name, 
-                "messages": [{
-                    "role": "system", 
-                    "content": "You are a helpful journalist's assistant."
-                },{
-                    "role": "user", 
-                    "content": p
-                }],
-                "max_tokens": 1000
-            }
-        }
-        output_ps.append(message_body)
-    return output_ps
-
-def read_keyword_files(data_dir):
-    """
-    Read JSON lines files from a directory and concatenate them into a DataFrame.
-    """
-    files = glob.glob(os.path.join(data_dir, '*'))
-    dfs = []
-    for f in files:
-        dfs.append(pd.read_json(f, lines=True))
-    df = pd.concat(dfs, ignore_index=True)
-    return df
-
-def process_source_data(df):
-    """
-    Process the DataFrame to extract and structure source data.
-    """
-    source_df = (
-        df
-        .assign(parsed_sources=lambda df: df['response'].apply(parse_sources))
-        .explode('parsed_sources')
-        .dropna()
-    )
-    source_df = (source_df[['url', 'parsed_sources']]
-        .pipe(lambda df: pd.concat([
-            df['url'].reset_index(drop=True),
-            pd.DataFrame(df['parsed_sources'].tolist())
-        ], axis=1))
-    )
-    cols_to_keep = ['url', 'Name', 'Original Name', 'Narrative Function', 'Is_Error']
-    source_df = source_df[cols_to_keep]
-    return source_df
 
 def compute_embeddings(source_df, embedding_model_name):
     """
@@ -141,6 +30,7 @@ def compute_embeddings(source_df, embedding_model_name):
     embeddings = model.encode(texts, show_progress_bar=True)
     idx_of_df = narrative_functions.index
     return embeddings, idx_of_df
+
 
 def compute_high_similarity_pairs(embeddings, idx_of_df, sim_threshold=0.3, sample_size=2000000):
     """
@@ -159,6 +49,7 @@ def compute_high_similarity_pairs(embeddings, idx_of_df, sim_threshold=0.3, samp
     high_sim_pairs = high_sim_pairs.loc[high_sim_pairs['level_0'] != high_sim_pairs['level_1']]
     high_sim_sample = high_sim_pairs.sample(n=sample_size)
     return high_sim_sample
+
 
 def create_high_similarity_samples(source_df, high_sim_sample):
     """
@@ -203,114 +94,7 @@ Answer each sequentially and number them with 1., 2., 3., etc.""")
         all_prompts.append(p)
     return all_prompts
 
-def write_prompts_to_files(all_prompts, output_dir, batch_size=40000, model_name='gpt-4'):
-    """
-    Write the prompts to JSON Lines files in batches.
-    """
-    os.makedirs(output_dir, exist_ok=True)
-    prompt_batches = []
-    for prompt_batch in batchify(all_prompts, batch_size):
-        batch_to_write = format_batch_prompt(prompt_batch, model_name)
-        prompt_batches.append(batch_to_write)
-    batch_files = []
-    for i, b in enumerate(prompt_batches):
-        batch_file = os.path.join(output_dir, f'narr-role-similarity-batch-{i}.jsonl')
-        with jsonlines.open(batch_file, 'w') as f:
-            f.write_all(b)
-        batch_files.append(batch_file)
-    return batch_files
 
-def process_batches_with_openai(batch_files, openai_api_key, model_name, max_tokens=1000, completion_window='24h'):
-    """
-    Process the batches using OpenAI's batch processing API.
-    """
-    openai.api_key = openai_api_key
-    batch_ids = []
-    for batch_file in tqdm(batch_files):
-        with open(batch_file, 'rb') as f:
-            batch_input_file = openai.File.create(file=f, purpose="batch")
-        batch_input_file_id = batch_input_file.id
-        # Create a batch processing job
-        batch_response = openai.Batch.create(
-            input_file=batch_input_file_id,
-            endpoint="/v1/chat/completions",
-            completion_window=completion_window,
-            metadata={
-                "description": "narrative role similarity evaluation"
-            }
-        )
-        batch_ids.append(batch_response['id'])
-    return batch_ids
-
-def download_and_process_outputs(batch_ids, output_dir, openai_api_key):
-    """
-    Download the outputs from OpenAI batch processing and process them.
-    """
-    openai.api_key = openai_api_key
-    all_data = []
-    for batch_id in tqdm(batch_ids):
-        batch_info = openai.Batch.retrieve(id=batch_id)
-        output_file_id = batch_info['output_file_id']
-        if output_file_id:
-            output_file = openai.File.download(id=output_file_id)
-            output_file_path = os.path.join(output_dir, f"{batch_id}_output.jsonl")
-            with open(output_file_path, 'w') as f:
-                f.write(output_file.decode('utf-8'))
-            # Read and process the output file
-            with jsonlines.open(output_file_path) as reader:
-                for obj in reader:
-                    all_data.append(obj)
-    # Further processing of all_data can be done here
-    return all_data
-
-def process_input_output_data_from_files(input_files, output_files):
-    """
-    Process the input prompts and OpenAI responses from files to extract relevant data.
-    """
-    all_input_data = []
-    for f in input_files:
-        data = list(jsonlines.open(f))
-        data_df = pd.DataFrame(data)
-        data_df['filename'] = os.path.basename(f)
-        all_input_data.append(data_df)
-
-    all_output_data = []
-    for f in output_files:
-        data = list(jsonlines.open(f))
-        data_df = pd.DataFrame(data)
-        data_df['filename'] = os.path.basename(f)
-        all_output_data.append(data_df)
-
-    all_input_data_df = pd.concat(all_input_data)
-    all_output_data_df = pd.concat(all_output_data)
-
-    # Merge input and output data
-    all_input_data_df['input'] = all_input_data_df['body'].str.get('messages').str.get(1).str.get('content')
-    all_input_data_df['f_key'] =  all_input_data_df['filename'].str.replace('.jsonl', '')
-    all_output_data_df['output'] = all_output_data_df['response'].str.get('body').str.get('choices').str.get(0).str.get('message').str.get('content')
-    all_output_data_df['f_key'] = all_output_data_df['filename'].str.split('__').str.get(0)
-
-    full_data_df = all_input_data_df[['custom_id', 'f_key', 'input']].merge(
-        all_output_data_df[['custom_id', 'f_key', 'output']], on=['custom_id', 'f_key']
-    )
-
-    # Further processing as in your original code
-    full_data_df['input'] = full_data_df['input'].str.split('\n').apply(lambda x: list(filter(lambda y: re.search(r'^\d\.', y), x)))
-    full_data_df['output'] = full_data_df['output'].str.split('\n')
-    full_data_df = full_data_df.loc[lambda df: df['output'].str.len() == 5]
-    full_data_exp_df = full_data_df.explode(['input', 'output'])
-    full_data_exp_df['input_chunks'] = full_data_exp_df['input'].str.split(r'Source \d\:', regex=True)
-
-    full_data_exp_df = (full_data_exp_df
-        .assign(source_1=lambda df: df['input_chunks'].str.get(1).str.strip())
-        .assign(source_2=lambda df: df['input_chunks'].str.get(2).str.strip())
-        .drop(columns=['input', 'input_chunks'])
-    )
-
-    full_data_exp_df['output'] = full_data_exp_df['output'].str.replace(r'\d\.', '', regex=True).str.strip()
-    full_data_exp_df = full_data_exp_df.reset_index(drop=True)
-
-    return full_data_exp_df
 
 def main():
     # Parse command-line arguments
@@ -327,11 +111,8 @@ def main():
     parser.add_argument('--completion_window', type=str, default='24h', help='Completion window for OpenAI batch processing.')
     args = parser.parse_args()
 
-    # Read keyword files
-    df = read_keyword_files(args.data_dir)
-
     # Process source data
-    source_df = process_source_data(df)
+    source_df = process_source_data(data_dir=args.data_dir)
 
     # Compute embeddings
     embeddings, idx_of_df = compute_embeddings(source_df, args.embedding_model_name)
@@ -344,26 +125,21 @@ def main():
     # Create high similarity samples to evaluate
     high_sim_samples = create_high_similarity_samples(source_df, high_sim_sample)
 
-    # Generate prompts
+    # 
+    # Generate prompts for prompting an LLM to label the data
+    #
     all_prompts = generate_prompts(high_sim_samples, k=args.k)
-
-    # Write prompts to files
+    # batch process with OpenAI
     batch_files = write_prompts_to_files(
         all_prompts, args.output_dir, batch_size=args.batch_size, model_name=args.model_name
     )
-
-    # Process batches with OpenAI
     batch_ids = process_batches_with_openai(
         batch_files, args.openai_api_key, args.model_name, completion_window=args.completion_window
     )
-
-    # Download and process outputs
     all_data = download_and_process_outputs(batch_ids, args.output_dir, args.openai_api_key)
-
-    # Process input and output data from files
     input_files = batch_files
     output_files = [os.path.join(args.output_dir, f"{batch_id}_output.jsonl") for batch_id in batch_ids]
-    full_data_exp_df = process_input_output_data_from_files(input_files, output_files)
+    full_data_exp_df = process_input_output_data_from_openai_files(input_files, output_files)
 
     # Save the processed data
     output_csv = os.path.join(args.output_dir, 'processed_narrative_roles.csv')

@@ -4,6 +4,7 @@ from torch import Tensor
 from transformers import AutoTokenizer, AutoModel
 import argparse
 import pandas as pd
+from tqdm import tqdm
 
 def last_token_pool(
     last_hidden_states: Tensor,
@@ -31,7 +32,8 @@ if __name__ == "__main__":
     parser.add_argument('--output_file', type=str, required=True, help='Path to the output file')
     parser.add_argument('--model_name', type=str, default="Salesforce/SFR-Embedding-2_R", help='Name of the model to use')    
     parser.add_argument('--nrows', type=int, default=None, help='Number of rows to process from the CSV file')
-    
+    parser.add_argument('--device', type=str, default='cuda' if torch.cuda.is_available() else 'cpu', help='Device to run the model on (cuda/cpu)')
+    parser.add_argument('--batch_size', type=int, default=32)
     args = parser.parse_args()
 
     df = pd.read_csv(args.csv_file)
@@ -43,20 +45,26 @@ if __name__ == "__main__":
 
     # load model and tokenizer
     tokenizer = AutoTokenizer.from_pretrained(args.model_name)
-    model = AutoModel.from_pretrained(args.model_name)
-
+    model = AutoModel.from_pretrained(args.model_name, device_map=args.device)
     max_length = 4096
-    batch_dict = tokenizer(
-        queries, 
-        max_length=max_length, 
-        padding=True, 
-        truncation=True,
-        return_tensors="pt"
-    )
-    outputs = model(**batch_dict)
-    embeddings = last_token_pool(outputs.last_hidden_state, batch_dict['attention_mask'])
-
-    # normalize embeddings
+    embeddings = []    
+    for i in tqdm(range(0, len(queries), args.batch_size), desc="Processing batches"):
+        batch = queries[i:i + args.batch_size]
+        batch_dict = tokenizer(
+            batch, 
+            max_length=max_length, 
+            padding=True, 
+            truncation=True,
+            return_tensors="pt",
+        ).to(args.device)
+        
+        with torch.no_grad():
+            outputs = model(**batch_dict)
+        
+        batch_embeddings = last_token_pool(outputs.last_hidden_state, batch_dict['attention_mask'])
+        embeddings.append(batch_embeddings)
+    
+    embeddings = torch.cat(embeddings, dim=0)
     embeddings = F.normalize(embeddings, p=2, dim=1)
 
     # save embeddings to file

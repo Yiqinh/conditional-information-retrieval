@@ -24,6 +24,7 @@ for article in tqdm(articles, desc="creating source txt folder"):
         source_name = source['Name']
         source_text = source['Information']
         file_name = source_name.replace(" ", "_")
+        file_name = source_name.replace("/", "_")
         with open(f"{data_dir}/{file_name}.txt", 'w') as source_file:
             source_file.write(source_name + " : " + source_text)
 

@@ -60,13 +60,13 @@ document_store.write_documents(docs)
 #         embedding_model=model, # this is my custom-trained model
 #     )
 
-# reloaded_retriever = DensePassageRetriever.load(load_dir=save_dir, document_store=document_store)
+
 retriever = EmbeddingRetriever(
-    document_store=document_store, embedding_model=save_dir
+    document_store=document_store, embedding_model="sentence-transformers/multi-qa-mpnet-base-dot-v1"
 )
-
+print("updating embeddings...")
 document_store.update_embeddings(retriever)
-
+reloaded_retriever = DensePassageRetriever.load(load_dir=save_dir, document_store=document_store)
 print("finished loading the retriever")
 
 results = {}
@@ -76,7 +76,7 @@ for article in tqdm(articles):
     if question == "":
         print("This question is empty")
         continue
-    results[question] = retriever.retrieve(question, top_k=10)
+    results[question] = reloaded_retriever.retrieve(question, top_k=10)
 
 print(results)
    

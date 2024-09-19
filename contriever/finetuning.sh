@@ -7,9 +7,9 @@
 #SBATCH --mem=150G
 #SBATCH --partition=isi
 
-cd /project/jonmay_231/spangher/Projects/conditional-information-retrieval
+cd /project/jonmay_231/spangher/Projects/conditional-information-retrieval/contriever
 
 module load conda
 source conda activate contriever
 
-python3 contriever/finetuning.py
+python3 finetuning.py

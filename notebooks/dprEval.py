@@ -28,7 +28,7 @@ for article in articles:
 
 document_store.write_documents(documents)
 
-reloaded_retriever = DensePassageRetriever.load(load_dir=save_dir, document_store=InMemoryDocumentStore())
+reloaded_retriever = DensePassageRetriever.load(load_dir=save_dir, document_store=document_store)
 print("finished loading the retriever")
 
 results = {}

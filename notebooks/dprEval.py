@@ -23,7 +23,8 @@ for article in tqdm(articles, desc="creating source txt folder"):
     for source in article['sources']:
         source_name = source['Name']
         source_text = source['Information']
-        with open(f"{data_dir}/{source_name}.txt", 'w') as source_file:
+        file_name = source_name.replace(" ", "_")
+        with open(f"{data_dir}/{file_name}.txt", 'w') as source_file:
             source_file.write(source_name + " : " + source_text)
 
 print("converting files to docs...")

@@ -21,7 +21,7 @@ for article in articles:
     for source in article['sources']:
         content = {
             'id': article['url'] + "#" + source['Name'],
-            'content': source['information']
+            'content': source['Information']
         }
         documents.append(content)
 

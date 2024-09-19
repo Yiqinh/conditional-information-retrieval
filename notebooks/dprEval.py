@@ -64,6 +64,9 @@ document_store.write_documents(docs)
 retriever = EmbeddingRetriever(
     document_store=document_store, embedding_model=save_dir
 )
+
+document_store.update_embeddings(retriever)
+
 print("finished loading the retriever")
 
 results = {}

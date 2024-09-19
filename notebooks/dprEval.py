@@ -9,7 +9,7 @@ import json
 
 
 save_dir = "../trained_model"
-dev_filename = "/scratch1/spangher/liheng/combined_test_prompt1_v2.json"
+dev_filename = "/scratch1/spangher/liheng/conditional-information-retrieval/combined_test_prompt1_v2.json"
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 with open(dev_filename, 'r') as f:

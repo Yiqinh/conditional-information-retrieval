@@ -1,7 +1,7 @@
 import os
 os.environ['OPENBLAS_NUM_THREADS'] = '1'
 
-from haystack.nodes import DensePassageRetriever
+from haystack.nodes import DensePassageRetriever, EmbeddingRetriever
 from haystack.document_stores import InMemoryDocumentStore
 from tqdm import tqdm
 
@@ -27,6 +27,13 @@ for article in articles:
         documents.append(content)
 
 document_store.write_documents(documents)
+document_store.update_embeddings(retriever="facebook/dpr-ctx_encoder-single-nq-base")
+
+
+# retriever = EmbeddingRetriever(
+#         document_store=document_store,
+#         embedding_model=model, # this is my custom-trained model
+#     )
 
 reloaded_retriever = DensePassageRetriever.load(load_dir=save_dir, document_store=document_store)
 print("finished loading the retriever")

@@ -5,31 +5,33 @@ from haystack.nodes import DensePassageRetriever, EmbeddingRetriever
 from haystack.document_stores import InMemoryDocumentStore
 from haystack import Document
 from haystack.components.writers import DocumentWriter
+from haystack.utils import convert_files_to_docs
 from tqdm import tqdm
 
 import json
 
 
 save_dir = "../trained_model"
+data_dir = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tune/docs"
 dev_filename = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/source_summaries/v2_info_parsed/combined_test_prompt1_v2.json"
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
-print(dev_filename)
+
 with open(dev_filename, 'r') as f:
     articles = json.load(f)
 
 document_store = InMemoryDocumentStore()
 documents = []
-for article in articles:
+for article in tqdm(articles, desc="creating source txt folder"):
     for source in article['sources']:
-        content = {
-            'id': article['url'] + "#" + source['Name'],
-            'content': source['Information']
-        }
-        documents.append(Document(content=source['Information']))
+        source_name = source['Name']
+        source_text = source['Information']
+        with open(f"{data_dir}/{source_name}.txt", 'w') as source_file:
+            source_file.write(source_name + " : " + source_text)
 
-document_writer = DocumentWriter(document_store = document_store)
-document_writer.run(documents=documents)
+print("converting files to docs...")
+docs = convert_files_to_docs(dir_path=data_dir)
+document_store.write_documents(docs)
 
 
 # document_store.write_documents(documents)
@@ -62,9 +64,7 @@ for article in tqdm(articles):
     results[question] = reloaded_retriever.retrieve(question, top_k=10)
 
 print(results)
-
-
    
 with open(f"/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result.json", 'w') as json_file:
-        json.dump(results, json_file)
+    json.dump(results, json_file)
 

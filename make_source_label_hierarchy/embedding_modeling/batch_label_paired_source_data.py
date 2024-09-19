@@ -13,6 +13,8 @@ from tqdm.auto import tqdm
 from sklearn.metrics.pairwise import cosine_similarity
 from sentence_transformers import SentenceTransformer
 import openai  # Ensure you have installed the OpenAI library
+import sys
+sys.path.append('..')
 from utils_client import write_prompts_to_files, process_batches_with_openai, download_and_process_outputs, process_input_output_data_from_openai_files
 from utils_basic import batchify, process_source_data
 

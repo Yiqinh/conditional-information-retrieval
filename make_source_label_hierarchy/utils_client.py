@@ -4,12 +4,45 @@ import tqdm
 import openai
 from utils_basic import batchify
 import re
+import openai
 import pandas as pd
 
 
+# os.environ['OPENAI_API_KEY'] = open()
+client = openai.OpenAI()
+
+# 
+# hit OpenAI API 
+# 
+def call_openai_completions(prompt, model_name='gpt-4o', max_tokens=1000):
+    """
+    Call the OpenAI completions API with a given prompt.
+    
+    Args:
+    prompt (str): The prompt to send to the API.
+    model_name (str): The name of the model to use.
+    max_tokens (int): The maximum number of tokens to generate.
+    
+    Returns:
+    dict: The response from the OpenAI API.
+    """
+    response = client.chat.completions.create(
+        model=model_name,
+        messages=[
+            {"role": "system", "content": "You are a helpful journalist assistant."},
+            {"role": "user", "content": prompt}
+        ],
+    )
+    return response.choices[0].message.content
+
+
+
+# 
+# batch API data processing 
+#
 def format_batch_prompt(prompts, model_name):
     """
-    Format a batch of prompts for the OpenAI API.
+    Format a list of prompts for the OpenAI Batch API.
     """
     output_ps = []
     for i, p in enumerate(prompts):
@@ -35,7 +68,7 @@ def format_batch_prompt(prompts, model_name):
 
 def write_prompts_to_files(all_prompts, output_dir, batch_size=40000, model_name='gpt-4'):
     """
-    Write the prompts to JSON Lines files in batches.
+    Take a list of the text-prompts, format them for the OpenAI Batch API, and write them to JSON Lines files (in batches).
     """
     os.makedirs(output_dir, exist_ok=True)
     prompt_batches = []
@@ -51,18 +84,17 @@ def write_prompts_to_files(all_prompts, output_dir, batch_size=40000, model_name
     return batch_files
 
 
-def process_batches_with_openai(batch_files, openai_api_key, model_name, max_tokens=1000, completion_window='24h'):
+def process_batches_with_openai(batch_files, completion_window='24h'):
     """
-    Process the batches using OpenAI's batch processing API.
+    Upload them to OpenAI's batch processing API and create batch processing jobs.
     """
-    openai.api_key = openai_api_key
     batch_ids = []
     for batch_file in tqdm(batch_files):
         with open(batch_file, 'rb') as f:
-            batch_input_file = openai.File.create(file=f, purpose="batch")
+            batch_input_file = client.files.create(file=f, purpose="batch")
         batch_input_file_id = batch_input_file.id
         # Create a batch processing job
-        batch_response = openai.Batch.create(
+        batch_response = client.batches.create(
             input_file=batch_input_file_id,
             endpoint="/v1/chat/completions",
             completion_window=completion_window,
@@ -78,13 +110,12 @@ def download_and_process_outputs(batch_ids, output_dir, openai_api_key):
     """
     Download the outputs from OpenAI batch processing and process them.
     """
-    openai.api_key = openai_api_key
     all_data = []
     for batch_id in tqdm(batch_ids):
-        batch_info = openai.Batch.retrieve(id=batch_id)
+        batch_info = client.batches.retrieve(id=batch_id)
         output_file_id = batch_info['output_file_id']
         if output_file_id:
-            output_file = openai.File.download(id=output_file_id)
+            output_file = client.files.content(id=output_file_id)
             output_file_path = os.path.join(output_dir, f"{batch_id}_output.jsonl")
             with open(output_file_path, 'w') as f:
                 f.write(output_file.decode('utf-8'))
@@ -98,7 +129,7 @@ def download_and_process_outputs(batch_ids, output_dir, openai_api_key):
 
 def process_input_output_data_from_openai_files(input_files, output_files):
     """
-    Process the input prompts and OpenAI responses from files to extract relevant data.
+    Join the batches of input prompts with OpenAI's responses.
 
     Parameters:
         input_files (list): List of input prompt files.

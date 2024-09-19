@@ -10,6 +10,10 @@ __pycache__/
 *.csv
 .idea/
 
+make_source_label_hierarchy/trained-models
+make_source_label_hierarchy/similarity_training_data
+
+
 # Distribution / packaging
 .Python
 build/
@@ -190,4 +194,5 @@ source_retriever/collections/*
 g++
 
 source_retriever/v2_search_res/*
+source_retriever/queries/*
 narrative_function/info*

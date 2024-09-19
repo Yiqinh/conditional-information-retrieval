@@ -12,11 +12,29 @@ save_dir = "../trained_model"
 dev_filename = "/scratch1/spangher/liheng/combined_test_prompt1_v2.json"
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
+with open(dev_filename, 'r') as f:
+    articles = json.load(f)
+
+document_store = InMemoryDocumentStore()
+documents = []
+for article in articles:
+    for source in article['sources']:
+        content = {
+            'id': article['url'] + "#" + source['Name'],
+            'content': source['information']
+        }
+        documents.append(content)
+
+document_store.write_documents(documents)
+        
+     
+
+
+
 reloaded_retriever = DensePassageRetriever.load(load_dir=save_dir, document_store=InMemoryDocumentStore())
 print("finished loading the retriever")
 
-with open(dev_filename, 'r') as f:
-    articles = json.load(f)
+
 
 results = {}
 for article in tqdm(articles):

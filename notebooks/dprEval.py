@@ -12,6 +12,7 @@ save_dir = "../trained_model"
 dev_filename = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/source_summaries/v2_info_parsed/combined_test_prompt1_v2.json"
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
+print(dev_filename)
 with open(dev_filename, 'r') as f:
     articles = json.load(f)
 

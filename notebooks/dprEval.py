@@ -27,7 +27,12 @@ for article in articles:
         documents.append(content)
 
 document_store.write_documents(documents)
-document_store.update_embeddings(retriever="facebook/dpr-ctx_encoder-single-nq-base")
+
+embedding_model = EmbeddingRetriever(
+    document_store=document_store,
+    embedding_model="facebook/dpr-ctx_encoder-single-nq-base",
+)
+document_store.update_embeddings(retriever=embedding_model)
 
 
 # retriever = EmbeddingRetriever(

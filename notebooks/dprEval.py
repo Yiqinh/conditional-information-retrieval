@@ -4,6 +4,7 @@ os.environ['OPENBLAS_NUM_THREADS'] = '1'
 from haystack.nodes import DensePassageRetriever, EmbeddingRetriever
 from haystack.document_stores import InMemoryDocumentStore
 from haystack import Document
+from haystack.components.writers import DocumentWriter
 from tqdm import tqdm
 
 import json
@@ -27,17 +28,21 @@ for article in articles:
         }
         documents.append(Document(content=source['Information']))
 
-document_store.write_documents(documents)
+document_writer = DocumentWriter(document_store = document_store)
+document_writer.run(documents=documents)
 
-embedding_model = EmbeddingRetriever(
-    document_store=document_store,
-    embedding_model="facebook/dpr-ctx_encoder-single-nq-base",
-    use_gpu=True
-)
 
-print("updating embeddings")
-document_store.update_embeddings(retriever=embedding_model)
-print("embedding update completed")
+# document_store.write_documents(documents)
+
+# embedding_model = EmbeddingRetriever(
+#     document_store=document_store,
+#     embedding_model="facebook/dpr-ctx_encoder-single-nq-base",
+#     use_gpu=True
+# )
+
+# print("updating embeddings")
+# document_store.update_embeddings(retriever=embedding_model)
+# print("embedding update completed")
 
 # retriever = EmbeddingRetriever(
 #         document_store=document_store,

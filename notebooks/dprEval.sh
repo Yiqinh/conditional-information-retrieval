@@ -2,9 +2,12 @@
 #SBATCH -N 1
 #SBATCH -n 1
 #SBATCH --time=40:00:00
-#SBATCH --cpus-per-task=10
-#SBATCH --mem=100G        
-#SBATCH --partition=isi
+#SBATCH --gres=gpu:a100:2
+#SBATCH --constraint=a100-80gb
+#SBATCH --mem=100GB
+#SBATCH --cpus-per-gpu=10
+#SBATCH --partition=gpu
+
 
 source /home1/spangher/.bashrc
 source activate hay

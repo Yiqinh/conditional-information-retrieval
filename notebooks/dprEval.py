@@ -31,9 +31,12 @@ document_store.write_documents(documents)
 embedding_model = EmbeddingRetriever(
     document_store=document_store,
     embedding_model="facebook/dpr-ctx_encoder-single-nq-base",
+    use_gpu=True
 )
-document_store.update_embeddings(retriever=embedding_model)
 
+print("updating embeddings")
+document_store.update_embeddings(retriever=embedding_model)
+print("embedding update completed")
 
 # retriever = EmbeddingRetriever(
 #         document_store=document_store,

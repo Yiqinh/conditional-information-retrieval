@@ -29,7 +29,8 @@ task = 'Given a description of a narrative role, how might it be similar to othe
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process some queries and passages.')
     parser.add_argument('--csv_file', type=str, required=True, help='Path to the CSV file containing queries')
-    parser.add_argument('--column_name', type=str, required=True, help='Column name in the CSV file containing queries')
+    parser.add_argument('--text_column_name', type=str, required=True, help='Column name in the CSV file containing queries')
+    parser.add_argument('--is_error_column_name', type=str, default='Is_Error', help='Column name in the CSV file containing error rows to filter out')
     parser.add_argument('--output_file', type=str, required=True, help='Path to the output file')
     parser.add_argument('--model_name', type=str, default="Salesforce/SFR-Embedding-2_R", help='Name of the model to use')    
     parser.add_argument('--nrows', type=int, default=None, help='Number of rows to process from the CSV file')
@@ -38,11 +39,15 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     df = pd.read_csv(args.csv_file)
+    if args.is_error_column_name is not None:
+        df = df[df[args.is_error_column_name] == 'No']
+
     if args.nrows is not None:
         df = df.head(args.nrows)
 
     queries = df[args.column_name].tolist()
     queries = list(map(lambda x: get_detailed_instruct(task, x), queries))
+
 
     # load model and tokenizer
     tokenizer = AutoTokenizer.from_pretrained(args.model_name)

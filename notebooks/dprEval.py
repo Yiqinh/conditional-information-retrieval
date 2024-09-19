@@ -3,6 +3,7 @@ os.environ['OPENBLAS_NUM_THREADS'] = '1'
 
 from haystack.nodes import DensePassageRetriever, EmbeddingRetriever
 from haystack.document_stores import InMemoryDocumentStore
+from haystack import Document
 from tqdm import tqdm
 
 import json
@@ -24,7 +25,7 @@ for article in articles:
             'id': article['url'] + "#" + source['Name'],
             'content': source['Information']
         }
-        documents.append(content)
+        documents.append(Document(content=source['Information']))
 
 document_store.write_documents(documents)
 

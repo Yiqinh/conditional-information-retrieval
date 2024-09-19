@@ -1,7 +1,7 @@
 import os
 os.environ['OPENBLAS_NUM_THREADS'] = '1'
 
-from haystack.nodes import DensePassageRetriever
+from haystack.nodes import DensePassageRetriever, EmbeddingRetriever
 from haystack.document_stores import InMemoryDocumentStore, FAISSDocumentStore
 from haystack.utils import convert_files_to_docs
 from tqdm import tqdm
@@ -60,7 +60,10 @@ document_store.write_documents(docs)
 #         embedding_model=model, # this is my custom-trained model
 #     )
 
-reloaded_retriever = DensePassageRetriever.load(load_dir=save_dir, document_store=document_store)
+# reloaded_retriever = DensePassageRetriever.load(load_dir=save_dir, document_store=document_store)
+retriever = EmbeddingRetriever(
+    document_store=document_store, embedding_model=save_dir
+)
 print("finished loading the retriever")
 
 results = {}
@@ -70,7 +73,7 @@ for article in tqdm(articles):
     if question == "":
         print("This question is empty")
         continue
-    results[question] = reloaded_retriever.retrieve(question, top_k=10)
+    results[question] = retriever.retrieve(question, top_k=10)
 
 print(results)
    

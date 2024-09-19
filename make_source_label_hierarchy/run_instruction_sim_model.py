@@ -5,6 +5,7 @@ from transformers import AutoTokenizer, AutoModel
 import argparse
 import pandas as pd
 from tqdm import tqdm
+import numpy as np
 
 def last_token_pool(
     last_hidden_states: Tensor,
@@ -67,8 +68,9 @@ if __name__ == "__main__":
     embeddings = torch.cat(embeddings, dim=0)
     embeddings = F.normalize(embeddings, p=2, dim=1)
 
-    # save embeddings to file
-    torch.save(embeddings, args.output_file)
+    # convert embeddings to numpy and save to file
+    embeddings = embeddings.cpu().numpy()
+    np.save(args.output_file, embeddings)
 
 
 """ example command

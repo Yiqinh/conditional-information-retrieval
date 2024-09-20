@@ -1,41 +1,51 @@
 import json
 import pdb
+import statistics
 
+def get_scores(path: str):
+    precision_list = []
+    recall_list = []
+    f1_list = []
 
-def custom_accuracy(y_true, y_pred):
-    correct = 0
-    total = len(y_true)
+    with open(path, 'r') as file:
+        articles = json.load(file)
+        for article in articles:
+            y_pred = set()
+            y_true = set()
+
+            for source in article['dr_sources']:
+                id = source['id']
+                y_pred.add(id)
+            for source in article['sources']:
+                y_true.add(article['url']+"#"+source['Name'])
+            
+            if len(y_true) == 0:
+                continue
+            
+            true_pos = set.intersection(y_pred, y_true)
+            n = len(true_pos)
+
+            recall = n / len(y_true)
+            precision = n / len(y_pred)
+
+            if (recall + precision) == 0:
+                f1 = 0
+
+            else:
+                f1 = (2 * precision * recall) / (precision + recall)
+            
+            recall_list.append(recall)
+            precision_list.append(precision)
+            f1_list.append(f1)
     
-    for i in range(total):
-        if y_true[i] in y_pred[i]:
-            correct += 1
-    
-    return correct / len(y_pred)
+    avg_prec = statistics.mean(precision_list)
+    avg_rec = statistics.mean(recall_list)
+    avg_f1 = statistics.mean(f1_list)
 
-test_filename = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/source_summaries/v2_info_parsed/combined_test_prompt1_v2.json"
-retrieval_results_filename = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result.json"
-with open(retrieval_results_filename, 'w') as json_file:
-    retrieval_results = json.load(json_file)
-with open(test_filename, 'w') as json_file:
-    test_set = json.load(json_file)
-
-id_to_label_index = {}
-included_documents = [] #a list of document ids that need to be included
-label_index = 0
-with open(test_filename, 'r') as file:
-    articles = json.load(file)
-    for url, article in articles.items():
-        for name, text in article["sources"].items():
-            included_documents.append(text)
-            id_to_label_index[text] = label_index
-            label_index += 1
+    print("average precision:", avg_prec)
+    print("average recall:", avg_rec)
+    print("average f1:", avg_f1)
 
 
-pdb.set_trace()
 
-for query in retrieval_results:
-
-    y_true = [source['Information'] for source in test_set[query]]
-    y_pred = [source.split("###") for source in retrieval_results[query]]
-    custom_accuracy(y_true, y_pred)
-
+get_scores("/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/docs/test_result.json")

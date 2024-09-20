@@ -76,7 +76,8 @@ for article in tqdm(articles):
     if question == "":
         print("This question is empty")
         continue
-    results[question] = reloaded_retriever.retrieve(question, top_k=10)
+    topk = reloaded_retriever.retrieve(question, top_k=10)
+    results[question] = [r.content for r in topk]
 
 print(results)
    

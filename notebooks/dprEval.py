@@ -30,7 +30,7 @@ for article in tqdm(articles, desc="creating source txt folder"):
         file_name = source_name.replace("/", "_")
         try:
             with open(f"{data_dir}/{file_name}.txt", 'w') as source_file:
-                source_file.write(source_name + "###" + source_text)
+                source_file.write(url + "###" + source_name + "###" + source_text)
         except Exception as e:
             print(f"An error occurred while writing the file: {e}")
             error_count += 1

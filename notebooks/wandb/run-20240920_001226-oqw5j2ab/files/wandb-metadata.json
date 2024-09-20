@@ -1,0 +1,48 @@
+{
+    "os": "macOS-14.6.1-arm64-arm-64bit",
+    "python": "3.12.2",
+    "heartbeatAt": "2024-09-20T07:12:27.500185",
+    "startedAt": "2024-09-20T07:12:26.203426",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "2024-09-19__look-for-groups-of-sources.ipynb",
+    "codePathLocal": "2024-09-19__look-for-groups-of-sources.ipynb",
+    "root": "/Users/spangher/Projects/berkeley-research/conditional-information-retrieval",
+    "git": {
+        "remote": "git@github.com:alex2awesome/conditional-information-retrieval.git",
+        "commit": "00743804e2a8ab972abf0290736f0d40844158d0"
+    },
+    "email": "spangher@usc.edu",
+    "host": "D22ML-SPANGHER.local",
+    "username": "spangher",
+    "executable": "/Users/spangher/miniconda3/bin/python",
+    "cpu_count": 10,
+    "cpu_count_logical": 10,
+    "cpu_freq": {
+        "current": 3228,
+        "min": 600,
+        "max": 3228
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 3228,
+            "min": 600,
+            "max": 3228
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 1858.1917190551758,
+            "used": 1648.6016464233398
+        }
+    },
+    "gpuapple": {
+        "type": "Apple M1 Max",
+        "vendor": "sppci_vendor_Apple"
+    },
+    "memory": {
+        "total": 64.0
+    }
+}

@@ -30,12 +30,12 @@ for article in tqdm(articles, desc="creating source txt folder"):
         file_name = source_name.replace("/", "_")
         try:
             with open(f"{data_dir}/{file_name}.txt", 'w') as source_file:
-                source_file.write(url + "###" + source_name + "###" + source_text)
+                source_file.write(source_name + "###" + source_text)
         except Exception as e:
             print(f"An error occurred while writing the file: {e}")
             error_count += 1
 
-# print("error count", error_count)
+print("error count", error_count)
 
 
 print("converting files to docs...")
@@ -70,7 +70,7 @@ document_store.update_embeddings(retriever)
 reloaded_retriever = DensePassageRetriever.load(load_dir=save_dir, document_store=document_store)
 print("finished loading the retriever")
 
-results = {}
+results = []
 for article in tqdm(articles):
     question = article['query']
     # print(question)
@@ -78,9 +78,21 @@ for article in tqdm(articles):
         print("This question is empty")
         continue
     topk = reloaded_retriever.retrieve(question, top_k=10)
-    results[question] = [r.content for r in topk]
+    dr_result = {}
+    
+    for k in topk:
+        url, name, text = k.content.split("###")
+        id = url + "#" + name
+        dr_result['id'] = id
+        dr_result['text'] = text
+    one_article = {}
+    one_article['url'] = article['url']
+    one_article['sources'] = article['sources']
+    one_article['dr_sources'] = dr_result
+    one_article['query'] = article['query']
+    
+    results.append(one_article)
 
-print(results)
    
 with open(f"/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result.json", 'w') as json_file:
     json.dump(results, json_file)

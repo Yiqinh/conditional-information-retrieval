@@ -20,22 +20,22 @@ with open(dev_filename, 'r') as f:
 # document_store = InMemoryDocumentStore()
 document_store = FAISSDocumentStore(sql_url="sqlite:///", faiss_index_factory_str="Flat")
 # documents = []
-# error_count = 0
-# for article in tqdm(articles, desc="creating source txt folder"):
-#     for source in article['sources']:
-#         source_name = source['Name']
-#         source_text = source['Information']
-#         url = article['url']
-#         file_name = source_name.replace(" ", "_")
-#         file_name = source_name.replace("/", "_")
-#         try:
-#             with open(f"{data_dir}/{file_name}.txt", 'w') as source_file:
-#                 source_file.write(url + "###" + source_name + "###" + source_text)
-#         except Exception as e:
-#             print(f"An error occurred while writing the file: {e}")
-#             error_count += 1
+error_count = 0
+for article in tqdm(articles, desc="creating source txt folder"):
+    for source in article['sources']:
+        source_name = source['Name']
+        source_text = source['Information']
+        url = article['url']
+        file_name = source_name.replace(" ", "_")
+        file_name = source_name.replace("/", "_")
+        try:
+            with open(f"{data_dir}/{file_name}.txt", 'w') as source_file:
+                source_file.write(url + "###" + source_name + "###" + source_text)
+        except Exception as e:
+            print(f"An error occurred while writing the file: {e}")
+            error_count += 1
 
-# print("error count", error_count)
+print("error count", error_count)
 
 
 print("converting files to docs...")
@@ -60,7 +60,7 @@ for article in tqdm(articles):
         print("This question is empty")
         continue
     topk = reloaded_retriever.retrieve(question, top_k=10)
-    dr_result = {}
+    dr_result = []
     
     for k in topk:
         try:
@@ -70,8 +70,10 @@ for article in tqdm(articles):
             print(k.content)
 
         id = url + "#" + name
-        dr_result['id'] = id
-        dr_result['text'] = text
+        curr_k = {}
+        curr_k['id'] = id
+        curr_k['text'] = text
+        dr_result.append(curr_k)
 
     one_article = {}
     one_article['url'] = article['url']

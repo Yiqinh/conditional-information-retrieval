@@ -13,6 +13,8 @@ __pycache__/
 make_source_label_hierarchy/trained-models
 make_source_label_hierarchy/similarity_training_data
 
+*/wandb/*
+notebooks/wandb/
 
 # Distribution / packaging
 .Python

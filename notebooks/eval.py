@@ -1,6 +1,7 @@
 import json
 import pdb
 import statistics
+from tqdm import tqdm
 
 def get_scores(path: str):
     precision_list = []
@@ -9,7 +10,7 @@ def get_scores(path: str):
 
     with open(path, 'r') as file:
         articles = json.load(file)
-        for article in articles:
+        for article in tqdm(articles):
             y_pred = set()
             y_true = set()
 
@@ -48,4 +49,4 @@ def get_scores(path: str):
 
 
 
-get_scores("/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/docs/test_result.json")
+get_scores("/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result.json")

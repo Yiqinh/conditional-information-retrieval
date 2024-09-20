@@ -3,10 +3,11 @@
 #SBATCH -n 1
 #SBATCH --time=40:00:00
 #SBATCH --cpus-per-task=10
-#SBATCH --mem=100G        
+#SBATCH --mem=400G
 #SBATCH --partition=isi
+
 
 source /home1/spangher/.bashrc
 source activate hay
-cd /scratch1/spangher/conditional-information-retrieval/notebooks
+cd /project/jonmay_231/spangher/Projects/conditional-information-retrieval/notebooks
 python dprEval.py

@@ -25,7 +25,7 @@ for article in tqdm(articles, desc="creating source txt folder"):
     for source in article['sources']:
         source_name = source['Name']
         source_text = source['Information']
-        url = source['url']
+        url = article['url']
         file_name = source_name.replace(" ", "_")
         file_name = source_name.replace("/", "_")
         try:
@@ -90,7 +90,7 @@ for article in tqdm(articles):
     one_article['sources'] = article['sources']
     one_article['dr_sources'] = dr_result
     one_article['query'] = article['query']
-    
+
     results.append(one_article)
 
    

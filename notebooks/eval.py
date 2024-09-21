@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 def get_scores(path: str):
 
-    with open("/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/index.json", 'w') as json_file:
+    with open("/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/index.json", 'r') as json_file:
         index_mapping = json.load(json_file)
         
     precision_list = []

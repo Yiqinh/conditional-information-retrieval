@@ -75,7 +75,7 @@ for article in tqdm(articles, desc="generating retrieval results"):
     one_article = {}
     one_article['url'] = article['url']
     one_article['sources'] = article['sources']
-    one_article['dr_sources'] = topk
+    one_article['dr_sources'] = [k.content for k in topk]
     one_article['query'] = article['query']
 
     results.append(one_article)

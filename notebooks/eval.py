@@ -20,6 +20,8 @@ def get_scores(path: str):
             for source in article['sources']:
                 y_true.add(article['url']+"#"+source['Name'])
             
+            pdb.set_trace()
+            
             if len(y_true) == 0:
                 continue
             

@@ -42,7 +42,6 @@ document_store.update_embeddings(retriever)
 print("creating index mapping...")
 documents = document_store.get_all_documents()
 
-pdb.set_trace()
 mapping = {}
 for document in documents:
     mapping[document.content] = document.id

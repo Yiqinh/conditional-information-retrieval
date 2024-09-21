@@ -4,6 +4,10 @@ import statistics
 from tqdm import tqdm
 
 def get_scores(path: str):
+
+    with open("/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/index.json", 'w') as json_file:
+        index_mapping = json.load(json_file)
+        
     precision_list = []
     recall_list = []
     f1_list = []
@@ -15,10 +19,10 @@ def get_scores(path: str):
             y_true = set()
 
             for source in article['dr_sources']:
-                id = source['id']
+                id = index_mapping[source]
                 y_pred.add(id)
             for source in article['sources']:
-                y_true.add(article['url'] + "#" + source['Name'])
+                y_true.add(index_mapping[source])
             
             pdb.set_trace()
             

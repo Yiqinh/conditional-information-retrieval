@@ -19,12 +19,10 @@ def get_scores(path: str):
             y_true = set()
 
             for source in article['dr_sources']:
-                id = index_mapping[source]
-                y_pred.add(id)
+                y_pred.add(index_mapping[source])
             for source in article['sources']:
-                y_true.add(index_mapping[source])
+                y_true.add(index_mapping[source['Information']])
             
-            pdb.set_trace()
             
             if len(y_true) == 0:
                 continue

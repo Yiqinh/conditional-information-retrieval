@@ -18,7 +18,7 @@ def get_scores(path: str):
                 id = source['id']
                 y_pred.add(id)
             for source in article['sources']:
-                y_true.add(article['url']+"#"+source['Name'])
+                y_true.add(article['url'] + "#" + source['Name'])
             
             pdb.set_trace()
             

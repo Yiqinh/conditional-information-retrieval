@@ -46,6 +46,7 @@ pdb.set_trace()
 mapping = {}
 for document in documents:
     mapping[document.content] = document.id
+print(mapping)
 
 with open(f"/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/index.json", 'w') as json_file:
     json.dump(mapping, json_file)

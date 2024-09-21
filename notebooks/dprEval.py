@@ -5,6 +5,7 @@ from haystack.nodes import DensePassageRetriever, EmbeddingRetriever
 from haystack.document_stores import InMemoryDocumentStore, FAISSDocumentStore
 from haystack.utils import convert_files_to_docs
 from tqdm import tqdm
+import pdb
 import json
 
 
@@ -40,6 +41,8 @@ document_store.update_embeddings(retriever)
 
 print("creating index mapping...")
 documents = document_store.get_all_documents()
+
+pdb.set_trace()
 mapping = {}
 for document in documents:
     mapping[document.content] = document.id

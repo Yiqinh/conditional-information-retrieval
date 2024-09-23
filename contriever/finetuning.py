@@ -18,8 +18,8 @@ from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 from src.options import Options
 
 sys.path.append(os.path.join(os.path.abspath(__file__), 'src/slurm.py'))
-# from src import data, dist_utils, utils, contriever, finetuning_data, inbatch
-from src import *
+from src import data, dist_utils, utils, contriever, finetuning_data, inbatch
+from src import slurm
 
 # from src.slurm import sig_handler, term_handler, init_signal_handler, init_distributed_mode
 

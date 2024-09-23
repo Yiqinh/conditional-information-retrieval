@@ -25,7 +25,7 @@ if __name__ == "__main__":
     parser.add_argument("--retriv_cache_dir", type=str, default=here, help="Path to the directory containing indices")
     parser.add_argument("--huggingface_cache_dir", type=str, default='/project/jonmay_231/spangher/huggingface_cache', help="Path to the directory containing HuggingFace cache")
     parser.add_argument("--iterations", type=int, help="Number of iterations to augment query and retrieve sources", default=10)
-    parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3-70B-Instruct")
+    parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3.1-70B-Instruct")
 
     args = parser.parse_args()
 

@@ -16,7 +16,10 @@ import torch.distributed as dist
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 
 from src.options import Options
-from src import data, dist_utils, utils, contriever, finetuning_data, inbatch
+
+sys.path.append(os.join(os.path.abspath(__file__), 'src/slurm.py'))
+from src import data, slurm, dist_utils, utils, contriever, finetuning_data, inbatch
+
 
 import train
 import socket

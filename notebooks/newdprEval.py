@@ -14,9 +14,10 @@ from haystack.utils import convert_files_to_docs
 
 
 # Directories and file paths
-save_dir = "/nas04/tenghaoh/conditional-retrieval/notebooks/saved_models"
-data_dir = "/nas04/tenghaoh/conditional-retrieval/data_txts_folder"
-dev_filename = "/nas04/tenghaoh/conditional-retrieval/data/combined_test_prompt1_v2.json"
+
+save_dir = "../trained_model"
+data_dir = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/docs"
+dev_filename = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/source_summaries/v2_info_parsed/combined_test_prompt1_v2.json"
 
 # Load development data
 with open(dev_filename, 'r') as f:

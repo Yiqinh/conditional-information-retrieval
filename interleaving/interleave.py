@@ -199,6 +199,6 @@ if __name__ == "__main__":
         #write to json file with RESULTS from iteration i
         fname = os.path.join(here, f"iter_{i}_search_results.json")
         with open(fname, 'w') as json_file:
-            json.dump(interleave_result, json_file)
+            json.dump(interleave_result, json_file, indent=4)
         
 

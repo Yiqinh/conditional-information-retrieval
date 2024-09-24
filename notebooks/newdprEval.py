@@ -80,7 +80,7 @@ print("Distances: ", distances)
 
 results = []
 
-for article in tqdm(articles, desc="generating retrieval results"):
+for article in tqdm(articles[:100], desc="generating retrieval results"):
     question = article['query']
     if question == "":
         print("This question is empty")

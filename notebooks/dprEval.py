@@ -34,7 +34,7 @@ print("writing to document store...")
 document_store.write_documents(docs)
 
 retriever = EmbeddingRetriever(
-    document_store=document_store, embedding_model="sentence-transformers/multi-qa-mpnet-base-dot-v1"
+    document_store=document_store, embedding_model=save_dir
 )
 print("updating embeddings...")
 document_store.update_embeddings(retriever)

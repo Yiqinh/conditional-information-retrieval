@@ -11,5 +11,5 @@ cd /project/jonmay_231/spangher/Projects/conditional-information-retrieval/contr
 
 module load conda
 source conda activate contriever
-
+pip install torch
 python3 finetuning.py

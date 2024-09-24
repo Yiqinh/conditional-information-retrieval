@@ -21,7 +21,7 @@ dev_filename = "/project/jonmay_231/spangher/Projects/conditional-information-re
 
 # Load development data
 with open(dev_filename, 'r') as f:
-    articles = json.load(f)
+    articles = json.load(f)[:1000]
 
 # Initialize document store and retriever
 document_store = FAISSDocumentStore(sql_url="sqlite:///", faiss_index_factory_str="Flat")
@@ -38,7 +38,7 @@ for article in tqdm(articles, desc="creating source txt folder"):
         file_idx += 1
 
 print("converting files to docs...")
-docs = convert_files_to_docs(dir_path=data_dir)[:100]
+docs = convert_files_to_docs(dir_path=data_dir)[:1000]
 print("writing to document store...")
 document_store.write_documents(docs)
 
@@ -66,8 +66,10 @@ def search_vectors(index, query_vector, k):
 dim = 768  # Dimension of the vectors
 index = create_index(dim)
 
+
 # Adding vectors to the index
 add_vectors_to_index(index, tmp)
+print(type(index))
 
 # Simulating a query vector (for example purposes)
 question = "what is the square root of 144?"
@@ -75,6 +77,8 @@ query_vector = reloaded_retriever.embed_queries([question])[0]
 
 # Searching the index
 distances, indices = search_vectors(index, query_vector, 10)
+print(type(indices))
+print(indices.tolist())
 print("Nearest neighbors: ", indices)
 print("Distances: ", distances)
 
@@ -90,7 +94,7 @@ for article in tqdm(articles, desc="generating retrieval results"):
     one_article = {}
     one_article['url'] = article['url']
     one_article['sources'] = article['sources']
-    one_article['dr_sources'] = indices
+    one_article['dr_sources'] = indices.tolist()
     one_article['query'] = article['query']
 
     results.append(one_article)

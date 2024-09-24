@@ -89,7 +89,6 @@ if __name__ == "__main__":
     # needs to be imported here to make sure the environment variables are set before
     # the retriv library sets certain defaults
     from dense_retriever import MyDenseRetriever
-
     #sets the retriv base path
     retriv_cache_dir = args.retriv_cache_dir
     logging.info(f"Setting environment variables: RETRIV_BASE_PATH={retriv_cache_dir}")

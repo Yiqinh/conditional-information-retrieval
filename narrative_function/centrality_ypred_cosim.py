@@ -55,8 +55,9 @@ for article in tqdm(articles, desc='Article Cosims Calculated'):
     cost = similarities.numpy()
     row_ind, col_ind = linear_sum_assignment(cost, maximize=True) #hungarian matching
 
-    for r in row_ind: # r is the indices of the y_true sources
-        c = col_ind[r] # each row/r is matched to a column, which represents a matched y_pred
+    for i in range(len(row_ind)): 
+        r = row_ind[i] # r is the indices of the y_true sources
+        c = col_ind[i] # each row/r is matched to a column, which represents a matched y_pred
 
         if text_to_centrality.get(y_true[r], None) != None:
             cur_centrality = text_to_centrality[y_true[r]]

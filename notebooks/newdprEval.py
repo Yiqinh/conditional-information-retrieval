@@ -66,8 +66,10 @@ def search_vectors(index, query_vector, k):
 dim = 768  # Dimension of the vectors
 index = create_index(dim)
 
+
 # Adding vectors to the index
 add_vectors_to_index(index, tmp)
+print(type(index))
 
 # Simulating a query vector (for example purposes)
 question = "what is the square root of 144?"

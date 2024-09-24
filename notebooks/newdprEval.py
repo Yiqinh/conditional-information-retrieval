@@ -21,7 +21,7 @@ dev_filename = "/project/jonmay_231/spangher/Projects/conditional-information-re
 
 # Load development data
 with open(dev_filename, 'r') as f:
-    articles = json.load(f)[:100]
+    articles = json.load(f)[:1000]
 
 # Initialize document store and retriever
 document_store = FAISSDocumentStore(sql_url="sqlite:///", faiss_index_factory_str="Flat")
@@ -38,7 +38,7 @@ for article in tqdm(articles, desc="creating source txt folder"):
         file_idx += 1
 
 print("converting files to docs...")
-docs = convert_files_to_docs(dir_path=data_dir)[:100]
+docs = convert_files_to_docs(dir_path=data_dir)[:1000]
 print("writing to document store...")
 document_store.write_documents(docs)
 
@@ -76,26 +76,27 @@ query_vector = reloaded_retriever.embed_queries([question])[0]
 # Searching the index
 distances, indices = search_vectors(index, query_vector, 10)
 print(type(indices))
+print(indices.tolist())
 print("Nearest neighbors: ", indices)
 print("Distances: ", distances)
 
 results = []
 
-# for article in tqdm(articles, desc="generating retrieval results"):
-#     question = article['query']
-#     if question == "":
-#         print("This question is empty")
-#         continue
+for article in tqdm(articles, desc="generating retrieval results"):
+    question = article['query']
+    if question == "":
+        print("This question is empty")
+        continue
 
-#     distances, indices = search_vectors(index, query_vector, 10)
-#     one_article = {}
-#     one_article['url'] = article['url']
-#     one_article['sources'] = article['sources']
-#     one_article['dr_sources'] = indices
-#     one_article['query'] = article['query']
+    distances, indices = search_vectors(index, query_vector, 10)
+    one_article = {}
+    one_article['url'] = article['url']
+    one_article['sources'] = article['sources']
+    one_article['dr_sources'] = indices.tolist()
+    one_article['query'] = article['query']
 
-#     results.append(one_article)
+    results.append(one_article)
     
-# with open(f"/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result.json", 'w') as json_file:
-#     json.dump(results, json_file)
+with open(f"/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result.json", 'w') as json_file:
+    json.dump(results, json_file)
 

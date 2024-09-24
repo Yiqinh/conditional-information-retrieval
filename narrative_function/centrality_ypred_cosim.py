@@ -76,7 +76,7 @@ for c, sims in cosims.items():
     u = statistics.mean(sims)
     print(f"The average cosim for {c} is: {u}")
 
-with open('centrality_ypred_cosim.csv', mode='w', newline='') as file:
+with open(os.path.join(here, 'centrality_ypred_cosim.csv'), mode='w', newline='') as file:
     writer = csv.writer(file)
     
     # Write each row to the file

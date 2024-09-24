@@ -2,6 +2,20 @@ import json
 import pdb
 import statistics
 from tqdm import tqdm
+import faiss
+import numpy as np
+
+
+
+index_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test.index"
+
+print("loading in index")
+index = faiss.read_index(index_file)
+
+
+def get_index(source):
+    return index.search(np.array([source], dtype=np.float32), 1)
+
 
 def get_scores(path: str):
 
@@ -19,10 +33,9 @@ def get_scores(path: str):
             y_true = set()
 
             for source in article['dr_sources']:
-                y_pred.add(index_mapping[source])
+                y_pred.add(get_index[source])
             for source in article['sources']:
-                y_true.add(index_mapping[source['Information']])
-            
+                y_true.add(get_index[source['Information']])
             
             if len(y_true) == 0:
                 continue

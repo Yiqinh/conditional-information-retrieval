@@ -21,7 +21,7 @@ dev_filename = "/project/jonmay_231/spangher/Projects/conditional-information-re
 index_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test.index"
 # Load development data
 with open(dev_filename, 'r') as f:
-    articles = json.load(f)[:10]
+    articles = json.load(f)
 
 # Initialize document store and retriever
 document_store = FAISSDocumentStore(sql_url="sqlite:///", faiss_index_factory_str="Flat")
@@ -38,7 +38,7 @@ for article in tqdm(articles, desc="creating source txt folder"):
         file_idx += 1
 
 print("converting files to docs...")
-docs = convert_files_to_docs(dir_path=data_dir)[:10]
+docs = convert_files_to_docs(dir_path=data_dir)
 print("writing to document store...")
 document_store.write_documents(docs)
 

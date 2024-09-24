@@ -170,15 +170,17 @@ if __name__ == "__main__":
         print(f"Starting another round of DR search for augmented query {i}")
         for url in article_order:
             new_query = url_to_new_query[url]
-
-            article_seen_docs = url_to_searched_docs[url] #Put all of the past source retrievals for this article in a set to avoid duplicate retrieval
+            
+            article_seen_ids = [] #Put all of the past source retrievals for this article in a list to avoid duplicate retrieval
+            for d in url_to_searched_docs[url]:
+                article_seen_ids.append(d['id'])
  
-            included_documents_list = [doc for doc in included_docs if doc not in article_seen_docs]
+            included_id_list = [id for id in included_docs if id not in article_seen_ids]
 
             dr_result = dr.search(
                     query=new_query,
                     return_docs=True,
-                    include_id_list=included_documents_list,
+                    include_id_list=included_id_list,
                     cutoff=10)
 
             for source in dr_result:
@@ -186,6 +188,7 @@ if __name__ == "__main__":
             
             one_article = {}
             one_article['url'] = url
+            one_article['query'] = new_query
             one_article['dr_sources'] = dr_result
 
             url_to_searched_docs[url].extend(dr_result)

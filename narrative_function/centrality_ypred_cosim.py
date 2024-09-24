@@ -71,8 +71,6 @@ for article in tqdm(articles, desc='Article Cosims Calculated'):
 
             data.append(data_point)
 
-    break
-
 for c, sims in cosims.items():
     u = statistics.mean(sims)
     print(f"The average cosim for {c} is: {u}")

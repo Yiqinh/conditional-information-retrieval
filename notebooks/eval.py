@@ -35,7 +35,7 @@ def get_scores(path: str):
             y_true = set()
 
             for source in article['dr_sources']:
-                y_pred.add(get_index(source))
+                y_pred.add(source)
             for source in article['sources']:
                 y_true.add(get_index(source['Information']))
             

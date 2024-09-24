@@ -21,7 +21,7 @@ dev_filename = "/project/jonmay_231/spangher/Projects/conditional-information-re
 
 # Load development data
 with open(dev_filename, 'r') as f:
-    articles = json.load(f)
+    articles = json.load(f)[:100]
 
 # Initialize document store and retriever
 document_store = FAISSDocumentStore(sql_url="sqlite:///", faiss_index_factory_str="Flat")
@@ -75,26 +75,27 @@ query_vector = reloaded_retriever.embed_queries([question])[0]
 
 # Searching the index
 distances, indices = search_vectors(index, query_vector, 10)
+print(type(indices))
 print("Nearest neighbors: ", indices)
 print("Distances: ", distances)
 
 results = []
 
-for article in tqdm(articles, desc="generating retrieval results"):
-    question = article['query']
-    if question == "":
-        print("This question is empty")
-        continue
+# for article in tqdm(articles, desc="generating retrieval results"):
+#     question = article['query']
+#     if question == "":
+#         print("This question is empty")
+#         continue
 
-    distances, indices = search_vectors(index, query_vector, 10)
-    one_article = {}
-    one_article['url'] = article['url']
-    one_article['sources'] = article['sources']
-    one_article['dr_sources'] = indices
-    one_article['query'] = article['query']
+#     distances, indices = search_vectors(index, query_vector, 10)
+#     one_article = {}
+#     one_article['url'] = article['url']
+#     one_article['sources'] = article['sources']
+#     one_article['dr_sources'] = indices
+#     one_article['query'] = article['query']
 
-    results.append(one_article)
+#     results.append(one_article)
     
-with open(f"/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result.json", 'w') as json_file:
-    json.dump(results, json_file)
+# with open(f"/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result.json", 'w') as json_file:
+#     json.dump(results, json_file)
 

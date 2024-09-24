@@ -10,10 +10,6 @@ from haystack.nodes import DensePassageRetriever
 from haystack.document_stores import FAISSDocumentStore
 from haystack.utils import convert_files_to_docs
 
-# Set environment variables
-
-
-# Directories and file paths
 
 save_dir = "../trained_model"
 data_dir = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/docs"
@@ -69,7 +65,6 @@ index = create_index(dim)
 
 # Adding vectors to the index
 add_vectors_to_index(index, tmp)
-print(type(index))
 
 # Simulating a query vector (for example purposes)
 question = "what is the square root of 144?"
@@ -77,8 +72,6 @@ query_vector = reloaded_retriever.embed_queries([question])[0]
 
 # Searching the index
 distances, indices = search_vectors(index, query_vector, 10)
-print(type(indices))
-print(indices.tolist())
 print("Nearest neighbors: ", indices)
 print("Distances: ", distances)
 

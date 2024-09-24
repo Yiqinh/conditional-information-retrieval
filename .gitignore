@@ -198,3 +198,4 @@ g++
 source_retriever/v2_search_res/*
 source_retriever/queries/*
 narrative_function/info*
+interleaving/collections/*

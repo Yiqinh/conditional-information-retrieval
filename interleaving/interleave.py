@@ -163,7 +163,7 @@ if __name__ == "__main__":
         url_to_new_query = {}
 
         for url, output in zip(article_order, response):
-            url_to_new_query[url] = output.split["QUERY 2:"][-1]
+            url_to_new_query[url] = output.split("QUERY 2:")[-1]
 
         interleave_result = []
 

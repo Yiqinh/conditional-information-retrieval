@@ -1,4 +1,7 @@
 import os
+os.environ['OPENBLAS_NUM_THREADS'] = '1'
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
+
 import json
 import numpy as np
 import faiss
@@ -8,8 +11,7 @@ from haystack.document_stores import FAISSDocumentStore
 from haystack.utils import convert_files_to_docs
 
 # Set environment variables
-os.environ['OPENBLAS_NUM_THREADS'] = '1'
-os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
+
 
 # Directories and file paths
 save_dir = "/nas04/tenghaoh/conditional-retrieval/notebooks/saved_models"

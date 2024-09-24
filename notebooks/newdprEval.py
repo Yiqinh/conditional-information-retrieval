@@ -18,10 +18,10 @@ from haystack.utils import convert_files_to_docs
 save_dir = "../trained_model"
 data_dir = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/docs"
 dev_filename = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/source_summaries/v2_info_parsed/combined_test_prompt1_v2.json"
-
+index_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test.index"
 # Load development data
 with open(dev_filename, 'r') as f:
-    articles = json.load(f)[:1000]
+    articles = json.load(f)[:10]
 
 # Initialize document store and retriever
 document_store = FAISSDocumentStore(sql_url="sqlite:///", faiss_index_factory_str="Flat")
@@ -38,7 +38,7 @@ for article in tqdm(articles, desc="creating source txt folder"):
         file_idx += 1
 
 print("converting files to docs...")
-docs = convert_files_to_docs(dir_path=data_dir)[:1000]
+docs = convert_files_to_docs(dir_path=data_dir)[:10]
 print("writing to document store...")
 document_store.write_documents(docs)
 
@@ -81,6 +81,8 @@ print(type(indices))
 print(indices.tolist())
 print("Nearest neighbors: ", indices)
 print("Distances: ", distances)
+
+faiss.write_index(index, index_file)
 
 results = []
 

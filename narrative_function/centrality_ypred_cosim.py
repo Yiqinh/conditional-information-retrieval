@@ -12,7 +12,7 @@ here = os.path.dirname(os.path.abspath(__file__))
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
-df = pd.read_csv('info_narr_queryv1_df.csv.gz', compression='gzip')
+df = pd.read_csv(os.path.join(here, 'info_narr_queryv1_df.csv.gz'), compression='gzip')
 
 print(len(df))
 text_to_centrality = {}

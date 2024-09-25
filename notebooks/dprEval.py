@@ -106,7 +106,7 @@ def process_batch(batch):
 batch_size = 10
 
 for i in tqdm(range(0, len(articles), batch_size), desc="Generating retrieval results in batches"):
-    batch = articles[i:min(i + batch_size, len(article))]
+    batch = articles[i:min(i + batch_size, len(articles))]
     results.extend(process_batch(batch))
 
     

@@ -1,12 +1,28 @@
 import json
-import pdb
+import os
+os.environ['OPENBLAS_NUM_THREADS'] = '1'
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
+from haystack.nodes import DensePassageRetriever
 import statistics
 from tqdm import tqdm
+import faiss
+import numpy as np
+
+
+save_dir = "../trained_model"
+index_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test.index"
+
+print("loading in index")
+index = faiss.read_index(index_file)
+
+reloaded_retriever = DensePassageRetriever.load(load_dir=save_dir, document_store=None)
+
+def get_index(source):
+    query_vector = reloaded_retriever.embed_queries([source])[0]
+    return index.search(np.array([query_vector], dtype=np.float32), 1)
+
 
 def get_scores(path: str):
-
-    with open("/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/index.json", 'r') as json_file:
-        index_mapping = json.load(json_file)
         
     precision_list = []
     recall_list = []
@@ -18,11 +34,11 @@ def get_scores(path: str):
             y_pred = set()
             y_true = set()
 
-            for source in article['dr_sources']:
-                y_pred.add(index_mapping[source])
+            for source in article['dr_sources'][0]:
+                y_pred.add(source)
             for source in article['sources']:
-                y_true.add(index_mapping[source['Information']])
-            
+                distance, idx = get_index(source['Information'])
+                y_true.add(idx[0][0])
             
             if len(y_true) == 0:
                 continue

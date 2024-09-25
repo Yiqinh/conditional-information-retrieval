@@ -10,10 +10,6 @@ from haystack.nodes import DensePassageRetriever
 from haystack.document_stores import FAISSDocumentStore
 from haystack.utils import convert_files_to_docs
 
-# Set environment variables
-
-
-# Directories and file paths
 
 save_dir = "../trained_model"
 data_dir = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/docs"
@@ -21,7 +17,7 @@ dev_filename = "/project/jonmay_231/spangher/Projects/conditional-information-re
 index_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test.index"
 # Load development data
 with open(dev_filename, 'r') as f:
-    articles = json.load(f)[:10]
+    articles = json.load(f)
 
 # Initialize document store and retriever
 document_store = FAISSDocumentStore(sql_url="sqlite:///", faiss_index_factory_str="Flat")
@@ -38,7 +34,7 @@ for article in tqdm(articles, desc="creating source txt folder"):
         file_idx += 1
 
 print("converting files to docs...")
-docs = convert_files_to_docs(dir_path=data_dir)[:10]
+docs = convert_files_to_docs(dir_path=data_dir)
 print("writing to document store...")
 document_store.write_documents(docs)
 
@@ -69,7 +65,6 @@ index = create_index(dim)
 
 # Adding vectors to the index
 add_vectors_to_index(index, tmp)
-print(type(index))
 
 # Simulating a query vector (for example purposes)
 question = "what is the square root of 144?"
@@ -77,8 +72,6 @@ query_vector = reloaded_retriever.embed_queries([question])[0]
 
 # Searching the index
 distances, indices = search_vectors(index, query_vector, 10)
-print(type(indices))
-print(indices.tolist())
 print("Nearest neighbors: ", indices)
 print("Distances: ", distances)
 

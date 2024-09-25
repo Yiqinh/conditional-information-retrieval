@@ -17,11 +17,6 @@ index = faiss.read_index(index_file)
 
 reloaded_retriever = DensePassageRetriever.load(load_dir=save_dir, document_store=None)
 
-def get_index(source):
-    query_vector = reloaded_retriever.embed_queries([source])[0]
-    return index.search(np.array([query_vector], dtype=np.float32), 1)
-
-
 def get_scores(path: str):
         
     precision_list = []
@@ -34,11 +29,9 @@ def get_scores(path: str):
             y_pred = set()
             y_true = set()
 
-            for source in article['dr_sources'][0]:
-                y_pred.add(source)
-            for source in article['sources']:
-                distance, idx = get_index(source['Information'])
-                y_true.add(idx[0][0])
+            for dr_source, source in zip(article['dr_sources'], article['sources']):
+                y_pred.add(dr_source)
+                y_true.add(source)
             
             if len(y_true) == 0:
                 continue

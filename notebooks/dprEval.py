@@ -85,7 +85,7 @@ results = []
 
 def process_batch(batch):
     batch_results = []
-    questions = [article['query'] for article in batch]
+    questions = [article['query'] for article in batch if article['query'] != ""]
     query_vector = reloaded_retriever.embed_queries(questions)[0]
     distances, dr_indices = search_vectors(index, query_vector, 10)
     gt_indices = []

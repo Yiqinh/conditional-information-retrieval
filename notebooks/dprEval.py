@@ -82,18 +82,20 @@ def get_index(source, index):
 
 index = faiss.read_index(index_file)
 
-results = []
-
 
 def process_batch(batch):
     batch_results = []
     questions = [article['query'] for article in batch if article['query'] != ""]
-    query_vector = reloaded_retriever.embed_queries(questions)[0]
-    distances, dr_indices = search_vectors(index, query_vector, 10)
+    query_vectors = reloaded_retriever.embed_queries(questions)
+    distances, dr_indices = [], []
+    for query_vector in query_vectors:
+        d, i = search_vectors(index, query_vector, 10)[0]
+        distances.append(d)
+        dr_indices.append(i)
+
     gt_indices = []
     for article in batch:
         for source in article['sources']:
-
             sourceid = get_index(source['Information'], index)
             gt_indices.append(sourceid)
     
@@ -107,10 +109,14 @@ def process_batch(batch):
 
 
 batch_size = 10
+results = []
 
-for i in tqdm(range(0, len(articles), batch_size), desc="Generating retrieval results in batches"):
-    batch = articles[i:min(i + batch_size, len(articles))]
-    results.extend(process_batch(batch))
+for article in tqdm(articles, desc="Generating retrieval results in batches"):
+    # batch = articles[i:min(i + batch_size, len(articles))]
+    # results.extend(process_batch(batch))
+    question = article['query']
+    query_vector = reloaded_retriever.embed_queries(questions)[0]
+
 
     
 with open(f"/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result.json", 'w') as json_file:

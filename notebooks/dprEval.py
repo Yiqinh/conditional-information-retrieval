@@ -95,9 +95,11 @@ def process_batch(batch):
 
     gt_indices = []
     for article in batch:
+        curr_indices = []
         for source in article['sources']:
             sourceid = get_index(source['Information'], index)
-            gt_indices.append(sourceid)
+            curr_indices.append(sourceid)
+        gt_indices.append(curr_indices)
     
     for question, gt, dr in zip(questions, gt_indices, dr_indices):
         one_article = {}

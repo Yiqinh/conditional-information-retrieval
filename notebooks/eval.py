@@ -1,5 +1,7 @@
 import json
 import os
+os.environ['OPENBLAS_NUM_THREADS'] = '1'
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 import statistics
 from tqdm import tqdm
 import numpy as np

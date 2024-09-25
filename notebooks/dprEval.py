@@ -105,8 +105,8 @@ def process_batch(batch):
     for question, gt, dr in zip(questions, gt_indices, dr_indices):
         one_article = {}
         one_article['query'] = question
-        one_article['sources'] = str(gt)
-        one_article['dr_sources'] = str(dr)
+        one_article['sources'] = gt
+        one_article['dr_sources'] = dr
         batch_results.append(one_article)
     return batch_results
 

@@ -89,7 +89,7 @@ def process_batch(batch):
     query_vectors = reloaded_retriever.embed_queries(questions)
     distances, dr_indices = [], []
     for query_vector in query_vectors:
-        i = search_vectors(index, query_vector, 10)[0]
+        i = search_vectors(index, query_vector, 10)[1]
         # distances.append(d)
         dr_indices.append(i)
 

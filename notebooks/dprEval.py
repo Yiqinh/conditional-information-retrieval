@@ -59,6 +59,8 @@ def search_vectors(index, query_vector, k):
     return D, I  # Distances and indices of the nearest vectors
 
 def get_index(source, index):
+    if not source or source == "":
+        return 0
     query_vector = reloaded_retriever.embed_queries([source])[0]
     return index.search(np.array([query_vector], dtype=np.float32), 1)[0][0]
 
@@ -91,6 +93,7 @@ def process_batch(batch):
     gt_indices = []
     for article in batch:
         for source in article['sources']:
+
             sourceid = get_index(source['Information'], index)
             gt_indices.append(sourceid)
     

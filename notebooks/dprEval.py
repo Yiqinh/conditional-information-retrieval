@@ -97,7 +97,8 @@ def process_batch(batch):
     for article in batch:
         curr_indices = []
         for source in article['sources']:
-            sourceid = get_index(source['Information'], index)
+            source_vector = reloaded_retriever.embed_queries([source['Information']])[0]
+            sourceid = search_vectors(index, source_vector, 1)[1]
             curr_indices.append(sourceid)
         gt_indices.append(curr_indices)
     

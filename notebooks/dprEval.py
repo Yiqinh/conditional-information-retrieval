@@ -111,11 +111,11 @@ def process_batch(batch):
 batch_size = 10
 results = []
 
-for article in tqdm(articles, desc="Generating retrieval results in batches"):
-    # batch = articles[i:min(i + batch_size, len(articles))]
-    # results.extend(process_batch(batch))
-    question = article['query']
-    query_vector = reloaded_retriever.embed_queries(questions)[0]
+for i in tqdm(range(0, len(articles), batch_size), desc="Generating retrieval results in batches"):
+    batch = articles[i:min(i + batch_size, len(articles))]
+    results.extend(process_batch(batch))
+    # question = article['query']
+    # query_vector = reloaded_retriever.embed_queries(questions)[0]
 
 
     

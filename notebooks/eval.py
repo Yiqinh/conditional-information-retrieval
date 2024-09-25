@@ -1,21 +1,13 @@
 import json
 import os
-os.environ['OPENBLAS_NUM_THREADS'] = '1'
-os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
-from haystack.nodes import DensePassageRetriever
 import statistics
 from tqdm import tqdm
-import faiss
 import numpy as np
 
 
 save_dir = "../trained_model"
 index_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test.index"
 
-print("loading in index")
-index = faiss.read_index(index_file)
-
-reloaded_retriever = DensePassageRetriever.load(load_dir=save_dir, document_store=None)
 
 def get_scores(path: str):
         

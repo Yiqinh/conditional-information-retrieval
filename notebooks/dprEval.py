@@ -91,7 +91,7 @@ def process_batch(batch):
     for query_vector in query_vectors:
         i = search_vectors(index, query_vector, 10)[1]
         # distances.append(d)
-        dr_indices.append(i)
+        dr_indices.append(i[0].tolist())
 
     gt_indices = []
     for article in batch:

@@ -19,7 +19,7 @@ index_file = "/project/jonmay_231/spangher/Projects/conditional-information-retr
 mapping_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/mapping.json"
 # Load development data
 with open(dev_filename, 'r') as f:
-    articles = json.load(f)[:10]
+    articles = json.load(f)
 
 # Initialize document store and retriever
 document_store = FAISSDocumentStore(sql_url="sqlite:///", faiss_index_factory_str="Flat")
@@ -30,23 +30,23 @@ index = faiss.IndexIDMap(index)
 
 
 # Write documents to the document store
-print("creating source txt folder...")
 file_idx = 0
 mapping = {}
-doc_vectors = []
 for article in tqdm(articles, desc="creating source txt folder"):
     for source in article['sources']:
         source_text = source['Information']
         doc_vector = reloaded_retriever.embed_documents(convert_files_to_docs(file_paths=[Path(f"{data_dir}/{file_idx}.txt")]))
-        doc_vectors.append(doc_vector)
+        index.add_with_ids(doc_vector, file_idx)
+        mapping[file_idx] = source_text
         with open(f"{data_dir}/{file_idx}.txt", 'w') as source_file:
-            index.add_with_ids(doc_vector, file_idx)
             source_file.write(source_text)
-            mapping[file_idx] = source_text
+            
         file_idx += 1
 
+print("saving index...")
 faiss.write_index(index, index_file)
 
+print("saving mapping...")
 with open(mapping_file, 'w') as f:
     json.dump(mapping, f, indent=4)
 

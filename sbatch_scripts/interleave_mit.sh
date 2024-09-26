@@ -12,7 +12,7 @@
 cd /pool001/spangher/alex/conditional-information-retrieval
 
 conda init
-conda activate py39-retrieve-vllm
+source conda activate py39-retrieve-vllm
 
 export OMP_NUM_THREADS=50
 

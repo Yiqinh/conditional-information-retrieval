@@ -3,7 +3,6 @@ import sys
 import os
 import logging
 import argparse
-import numpy as np
 from sklearn.metrics import f1_score, precision_score, recall_score
 from tqdm.auto import tqdm
 

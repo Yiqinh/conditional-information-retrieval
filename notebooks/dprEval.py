@@ -91,7 +91,9 @@ def process_batch(batch):
     for query_vector in query_vectors:
         i = search_vectors(index, query_vector, 10)[1]
         # distances.append(d)
-        dr_indices.append(i[0].tolist())
+        curr_indices = i[0].tolist()
+        curr_indices = [int(i) for i in curr_indices]
+        dr_indices.append(curr_indices)
 
     gt_indices = []
     for article in batch:
@@ -102,7 +104,9 @@ def process_batch(batch):
             source_vector = reloaded_retriever.embed_queries([source['Information']])[0]
             sourceid = search_vectors(index, source_vector, 1)[1]
             curr_indices.append(sourceid[0][0])
+        curr_indices = [int(i) for i in curr_indices]
         gt_indices.append(curr_indices)
+    
     
     for question, gt, dr in zip(questions, gt_indices, dr_indices):
         one_article = {}

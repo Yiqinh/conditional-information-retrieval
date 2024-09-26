@@ -45,6 +45,12 @@ for article in tqdm(articles, desc="creating source txt folder"):
             mapping[file_idx] = source_text
         file_idx += 1
 
+faiss.write_index(index, index_file)
+
+with open(mapping_file, 'w') as f:
+    json.dump(mapping, f, indent=4)
+
+
 
 
 # print("converting files to docs...")
@@ -55,41 +61,41 @@ for article in tqdm(articles, desc="creating source txt folder"):
 # Embed documents
 # tmp = reloaded_retriever.embed_documents(docs)
 
-def create_index(vector_dim):
-    """Create a FAISS index for the given vector dimension."""
-    index = faiss.IndexFlatL2(vector_dim)  # Using L2 distance for similarity
-    return index
+# def create_index(vector_dim):
+#     """Create a FAISS index for the given vector dimension."""
+#     index = faiss.IndexFlatL2(vector_dim)  # Using L2 distance for similarity
+#     return index
 
-def add_vectors_to_index(index, vectors):
-    """Add vectors to the FAISS index."""
-    if isinstance(vectors, np.ndarray) and vectors.dtype != np.float32:
-        vectors = vectors.astype(np.float32)
-    index.add(vectors)  # Add vectors to the index
-    print("Vectors added to index!")
+# def add_vectors_to_index(index, vectors):
+#     """Add vectors to the FAISS index."""
+#     if isinstance(vectors, np.ndarray) and vectors.dtype != np.float32:
+#         vectors = vectors.astype(np.float32)
+#     index.add(vectors)  # Add vectors to the index
+#     print("Vectors added to index!")
 
-def search_vectors(index, query_vector, k):
-    """Search the index for the k nearest vectors to the query."""
-    D, I = index.search(np.array([query_vector], dtype=np.float32), k)  # Perform the search
-    return D, I  # Distances and indices of the nearest vectors
+# def search_vectors(index, query_vector, k):
+#     """Search the index for the k nearest vectors to the query."""
+#     D, I = index.search(np.array([query_vector], dtype=np.float32), k)  # Perform the search
+#     return D, I  # Distances and indices of the nearest vectors
 
-def get_index(source, index):
-    query_vector = reloaded_retriever.embed_queries([source])[0]
-    return index.search(np.array([query_vector], dtype=np.float32), 1)[0][0]
+# def get_index(source, index):
+#     query_vector = reloaded_retriever.embed_queries([source])[0]
+#     return index.search(np.array([query_vector], dtype=np.float32), 1)[0][0]
 
-# Set up the FAISS index
-
-
+# # Set up the FAISS index
 
 
-# Adding vectors to the index
-# add_vectors_to_index(index, tmp)
 
-# Simulating a query vector (for example purposes)
-question = "what is the square root of 144?"
-query_vector = reloaded_retriever.embed_queries([question])[0]
 
-distances, indices = search_vectors(index, query_vector, 10)
-print("Nearest neighbors: ", indices)
-print("Distances: ", distances)
+# # Adding vectors to the index
+# # add_vectors_to_index(index, tmp)
 
-faiss.write_index(index, index_file)
+# # Simulating a query vector (for example purposes)
+# question = "what is the square root of 144?"
+# query_vector = reloaded_retriever.embed_queries([question])[0]
+
+# distances, indices = search_vectors(index, query_vector, 10)
+# print("Nearest neighbors: ", indices)
+# print("Distances: ", distances)
+
+# faiss.write_index(index, index_file)

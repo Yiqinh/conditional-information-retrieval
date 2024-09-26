@@ -11,9 +11,10 @@
 
 cd /pool001/spangher/alex/conditional-information-retrieval
 
+
 conda init
 source conda activate py39-retrieve-vllm
 
 export OMP_NUM_THREADS=50
 
-python3 interleaving/interleave.py
+python3 interleaving/interleave_mit.py

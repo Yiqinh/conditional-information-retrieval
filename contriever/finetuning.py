@@ -250,13 +250,16 @@ def main():
         if isinstance(module, torch.nn.Dropout):
             module.p = opt.dropout
 
-    if torch.distributed.is_initialized():
-        model = torch.nn.parallel.DistributedDataParallel(
-            model,
-            device_ids=[opt.local_rank],
-            output_device=opt.local_rank,
-            find_unused_parameters=False,
-        )
+    # if torch.distributed.is_initialized():
+    #     model = torch.nn.parallel.DistributedDataParallel(
+    #         model,
+    #         device_ids=[opt.local_rank],
+    #         output_device=opt.local_rank,
+    #         find_unused_parameters=False,
+    #     )
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model.to(device)
+
 
     logger.info("Start training")
     finetuning(opt, model, optimizer, scheduler, tokenizer, step)

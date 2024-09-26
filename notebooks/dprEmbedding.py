@@ -37,7 +37,7 @@ for article in tqdm(articles, desc="creating source txt folder"):
         source_text = source['Information']
         doc_vector = reloaded_retriever.embed_documents(convert_files_to_docs(file_paths=[Path(f"{data_dir}/{file_idx}.txt")]))
         with open(f"{data_dir}/{file_idx}.txt", 'w') as source_file:
-            index.add_with_ids(doc_vector, file_idx)
+            index.add_with_ids(doc_vector, file_idx.astype('int64'))
             source_file.write(source_text)
             mapping[file_idx] = source_text
         file_idx += 1

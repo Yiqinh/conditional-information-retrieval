@@ -13,7 +13,6 @@
 cd /pool001/spangher/alex/conditional-information-retrieval/contriever
 
 conda init
-module load conda
 source conda activate contriever
 
 export OMP_NUM_THREADS=50

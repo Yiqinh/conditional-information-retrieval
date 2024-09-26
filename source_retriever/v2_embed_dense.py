@@ -112,7 +112,7 @@ if __name__ == '__main__':
     all_sources = train_sources + test_sources
 
     dr = MyDenseRetriever(
-        index_name="v2-all-dense-index",
+        index_name="v2-ALL-dense-index",
         model=args.embedding_model,
         normalize=True,
         max_length=args.max_seq_length,
@@ -120,6 +120,7 @@ if __name__ == '__main__':
         device=args.device,
         use_ann=True,
     )
+
 
     print("currently indexing ALL sources. len:", len(all_sources))
     dr.index(

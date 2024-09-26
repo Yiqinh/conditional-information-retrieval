@@ -3,8 +3,6 @@ import sys
 import os
 import logging
 import argparse
-import numpy as np
-from sklearn.metrics import f1_score, precision_score, recall_score
 from tqdm.auto import tqdm
 
 """
@@ -23,10 +21,8 @@ if __name__ == "__main__":
     parser.add_argument('--hf_config', type=str, default=os.path.join(os.path.dirname(here), 'config.json'), help="The path to the json file containing HF_TOKEN")
     parser.add_argument("--index_name", type=str, help="Name of the index to load", default="v2-test-dense-index")
     parser.add_argument("--retriv_cache_dir", type=str, default=here, help="Path to the directory containing indices")
-    parser.add_argument("--huggingface_cache_dir", type=str, default='/project/jonmay_231/spangher/huggingface_cache', help="Path to the directory containing HuggingFace cache")
     parser.add_argument("--iterations", type=int, help="Number of iterations to augment query and retrieve sources", default=10)
     parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3-70B-Instruct")
-
     args = parser.parse_args()
 
     #set huggingface token
@@ -34,9 +30,6 @@ if __name__ == "__main__":
     os.environ['HF_TOKEN'] = config_data["HF_TOKEN"]
 
     #set the proper huggingface cache directory
-    hf_cache_dir = args.huggingface_cache_dir
-    os.environ['HF_HOME'] = hf_cache_dir
-    logging.info(f"Setting environment variables: HF_HOME={hf_cache_dir}")
     os.environ['VLLM_WORKER_MULTIPROC_METHOD'] = 'spawn'
 
     # BEGIN INTERLEAVE EXPERIMENT SETUP
@@ -192,13 +185,11 @@ if __name__ == "__main__":
             one_article['dr_sources'] = dr_result
 
             url_to_searched_docs[url].extend(dr_result)
-
             interleave_result.append(one_article)
         
         print(f"DR search for round {i} complete")
         #write to json file with RESULTS from iteration i
-        fname = os.path.join(here, f"iter_{i}_search_results_2.json")
+        fname = os.path.join(here, f"iter_{i}_search_results.json")
         with open(fname, 'w') as json_file:
             json.dump(interleave_result, json_file, indent=4)
         
-

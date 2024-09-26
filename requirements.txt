@@ -1,12 +1,12 @@
 transformers
 torch
 torchvision
-datasets
+#datasets
 pandas
 numpy
 huggingface_hub
-vllm==0.5.1
+#vllm==0.5.1
 scikit-learn
 
 tqdm
-retriv
+#retriv

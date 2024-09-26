@@ -23,6 +23,9 @@ with open(dev_filename, 'r') as f:
 # Initialize document store and retriever
 document_store = FAISSDocumentStore(sql_url="sqlite:///", faiss_index_factory_str="Flat")
 reloaded_retriever = DensePassageRetriever.load(load_dir=save_dir, document_store=document_store)
+dim = 768  # Dimension of the vectors
+index = faiss.IndexFlatL2(dim)
+
 
 # Write documents to the document store
 print("creating source txt folder...")
@@ -31,20 +34,22 @@ mapping = {}
 for article in tqdm(articles, desc="creating source txt folder"):
     for source in article['sources']:
         source_text = source['Information']
+        doc_vector = reloaded_retriever.embed_documents(convert_files_to_docs(file_paths=f"{data_dir}/{file_idx}.txt"))
         with open(f"{data_dir}/{file_idx}.txt", 'w') as source_file:
+            index.add_with_ids(doc_vector, file_idx)
             source_file.write(source_text)
             mapping[file_idx] = source_text
         file_idx += 1
 
 
 
-print("converting files to docs...")
-docs = convert_files_to_docs(dir_path=data_dir)
-print("writing to document store...")
-document_store.write_documents(docs)
+# print("converting files to docs...")
+# docs = convert_files_to_docs(dir_path=data_dir)
+# print("writing to document store...")
+# document_store.write_documents(docs)
 
 # Embed documents
-tmp = reloaded_retriever.embed_documents(docs)
+# tmp = reloaded_retriever.embed_documents(docs)
 
 def create_index(vector_dim):
     """Create a FAISS index for the given vector dimension."""
@@ -68,12 +73,12 @@ def get_index(source, index):
     return index.search(np.array([query_vector], dtype=np.float32), 1)[0][0]
 
 # Set up the FAISS index
-dim = 768  # Dimension of the vectors
-index = create_index(dim)
+
+
 
 
 # Adding vectors to the index
-add_vectors_to_index(index, tmp)
+# add_vectors_to_index(index, tmp)
 
 # Simulating a query vector (for example purposes)
 question = "what is the square root of 144?"

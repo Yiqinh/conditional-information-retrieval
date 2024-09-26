@@ -229,7 +229,13 @@ def main():
 
     step = 0
 
-    retriever, tokenizer, retriever_model_id = contriever.load_retriever(opt.model_path, opt.pooling, opt.random_init)
+    # retriever, tokenizer, retriever_model_id = contriever.load_retriever(opt.model_path, opt.pooling, opt.random_init)
+    from transformers import AutoTokenizer, AutoModel
+    retriever_model_id = "facebook/contriever"
+
+# Load the tokenizer and retriever model
+    tokenizer = AutoTokenizer.from_pretrained(retriever_model_id)
+    retriever = AutoModel.from_pretrained(retriever_model_id)
     opt.retriever_model_id = retriever_model_id
     model = inbatch.InBatch(opt, retriever, tokenizer)
 

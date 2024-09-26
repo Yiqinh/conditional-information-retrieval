@@ -10,4 +10,4 @@
 source /home1/spangher/.bashrc
 source activate hay
 cd /project/jonmay_231/spangher/Projects/conditional-information-retrieval/notebooks
-python dprEval.py
+python dprEmbedding.py

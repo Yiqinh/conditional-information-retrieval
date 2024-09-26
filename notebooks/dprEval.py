@@ -1,89 +1,129 @@
 import os
 os.environ['OPENBLAS_NUM_THREADS'] = '1'
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
-from haystack.nodes import DensePassageRetriever, EmbeddingRetriever
-from haystack.document_stores import InMemoryDocumentStore, FAISSDocumentStore
-from haystack.utils import convert_files_to_docs
-from tqdm import tqdm
-import pdb
 import json
+import numpy as np
+import faiss
+from tqdm import tqdm
+from haystack.nodes import DensePassageRetriever
+from haystack.document_stores import FAISSDocumentStore
+from haystack.utils import convert_files_to_docs
 
 
 save_dir = "../trained_model"
 data_dir = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/docs"
 dev_filename = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/source_summaries/v2_info_parsed/combined_test_prompt1_v2.json"
-os.environ['KMP_DUPLICATE_LIB_OK']='True'
-
-
+index_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test.index"
+# Load development data
 with open(dev_filename, 'r') as f:
     articles = json.load(f)
 
-# document_store = InMemoryDocumentStore()
-document_store = FAISSDocumentStore(sql_url="sqlite:///", faiss_index_factory_str="Flat")
-file_idx = 0
-for article in tqdm(articles, desc="creating source txt folder"):
-    for source in article['sources']:
-        source_text = source['Information']
-        with open(f"{data_dir}/{file_idx}.txt", 'w') as source_file:
-            source_file.write(source_text)
-        file_idx += 1
+# Initialize document store and retriever
+# document_store = FAISSDocumentStore(sql_url="sqlite:///", faiss_index_factory_str="Flat")
+reloaded_retriever = DensePassageRetriever.load(load_dir=save_dir, document_store=None)
 
-print("converting files to docs...")
-docs = convert_files_to_docs(dir_path=data_dir)
-print("writing to document store...")
-document_store.write_documents(docs)
+# Write documents to the document store
+# print("creating source txt folder...")
+# file_idx = 0
+# for article in tqdm(articles, desc="creating source txt folder"):
+#     for source in article['sources']:
+#         source_text = source['Information']
+#         with open(f"{data_dir}/{file_idx}.txt", 'w') as source_file:
+#             source_file.write(source_text)
+#         file_idx += 1
 
-retriever = EmbeddingRetriever(
-    document_store=document_store, embedding_model=save_dir
-)
-print("updating embeddings...")
-document_store.update_embeddings(retriever)
+# print("converting files to docs...")
+# docs = convert_files_to_docs(dir_path=data_dir)
+# print("writing to document store...")
+# document_store.write_documents(docs)
 
-print("creating index mapping...")
-documents = document_store.get_all_documents()
+# # Embed documents
+# tmp = reloaded_retriever.embed_documents(docs)
 
-mapping = {}
-for document in documents:
-    mapping[document.content] = document.id
-print(mapping)
+def create_index(vector_dim):
+    """Create a FAISS index for the given vector dimension."""
+    index = faiss.IndexFlatL2(vector_dim)  # Using L2 distance for similarity
+    return index
 
-with open(f"/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/index.json", 'w') as json_file:
-    json.dump(mapping, json_file)
+def add_vectors_to_index(index, vectors):
+    """Add vectors to the FAISS index."""
+    if isinstance(vectors, np.ndarray) and vectors.dtype != np.float32:
+        vectors = vectors.astype(np.float32)
+    index.add(vectors)  # Add vectors to the index
+    print("Vectors added to index!")
+
+def search_vectors(index, query_vector, k):
+    """Search the index for the k nearest vectors to the query."""
+    D, I = index.search(np.array([query_vector], dtype=np.float32), k)  # Perform the search
+    return D, I  # Distances and indices of the nearest vectors
+
+def get_index(source, index):
+    if not source or source == "":
+        return 0
+    query_vector = reloaded_retriever.embed_queries([source])[0]
+    return index.search(np.array([query_vector], dtype=np.float32), 1)[0][0]
+
+# Set up the FAISS index
+# dim = 768  # Dimension of the vectors
+# index = create_index(dim)
 
 
-reloaded_retriever = DensePassageRetriever.load(load_dir=save_dir, document_store=document_store)
-print("finished loading the retriever")
+# # Adding vectors to the index
+# add_vectors_to_index(index, tmp)
 
-results = []
-for article in tqdm(articles, desc="generating retrieval results"):
-    question = article['query']
-    if question == "":
-        print("This question is empty")
-        continue
-    topk = reloaded_retriever.retrieve(question, top_k=10)
-    # dr_result = []
+# # Simulating a query vector (for example purposes)
+# question = "what is the square root of 144?"
+# query_vector = reloaded_retriever.embed_queries([question])[0]
+
+# distances, indices = search_vectors(index, query_vector, 10)
+# print("Nearest neighbors: ", indices)
+# print("Distances: ", distances)
+
+index = faiss.read_index(index_file)
+
+
+def process_batch(batch):
+    batch_results = []
+    questions = [article['query'] for article in batch if article['query'] != ""]
+    query_vectors = reloaded_retriever.embed_queries(questions)
+    distances, dr_indices = [], []
+    for query_vector in query_vectors:
+        i = search_vectors(index, query_vector, 10)[1]
+        # distances.append(d)
+        dr_indices.append(i[0].tolist())
+
+    gt_indices = []
+    for article in batch:
+        curr_indices = []
+        for source in article['sources']:
+            if source['Information'] == "" or not source['Information']:
+                continue
+            source_vector = reloaded_retriever.embed_queries([source['Information']])[0]
+            sourceid = search_vectors(index, source_vector, 1)[1]
+            curr_indices.append(sourceid[0][0])
+        gt_indices.append(curr_indices)
     
-    # for k in topk:
-    #     try:
-    #         url, name, text = k.content.split("###")
-    #     except Exception as e:
-    #         print(k.content)
+    for question, gt, dr in zip(questions, gt_indices, dr_indices):
+        one_article = {}
+        one_article['query'] = question
+        one_article['sources'] = gt
+        one_article['dr_sources'] = dr
+        batch_results.append(one_article)
+    return batch_results
 
-    #     id = url + "#" + name
-    #     curr_k = {}
-    #     curr_k['id'] = id
-    #     curr_k['text'] = text
-    #     dr_result.append(curr_k)
 
-    one_article = {}
-    one_article['url'] = article['url']
-    one_article['sources'] = article['sources']
-    one_article['dr_sources'] = [k.content for k in topk]
-    one_article['query'] = article['query']
+batch_size = 10
+results = []
 
-    results.append(one_article)
+for i in tqdm(range(0, len(articles), batch_size), desc="Generating retrieval results in batches"):
+    batch = articles[i:min(i + batch_size, len(articles))]
+    results.extend(process_batch(batch))
+    # question = article['query']
+    # query_vector = reloaded_retriever.embed_queries(questions)[0]
 
-   
+
+    
 with open(f"/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result.json", 'w') as json_file:
     json.dump(results, json_file)
 

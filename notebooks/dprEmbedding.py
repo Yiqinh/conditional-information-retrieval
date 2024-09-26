@@ -58,6 +58,10 @@ def search_vectors(index, query_vector, k):
     D, I = index.search(np.array([query_vector], dtype=np.float32), k)  # Perform the search
     return D, I  # Distances and indices of the nearest vectors
 
+def get_index(source, index):
+    query_vector = reloaded_retriever.embed_queries([source])[0]
+    return index.search(np.array([query_vector], dtype=np.float32), 1)[0][0]
+
 # Set up the FAISS index
 dim = 768  # Dimension of the vectors
 index = create_index(dim)
@@ -70,30 +74,9 @@ add_vectors_to_index(index, tmp)
 question = "what is the square root of 144?"
 query_vector = reloaded_retriever.embed_queries([question])[0]
 
-# Searching the index
 distances, indices = search_vectors(index, query_vector, 10)
 print("Nearest neighbors: ", indices)
 print("Distances: ", distances)
 
 faiss.write_index(index, index_file)
-
-results = []
-
-for article in tqdm(articles, desc="generating retrieval results"):
-    question = article['query']
-    if question == "":
-        print("This question is empty")
-        continue
-
-    distances, indices = search_vectors(index, query_vector, 10)
-    one_article = {}
-    one_article['url'] = article['url']
-    one_article['sources'] = article['sources']
-    one_article['dr_sources'] = indices.tolist()
-    one_article['query'] = article['query']
-
-    results.append(one_article)
-    
-with open(f"/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result.json", 'w') as json_file:
-    json.dump(results, json_file)
 

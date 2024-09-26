@@ -50,7 +50,7 @@ faiss.write_index(index, index_file)
 with open(mapping_file, 'w') as f:
     json.dump(mapping, f, indent=4)
 
-
+print("DONE")
 
 
 # print("converting files to docs...")

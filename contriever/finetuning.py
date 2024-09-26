@@ -14,15 +14,11 @@ import json
 import numpy as np
 import torch.distributed as dist
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
+import argparse
 
 from src.options import Options
 
-sys.path.append(os.path.join(os.path.abspath(__file__), 'src/slurm.py'))
-from src import data, dist_utils, utils, contriever, finetuning_data, inbatch
-from src import slurm
-
-# from src.slurm import sig_handler, term_handler, init_signal_handler, init_distributed_mode
-
+from src import data, slurm, dist_utils, utils, contriever, finetuning_data, inbatch
 
 import train
 import socket
@@ -32,6 +28,8 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
 logger = logging.getLogger(__name__)
+
+here = os.path.dirname(os.path.abspath(__file__))
 
 
 
@@ -231,7 +229,13 @@ def main():
 
     step = 0
 
-    retriever, tokenizer, retriever_model_id = contriever.load_retriever(opt.model_path, opt.pooling, opt.random_init)
+    # retriever, tokenizer, retriever_model_id = contriever.load_retriever(opt.model_path, opt.pooling, opt.random_init)
+    from transformers import AutoTokenizer, AutoModel
+    retriever_model_id = "facebook/contriever"
+
+# Load the tokenizer and retriever model
+    tokenizer = AutoTokenizer.from_pretrained(retriever_model_id)
+    retriever = AutoModel.from_pretrained(retriever_model_id)
     opt.retriever_model_id = retriever_model_id
     model = inbatch.InBatch(opt, retriever, tokenizer)
 
@@ -246,17 +250,58 @@ def main():
         if isinstance(module, torch.nn.Dropout):
             module.p = opt.dropout
 
-    if torch.distributed.is_initialized():
-        model = torch.nn.parallel.DistributedDataParallel(
-            model,
-            device_ids=[opt.local_rank],
-            output_device=opt.local_rank,
-            find_unused_parameters=False,
-        )
+    # if torch.distributed.is_initialized():
+    #     model = torch.nn.parallel.DistributedDataParallel(
+    #         model,
+    #         device_ids=[opt.local_rank],
+    #         output_device=opt.local_rank,
+    #         find_unused_parameters=False,
+    #     )
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model.to(device)
+
 
     logger.info("Start training")
     finetuning(opt, model, optimizer, scheduler, tokenizer, step)
 
 
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--hf_config',
+        type=str,
+        default="/pool001/spangher/alex/conditional-information-retrieval/config.json",
+        help="The path to the json file containing HF_TOKEN"
+    )
+    parser.add_argument(
+        "--index_name",
+        type=str,
+        help="Name of the index to load",
+        default="v2-test-dense-index",
+    )
+    # defaults and configs
+    parser.add_argument(
+        "--retriv_cache_dir",
+        type=str,
+        default=here,
+        help="Path to the directory containing indices"
+    )
+    # parser.add_argument(
+    #     "--huggingface_cache_dir",
+    #     type=str,
+    #     default='/project/jonmay_231/spangher/huggingface_cache',
+    #     help="Path to the directory containing HuggingFace cache"
+    # )
+    args = parser.parse_args()
+
+    config_data = json.load(open(args.hf_config))
+    os.environ['HF_TOKEN'] = config_data["HF_TOKEN"]
+
+    #set the proper huggingface cache directory
+    # hf_cache_dir = args.huggingface_cache_dir
+    # os.environ['HF_HOME'] = hf_cache_dir
+    # logging.info(f"Setting environment variables: HF_HOME={hf_cache_dir}")
+
+
     main()

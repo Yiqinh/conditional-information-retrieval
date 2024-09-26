@@ -32,7 +32,6 @@ if __name__ == "__main__":
     os.environ['HF_TOKEN'] = config_data["HF_TOKEN"]
 
     #set the proper huggingface cache directory
-    hf_cache_dir = args.huggingface_cache_dir
     os.environ['VLLM_WORKER_MULTIPROC_METHOD'] = 'spawn'
 
     # BEGIN INTERLEAVE EXPERIMENT SETUP

@@ -17,7 +17,7 @@ dev_filename = "/project/jonmay_231/spangher/Projects/conditional-information-re
 index_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test.index"
 # Load development data
 with open(dev_filename, 'r') as f:
-    articles = json.load(f)
+    articles = json.load(f)[:10]
 
 # Initialize document store and retriever
 # document_store = FAISSDocumentStore(sql_url="sqlite:///", faiss_index_factory_str="Flat")
@@ -119,11 +119,11 @@ results = []
 for i in tqdm(range(0, len(articles), batch_size), desc="Generating retrieval results in batches"):
     batch = articles[i:min(i + batch_size, len(articles))]
     results.extend(process_batch(batch))
-    # question = article['query']
-    # query_vector = reloaded_retriever.embed_queries(questions)[0]
 
 
-    
+print(results)
 with open(f"/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result.json", 'w') as json_file:
     json.dump(results, json_file)
+
+print("DONE!!!")
 

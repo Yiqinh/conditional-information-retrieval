@@ -109,8 +109,10 @@ if __name__ == '__main__':
                 train_sources.append(formatted_source)
 
     # set up index
-    test_dr = MyDenseRetriever(
-        index_name="v2-test-dense-index",
+    all_sources = train_sources + test_sources
+
+    dr = MyDenseRetriever(
+        index_name="v2-all-dense-index",
         model=args.embedding_model,
         normalize=True,
         max_length=args.max_seq_length,
@@ -119,26 +121,9 @@ if __name__ == '__main__':
         use_ann=True,
     )
 
-    train_dr = MyDenseRetriever(
-        index_name="v2-train-dense-index",
-        model=args.embedding_model,
-        normalize=True,
-        max_length=args.max_seq_length,
-        embedding_dim=args.embedding_dim,
-        device=args.device,
-        use_ann=True,
-    )
-
-    print("currently indexing test sources. len:", len(test_sources))
-    test_dr.index(
-        collection=test_sources,  # File kind is automatically inferred
-        batch_size=args.batch_size_to_index,  # Default value
-        show_progress=True,  # Default value
-    )
-
-    print("currently indexing train sources. len:", len(train_sources))
-    train_dr.index(
-        collection=train_sources,  # File kind is automatically inferred
+    print("currently indexing ALL sources. len:", len(all_sources))
+    dr.index(
+        collection=all_sources,  # File kind is automatically inferred
         batch_size=args.batch_size_to_index,  # Default value
         show_progress=True,  # Default value
     )

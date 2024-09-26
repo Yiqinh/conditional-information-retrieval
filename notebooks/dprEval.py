@@ -91,7 +91,9 @@ def process_batch(batch):
     for query_vector in query_vectors:
         i = search_vectors(index, query_vector, 10)[1]
         # distances.append(d)
-        dr_indices.append(i[0].tolist())
+        curr_indices = i[0].tolist()
+        curr_indices = [int(i) for i in curr_indices]
+        dr_indices.append(curr_indices)
 
     gt_indices = []
     for article in batch:
@@ -102,7 +104,9 @@ def process_batch(batch):
             source_vector = reloaded_retriever.embed_queries([source['Information']])[0]
             sourceid = search_vectors(index, source_vector, 1)[1]
             curr_indices.append(sourceid[0][0])
+        curr_indices = [int(i) for i in curr_indices]
         gt_indices.append(curr_indices)
+    
     
     for question, gt, dr in zip(questions, gt_indices, dr_indices):
         one_article = {}
@@ -119,11 +123,11 @@ results = []
 for i in tqdm(range(0, len(articles), batch_size), desc="Generating retrieval results in batches"):
     batch = articles[i:min(i + batch_size, len(articles))]
     results.extend(process_batch(batch))
-    # question = article['query']
-    # query_vector = reloaded_retriever.embed_queries(questions)[0]
 
 
-    
+print(results)
 with open(f"/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result.json", 'w') as json_file:
     json.dump(results, json_file)
+
+print("DONE!!!")
 

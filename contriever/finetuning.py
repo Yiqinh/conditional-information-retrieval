@@ -14,6 +14,7 @@ import json
 import numpy as np
 import torch.distributed as dist
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
+import argparse
 
 from src.options import Options
 
@@ -32,6 +33,8 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
 logger = logging.getLogger(__name__)
+
+here = os.path.dirname(os.path.abspath(__file__))
 
 
 
@@ -259,4 +262,42 @@ def main():
 
 
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--hf_config',
+        type=str,
+        default="/pool001/spangher/alex/conditional-information-retrieval/config.json",
+        help="The path to the json file containing HF_TOKEN"
+    )
+    parser.add_argument(
+        "--index_name",
+        type=str,
+        help="Name of the index to load",
+        default="v2-test-dense-index",
+    )
+    # defaults and configs
+    parser.add_argument(
+        "--retriv_cache_dir",
+        type=str,
+        default=here,
+        help="Path to the directory containing indices"
+    )
+    # parser.add_argument(
+    #     "--huggingface_cache_dir",
+    #     type=str,
+    #     default='/project/jonmay_231/spangher/huggingface_cache',
+    #     help="Path to the directory containing HuggingFace cache"
+    # )
+    args = parser.parse_args()
+
+    config_data = json.load(open(args.hf_config))
+    os.environ['HF_TOKEN'] = config_data["HF_TOKEN"]
+
+    #set the proper huggingface cache directory
+    # hf_cache_dir = args.huggingface_cache_dir
+    # os.environ['HF_HOME'] = hf_cache_dir
+    # logging.info(f"Setting environment variables: HF_HOME={hf_cache_dir}")
+
+
     main()

@@ -4,10 +4,13 @@
 #SBATCH --time=8:00:00
 #SBATCH --gres=gpu:4
 #SBATCH --cpus-per-task=50
-#SBATCH --mem=400G
+#SBATCH --mem=200G
 #SBATCH --partition=sched_mit_psfc_gpu_r8
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=yiqinhuang@berkeley.edu
+
+start_idx=$1
+end_idx=$2
 
 cd /pool001/spangher/alex/conditional-information-retrieval
 
@@ -17,4 +20,4 @@ source conda activate py39-retrieve-vllm
 
 export OMP_NUM_THREADS=50
 
-python3 interleaving/interleave_mit.py
+python3 interleaving/interleave_split.py --start_idx=${start_idx} --end_idx=${end_idx}

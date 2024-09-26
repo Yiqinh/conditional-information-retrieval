@@ -17,13 +17,13 @@ class Options:
         self.parser.add_argument(
             "--train_data",
             nargs="+",
-            default=["/project/jonmay_231/spangher/Projects/conditional-information-retrieval/contriever/ft_contriever_combined_train_prompt1_v2.json"],
+            default=["/pool001/spangher/alex/conditional-information-retrieval/source_summaries/v2_info_parsed/combined_train_prompt1_v2.json"],
             help="Data used for training, passed as a list of directories splitted into tensor files.",
         )
         self.parser.add_argument(
             "--eval_data",
             nargs="+",
-            default=["/project/jonmay_231/spangher/Projects/conditional-information-retrieval/contriever/ft_contriever_combined_test_prompt1_v2.json"],
+            default=["/pool001/spangher/alex/conditional-information-retrieval/source_summaries/v2_info_parsed/combined_test_prompt1_v2.json"],
             help="Data used for evaluation during finetuning, this option is not used during contrastive pre-training.",
         )
         self.parser.add_argument(

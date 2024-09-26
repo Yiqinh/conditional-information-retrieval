@@ -79,6 +79,9 @@ def get_index(source, index):
 # distances, indices = search_vectors(index, query_vector, 10)
 # print("Nearest neighbors: ", indices)
 # print("Distances: ", distances)
+mapping_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/mapping.json"
+with open(mapping_file, 'r') as f:
+    mapping = json.load(f)
 
 index = faiss.read_index(index_file)
 
@@ -93,22 +96,24 @@ def process_batch(batch):
         # distances.append(d)
         curr_indices = i[0].tolist()
         curr_indices = [int(i) for i in curr_indices]
-        dr_indices.append(curr_indices)
+        dr_indices.append([mapping[i] for i in curr_indices])
 
-    gt_indices = []
+    gt_sources = []
     for article in batch:
-        curr_indices = []
+        curr_sources = []
         for source in article['sources']:
             if source['Information'] == "" or not source['Information']:
                 continue
-            source_vector = reloaded_retriever.embed_queries([source['Information']])[0]
-            sourceid = search_vectors(index, source_vector, 1)[1]
-            curr_indices.append(sourceid[0][0])
-        curr_indices = [int(i) for i in curr_indices]
-        gt_indices.append(curr_indices)
+            curr_sources.append(source['Information'])
+        gt_sources.append(curr_sources)
+        #     source_vector = reloaded_retriever.embed_queries([source['Information']])[0]
+        #     sourceid = search_vectors(index, source_vector, 1)[1]
+        #     curr_indices.append(sourceid[0][0])
+        # curr_indices = [int(i) for i in curr_indices]
+        # gt_indices.append(curr_indices)
     
     
-    for question, gt, dr in zip(questions, gt_indices, dr_indices):
+    for question, gt, dr in zip(questions, gt_sources, dr_indices):
         one_article = {}
         one_article['query'] = question
         one_article['sources'] = gt

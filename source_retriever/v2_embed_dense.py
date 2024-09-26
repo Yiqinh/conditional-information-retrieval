@@ -121,7 +121,6 @@ if __name__ == '__main__':
         use_ann=True,
     )
 
-
     print("currently indexing ALL sources. len:", len(all_sources))
     dr.index(
         collection=all_sources,  # File kind is automatically inferred

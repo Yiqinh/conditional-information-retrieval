@@ -1,7 +1,7 @@
 import os
 os.environ['OPENBLAS_NUM_THREADS'] = '1'
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
-os.environ['OMP_NUM_THREADS'] = 1
+os.environ['OMP_NUM_THREADS'] = '1'
 
 import json
 import numpy as np

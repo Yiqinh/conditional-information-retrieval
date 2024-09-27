@@ -81,7 +81,7 @@ def get_index(source, index):
 # print("Distances: ", distances)
 mapping_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/mapping.json"
 with open(mapping_file, 'r') as f:
-    mapping = json.load(f)
+    mapping = json.load(f)[:10]
 
 index = faiss.read_index(index_file)
 

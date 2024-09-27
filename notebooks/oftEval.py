@@ -17,7 +17,7 @@ dev_filename = "/project/jonmay_231/spangher/Projects/conditional-information-re
 index_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_oft.index"
 # Load development data
 with open(dev_filename, 'r') as f:
-    articles = json.load(f)[:10]
+    articles = json.load(f)
 
 reloaded_retriever = DensePassageRetriever(
     document_store=None,

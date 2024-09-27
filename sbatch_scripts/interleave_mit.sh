@@ -6,8 +6,6 @@
 #SBATCH --cpus-per-task=50
 #SBATCH --mem=200G
 #SBATCH --partition=sched_mit_psfc_gpu_r8
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=yiqinhuang@berkeley.edu
 
 start_idx=$1
 end_idx=$2

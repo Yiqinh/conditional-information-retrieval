@@ -35,11 +35,12 @@ mapping = {}
 for article in tqdm(articles, desc="creating source txt folder"):
     for source in article['sources']:
         source_text = source['Information']
-        doc_vector = reloaded_retriever.embed_documents(convert_files_to_docs(file_paths=[Path(f"{data_dir}/{file_idx}.txt")]))
-        index.add_with_ids(doc_vector, file_idx)
-        mapping[file_idx] = source_text
+        
         with open(f"{data_dir}/{file_idx}.txt", 'w') as source_file:
             source_file.write(source_text)
+            doc_vector = reloaded_retriever.embed_documents(convert_files_to_docs(file_paths=[Path(f"{data_dir}/{file_idx}.txt")]))
+            index.add_with_ids(doc_vector, file_idx)
+            mapping[file_idx] = source_text
             
         file_idx += 1
 

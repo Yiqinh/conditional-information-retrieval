@@ -7,9 +7,6 @@ from tqdm import tqdm
 import numpy as np
 
 
-save_dir = "../trained_model"
-index_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test.index"
-
 
 def get_scores(path: str):
         
@@ -57,6 +54,7 @@ def get_scores(path: str):
 
 
 get_scores("/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result.json")
+get_scores("/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result_oft.json")
 
 
 

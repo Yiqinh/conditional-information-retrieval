@@ -12,7 +12,6 @@ from haystack.document_stores import FAISSDocumentStore
 from haystack.utils import convert_files_to_docs
 
 
-save_dir = "../trained_model"
 data_dir = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/docs_oft"
 dev_filename = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/source_summaries/v2_info_parsed/combined_test_prompt1_v2.json"
 index_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_oft.index"

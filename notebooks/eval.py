@@ -38,6 +38,7 @@ def get_scores(path: str):
             
             true_pos = set.intersection(y_pred, y_true)
             n = len(true_pos)
+            print(n, len(y_true), len(y_pred))
 
             recall = n / len(y_true)
             precision = n / len(y_pred)

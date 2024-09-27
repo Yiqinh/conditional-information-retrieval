@@ -14,10 +14,10 @@ end_idx=$2
 
 cd /pool001/spangher/alex/conditional-information-retrieval
 
-
 conda init
 source conda activate py39-retrieve-vllm
 
 export OMP_NUM_THREADS=50
+export VLLM_WORKER_MULTIPROC_METHOD = spawn
 
 python3 interleaving/interleave_split.py --start_idx=${start_idx} --end_idx=${end_idx}

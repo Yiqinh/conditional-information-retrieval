@@ -23,6 +23,7 @@ with open(dev_filename, 'r') as f:
 
 # Initialize document store and retriever
 document_store = FAISSDocumentStore(sql_url="sqlite:///", faiss_index_factory_str="Flat")
+print("loading model...")
 reloaded_retriever = DensePassageRetriever(
     document_store=document_store,
     query_embedding_model="facebook/dpr-question_encoder-single-nq-base",
@@ -41,11 +42,12 @@ mapping = {}
 for article in tqdm(articles, desc="creating source txt folder"):
     for source in article['sources']:
         source_text = source['Information']
-        doc_vector = reloaded_retriever.embed_documents(convert_files_to_docs(file_paths=[Path(f"{data_dir}/{file_idx}.txt")]))
-        index.add_with_ids(doc_vector, file_idx)
-        mapping[file_idx] = source_text
+        
         with open(f"{data_dir}/{file_idx}.txt", 'w') as source_file:
             source_file.write(source_text)
+            doc_vector = reloaded_retriever.embed_documents(convert_files_to_docs(file_paths=[Path(f"{data_dir}/{file_idx}.txt")]))
+            index.add_with_ids(doc_vector, file_idx)
+            mapping[file_idx] = source_text
             
         file_idx += 1
 

@@ -56,4 +56,61 @@ def get_scores(path: str):
 
 
 
-get_scores("/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result.json")
+get_scores("/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result_10.json")
+
+
+
+
+
+# import faiss
+# import numpy as np
+# from sentence_transformers import SentenceTransformer
+# # Initialize a pre-trained sentence transformer model for embedding
+# model = SentenceTransformer('all-MiniLM-L6-v2')
+# # Example dictionary of documents
+# documents = {
+#     "doc1": "Text of the first document.",
+#     "doc2": "Text of the second document.",
+#     "doc3": "Text of the third document."
+# }
+# # Convert documents to vectors
+# doc_ids = list(documents.keys())
+# doc_texts = list(documents.values())
+# doc_vectors = model.encode(doc_texts)
+# # Dimension of the vectors
+# d = doc_vectors.shape[1]
+# # Creating a FAISS index
+# index = faiss.IndexFlatL2(d)  # Using L2 distance for similarity
+# index.add(doc_vectors)
+# # Query to ground truth mapping
+# query_ground_truth = {
+#     "relevant information about the second document": ["doc2", "doc3"]
+# }
+# # Function to evaluate retrieval
+# def evaluate_retrieval(query, ground_truth_ids, k=2):
+#     query_vector = model.encode([query])
+#     distances, indices = index.search(query_vector, k)
+#     retrieved_ids = [doc_ids[idx] for idx in indices[0]]
+#     precision = len(set(retrieved_ids).intersection(ground_truth_ids)) / len(retrieved_ids)
+#     recall = len(set(retrieved_ids).intersection(ground_truth_ids)) / len(ground_truth_ids)
+#     f1_score = 2 * (precision * recall) / (precision + recall) if (precision + recall) != 0 else 0
+#     return {
+#         "query": query,
+#         "retrieved_ids": retrieved_ids,
+#         "precision": precision,
+#         "recall": recall,
+#         "f1_score": f1_score
+#     }
+# # Evaluate each query
+# results = []
+# for query, gt_ids in query_ground_truth.items():
+#     result = evaluate_retrieval(query, gt_ids, k=2)
+#     results.append(result)
+# # Print results
+# for result in results:
+#     print("Query:", result["query"])
+#     print("Retrieved IDs:", result["retrieved_ids"])
+#     print("Precision:", result["precision"])
+#     print("Recall:", result["recall"])
+#     print("F1 Score:", result["f1_score"])
+#     print("-" * 30)

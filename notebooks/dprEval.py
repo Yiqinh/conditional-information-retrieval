@@ -18,7 +18,7 @@ dev_filename = "/project/jonmay_231/spangher/Projects/conditional-information-re
 index_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test.index"
 # Load development data
 with open(dev_filename, 'r') as f:
-    articles = json.load(f)
+    articles = json.load(f)[:10]
 
 # Initialize document store and retriever
 # document_store = FAISSDocumentStore(sql_url="sqlite:///", faiss_index_factory_str="Flat")
@@ -84,6 +84,8 @@ mapping_file = "/project/jonmay_231/spangher/Projects/conditional-information-re
 with open(mapping_file, 'r') as f:
     mapping = json.load(f)
 
+reverse_mapping = {v: k for v, k in mapping.items()}
+
 index = faiss.read_index(index_file)
 
 
@@ -94,10 +96,10 @@ def process_batch(batch):
     distances, dr_indices = [], []
     for query_vector in query_vectors:
         i = search_vectors(index, query_vector, 10)[1]
-        # distances.append(d)
         curr_indices = i[0].tolist()
         curr_indices = [int(i) for i in curr_indices]
-        dr_indices.append([mapping[str(i)] for i in curr_indices])
+        # dr_indices.append([mapping[str(i)] for i in curr_indices])
+        dr_indices.append(curr_indices)
 
     gt_sources = []
     for article in batch:
@@ -105,7 +107,8 @@ def process_batch(batch):
         for source in article['sources']:
             if source['Information'] == "" or not source['Information']:
                 continue
-            curr_sources.append(source['Information'])
+            # curr_sources.append(source['Information'])
+            curr_sources.append(reverse_mapping[source['Information']])
         gt_sources.append(curr_sources)
         #     source_vector = reloaded_retriever.embed_queries([source['Information']])[0]
         #     sourceid = search_vectors(index, source_vector, 1)[1]
@@ -132,7 +135,7 @@ for i in tqdm(range(0, len(articles), batch_size), desc="Generating retrieval re
 
 
 print(results)
-with open(f"/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result.json", 'w') as json_file:
+with open(f"/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result_10.json", 'w') as json_file:
     json.dump(results, json_file)
 
 print("DONE!!!")

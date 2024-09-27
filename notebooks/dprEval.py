@@ -17,7 +17,7 @@ dev_filename = "/project/jonmay_231/spangher/Projects/conditional-information-re
 index_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test.index"
 # Load development data
 with open(dev_filename, 'r') as f:
-    articles = json.load(f)
+    articles = json.load(f)[:10]
 
 # Initialize document store and retriever
 # document_store = FAISSDocumentStore(sql_url="sqlite:///", faiss_index_factory_str="Flat")
@@ -81,7 +81,7 @@ def get_index(source, index):
 # print("Distances: ", distances)
 mapping_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/mapping.json"
 with open(mapping_file, 'r') as f:
-    mapping = json.load(f)[:10]
+    mapping = json.load(f)
 
 index = faiss.read_index(index_file)
 

@@ -84,7 +84,7 @@ mapping_file = "/project/jonmay_231/spangher/Projects/conditional-information-re
 with open(mapping_file, 'r') as f:
     mapping = json.load(f)
 
-reverse_mapping = {v: k for v, k in mapping.items()}
+reverse_mapping = {v: k for k, v in mapping.items()}
 
 index = faiss.read_index(index_file)
 

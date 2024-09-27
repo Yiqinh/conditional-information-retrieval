@@ -8,6 +8,6 @@ start_idx=$1
 end_idx=$2
 step=$3
 
-for ((i=start_idx; i<end_idx; i+=${step})); do
-    sbatch interleave_mit.sh ${i} $((i + step))
+for ((i=$start_idx; i<$end_idx; i+=$step)); do
+    sbatch interleave_mit.sh $i $((i + step))
 done

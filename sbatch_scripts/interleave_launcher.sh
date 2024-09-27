@@ -4,9 +4,10 @@
 cd /pool001/spangher/alex/conditional-information-retrieval/sbatch_scripts
 
 
-step=$1
+start_idx=$1
 end_idx=$2
+step=$3
 
-for ((i=0; i<end_idx; i+=${step})); do
+for ((i=start_idx; i<end_idx; i+=${step})); do
     sbatch interleave_mit.sh ${i} $((i + step))
 done

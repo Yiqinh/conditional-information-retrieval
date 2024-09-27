@@ -97,7 +97,7 @@ def process_batch(batch):
         # distances.append(d)
         curr_indices = i[0].tolist()
         curr_indices = [int(i) for i in curr_indices]
-        dr_indices.append([mapping[i] for i in curr_indices])
+        dr_indices.append([mapping[str(i)] for i in curr_indices])
 
     gt_sources = []
     for article in batch:

@@ -7,6 +7,15 @@ from tqdm import tqdm
 import numpy as np
 
 
+mapping_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/mapping.json"
+with open(mapping_file, 'r') as f:
+    mapping = json.load(f)
+
+mapping_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/mapping_oft.json"
+with open(mapping_file, 'r') as f:
+    mapping_oft = json.load(f)
+
+
 
 def get_scores(path: str):
         

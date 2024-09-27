@@ -56,7 +56,7 @@ def get_scores(path: str):
 
 
 
-get_scores("/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result_10.json")
+get_scores("/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result.json")
 
 
 

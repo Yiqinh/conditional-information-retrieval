@@ -1,9 +1,8 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
-
-import pdb
 import os
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 os.environ['OPENBLAS_NUM_THREADS'] = '1'
+os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 import time
 import sys
 import torch

@@ -12,17 +12,20 @@ from haystack.document_stores import FAISSDocumentStore
 from haystack.utils import convert_files_to_docs
 
 
-save_dir = "../trained_model"
-data_dir = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/docs"
+data_dir = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/docs_oft"
 dev_filename = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/source_summaries/v2_info_parsed/combined_test_prompt1_v2.json"
-index_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test.index"
+index_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_oft.index"
 # Load development data
 with open(dev_filename, 'r') as f:
     articles = json.load(f)
 
-# Initialize document store and retriever
-# document_store = FAISSDocumentStore(sql_url="sqlite:///", faiss_index_factory_str="Flat")
-reloaded_retriever = DensePassageRetriever.load(load_dir=save_dir, document_store=None)
+reloaded_retriever = DensePassageRetriever(
+    document_store=None,
+    query_embedding_model="facebook/dpr-question_encoder-single-nq-base",
+    passage_embedding_model="facebook/dpr-ctx_encoder-single-nq-base",
+    use_gpu=False,  # Set to False if you want to run on CPU
+)
+
 
 # Write documents to the document store
 # print("creating source txt folder...")
@@ -80,7 +83,7 @@ def get_index(source, index):
 # distances, indices = search_vectors(index, query_vector, 10)
 # print("Nearest neighbors: ", indices)
 # print("Distances: ", distances)
-mapping_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/mapping.json"
+mapping_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/mapping_oft.json"
 with open(mapping_file, 'r') as f:
     mapping = json.load(f)
 
@@ -135,7 +138,7 @@ for i in tqdm(range(0, len(articles), batch_size), desc="Generating retrieval re
 
 
 print(results)
-with open(f"/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result.json", 'w') as json_file:
+with open(f"/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result_oft.json", 'w') as json_file:
     json.dump(results, json_file)
 
 print("DONE!!!")

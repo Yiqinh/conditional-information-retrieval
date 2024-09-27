@@ -7,8 +7,14 @@ from tqdm import tqdm
 import numpy as np
 
 
-save_dir = "../trained_model"
-index_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test.index"
+mapping_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/mapping.json"
+with open(mapping_file, 'r') as f:
+    mapping = json.load(f)
+
+mapping_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/mapping_oft.json"
+with open(mapping_file, 'r') as f:
+    mapping_oft = json.load(f)
+
 
 
 def get_scores(path: str):
@@ -20,8 +26,9 @@ def get_scores(path: str):
     with open(path, 'r') as file:
         articles = json.load(file)
         for article in tqdm(articles):
-            y_pred = set(article['dr_sources'])
+            y_pred = set([str(i) for i in article['dr_sources']])
             y_true = set(article['sources'])
+
 
             # for dr_source, source in zip(article['dr_sources'], article['sources']):
             #     y_pred.add(dr_source)
@@ -32,6 +39,7 @@ def get_scores(path: str):
             
             true_pos = set.intersection(y_pred, y_true)
             n = len(true_pos)
+            # print(n, len(y_true), len(y_pred))
 
             recall = n / len(y_true)
             precision = n / len(y_pred)
@@ -57,6 +65,7 @@ def get_scores(path: str):
 
 
 get_scores("/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result.json")
+get_scores("/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result_oft.json")
 
 
 

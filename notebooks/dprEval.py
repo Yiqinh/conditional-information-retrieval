@@ -135,7 +135,7 @@ for i in tqdm(range(0, len(articles), batch_size), desc="Generating retrieval re
 
 
 print(results)
-with open(f"/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result_10.json", 'w') as json_file:
+with open(f"/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result.json", 'w') as json_file:
     json.dump(results, json_file)
 
 print("DONE!!!")

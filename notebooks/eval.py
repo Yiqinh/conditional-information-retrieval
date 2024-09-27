@@ -20,12 +20,12 @@ def get_scores(path: str):
     with open(path, 'r') as file:
         articles = json.load(file)
         for article in tqdm(articles):
-            y_pred = set()
-            y_true = set()
+            y_pred = set(article['dr_sources'])
+            y_true = set(article['sources'])
 
-            for dr_source, source in zip(article['dr_sources'], article['sources']):
-                y_pred.add(dr_source)
-                y_true.add(source)
+            # for dr_source, source in zip(article['dr_sources'], article['sources']):
+            #     y_pred.add(dr_source)
+            #     y_true.add(source)
             
             if len(y_true) == 0:
                 continue

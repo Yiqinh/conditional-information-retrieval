@@ -76,7 +76,7 @@ if __name__ == "__main__":
             first_search = article['dr_sources']
 
             url_to_story_lead[url] = initial_query
-            url_to_past_queries = []
+            url_to_past_queries[url] = []
             url_to_truth[url] = truth
             url_to_searched_docs[url] = first_search
 

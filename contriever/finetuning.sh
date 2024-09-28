@@ -14,7 +14,7 @@ cd /pool001/spangher/alex/conditional-information-retrieval/contriever
 
 conda init
 source conda activate /pool001/spangher/alex/miniconda3/envs/contriever
-
+pip install torch
 
 export OMP_NUM_THREADS=50
 

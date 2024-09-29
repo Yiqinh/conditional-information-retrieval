@@ -80,7 +80,12 @@ if __name__ == "__main__":
             url_to_truth[url] = truth
             url_to_searched_docs[url] = first_search
 
-   
+            #add all source documents from each article to the TOTAL pool of ground truth
+            for doc in truth:
+                id = url + "#" + doc["Name"]
+                included_docs.add(id)
+
+
     #LOAD THE DENSE RETRIEVER
     sys.path.append(os.path.join(os.path.dirname(here), "source_retriever"))
     # needs to be imported here to make sure the environment variables are set before
@@ -192,8 +197,8 @@ if __name__ == "__main__":
                     cutoff=10)
 
             #only taking the top 10 scores from last two retrievals
-            combined = list(dr_result).copy()
-            combined.extend(url_to_searched_docs[url].copy()) # last 10 sources + new 10 sources retrieved
+            combined = list(dr_result)
+            combined.extend(url_to_searched_docs[url]) # last 10 sources + new 10 sources retrieved
             combined.sort(key=lambda x: -float(x['score']))
 
             new_top_k = []

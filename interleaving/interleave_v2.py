@@ -192,10 +192,12 @@ if __name__ == "__main__":
                     cutoff=10)
 
             #only taking the top 10 scores from last two retrievals
-            combined_20 = dr_result + url_to_searched_docs[url] # last 10 sources + new 10 sources retrieved
-            combined_20.sort(key=lambda x: -float(x['score']))
+            combined = list(dr_result).copy().extend(url_to_searched_docs[url].copy()) # last 10 sources + new 10 sources retrieved
+            combined.sort(key=lambda x: -float(x['score']))
 
-            new_top_k = combined_20[:10] # k = 10
+            new_top_k = []
+            for s in combined:
+                new_top_k.append(s)
 
             for source in new_top_k:
                 source["score"] = str(source["score"]) #convert to string to write to json file.
@@ -206,9 +208,9 @@ if __name__ == "__main__":
             one_article['dr_sources'] = new_top_k
             
 
-            for source in combined_20:
+            for source in combined:
                 source["score"] = str(source["score"]) #convert to string to write to json file.
-            one_article['combined'] = combined_20
+            one_article['combined'] = combined
 
             interleave_result.append(one_article)
 

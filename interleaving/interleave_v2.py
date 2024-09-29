@@ -201,9 +201,7 @@ if __name__ == "__main__":
             combined.extend(url_to_searched_docs[url]) # last 10 sources + new 10 sources retrieved
             combined.sort(key=lambda x: -float(x['score']))
 
-            new_top_k = []
-            for s in combined:
-                new_top_k.append(s)
+            new_top_k = combined[:10]
 
             for source in new_top_k:
                 source["score"] = str(source["score"]) #convert to string to write to json file.
@@ -213,13 +211,7 @@ if __name__ == "__main__":
             one_article['query'] = new_query
             one_article['dr_sources'] = new_top_k
             
-
-            for source in combined:
-                source["score"] = str(source["score"]) #convert to string to write to json file.
-            one_article['combined'] = combined
-
             interleave_result.append(one_article)
-
             url_to_searched_docs[url] = new_top_k
             url_to_past_queries[url].append(new_query)
         

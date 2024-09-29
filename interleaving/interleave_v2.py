@@ -192,7 +192,8 @@ if __name__ == "__main__":
                     cutoff=10)
 
             #only taking the top 10 scores from last two retrievals
-            combined = list(dr_result).copy().extend(url_to_searched_docs[url].copy()) # last 10 sources + new 10 sources retrieved
+            combined = list(dr_result).copy()
+            combined.extend(url_to_searched_docs[url].copy()) # last 10 sources + new 10 sources retrieved
             combined.sort(key=lambda x: -float(x['score']))
 
             new_top_k = []

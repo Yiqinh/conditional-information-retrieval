@@ -204,7 +204,10 @@ if __name__ == "__main__":
             one_article['url'] = url
             one_article['query'] = new_query
             one_article['dr_sources'] = new_top_k
+            
 
+            for source in combined_20:
+                source["score"] = str(source["score"]) #convert to string to write to json file.
             one_article['combined'] = combined_20
 
             interleave_result.append(one_article)

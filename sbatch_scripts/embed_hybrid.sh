@@ -13,4 +13,4 @@ pip install torch
 
 cd /project/jonmay_1426/spangher/conditional-information-retrieval
 
-python3 source_retriever/v2_embed_dense.py
+python3 source_retriever/v2_embed_hybrid.py

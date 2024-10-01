@@ -1,10 +1,10 @@
 #!/bin/bash
-#SBATCH -N 1
-#SBATCH -n 1
+#SBATCH --nodes=1
+#SBATCH --ntasks=4
 #SBATCH --time=8:00:00
-#SBATCH --gres=gpu:8
+#SBATCH --gres=gpu:4
 #SBATCH --cpus-per-task=50
-#SBATCH --mem=400G
+#SBATCH --mem=200G
 #SBATCH --partition=sched_mit_psfc_gpu_r8
 
 start_idx=$1

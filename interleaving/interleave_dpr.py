@@ -35,7 +35,7 @@ def search_vectors(index, query_vector, k):
     return D, I  # Distances and indices of the near
 
 def infer(model, tokenizer, message):
-    input_ids = tokenizer.encode(message, return_tensors="pt").to(device)
+    input_ids = tokenizer.encode(message, return_tensors="pt").to("cuda")
     output = model.generate(
         input_ids=input_ids,
         max_length=150,   # Define the maximum length of generated text

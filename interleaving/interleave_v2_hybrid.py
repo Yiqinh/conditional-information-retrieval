@@ -19,7 +19,7 @@ logging.basicConfig(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--hf_config', type=str, default=os.path.join(os.path.dirname(here), 'config.json'), help="The path to the json file containing HF_TOKEN")
-    parser.add_argument("--index_name", type=str, help="Name of the index to load", default="v2-test-dense-index")
+    parser.add_argument("--index_name", type=str, help="Name of the index to load")
     parser.add_argument("--retriv_cache_dir", type=str, default=here, help="Path to the directory containing indices")
     parser.add_argument("--iterations", type=int, help="Number of iterations to augment query and retrieve sources", default=20)
     parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3-70B-Instruct")

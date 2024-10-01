@@ -2,9 +2,9 @@
 #SBATCH -N 1
 #SBATCH -n 1
 #SBATCH --time=8:00:00
-#SBATCH --gres=gpu:4
+#SBATCH --gres=4
 #SBATCH --cpus-per-task=50
-#SBATCH --mem=200G
+#SBATCH --mem=400G
 #SBATCH --partition=sched_mit_psfc_gpu_r8
 
 start_idx=$1

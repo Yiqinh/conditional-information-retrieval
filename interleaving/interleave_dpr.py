@@ -26,7 +26,7 @@ logging.basicConfig(
     level=logging.INFO,
 )
 
-HF_HOME = "/project/jonmay_231/spangher/huggingface_cache"
+HF_LLAMA = "/project/jonmay_231/spangher/huggingface_cache/models--meta-llama--Meta-Llama-3-70B-Instruct"
 
 
 def search_vectors(index, query_vector, k):
@@ -146,8 +146,8 @@ if __name__ == "__main__":
 
     # LLM_model = load_model(args.model)
     # model = pipeline("text-generation", model=args.model)
-    tokenizer = AutoTokenizer.from_pretrained(f"{HF_HOME}/meta-llama/Meta-Llama-3-70B-Instruct")
-    model = AutoModelForCausalLM.from_pretrained(f"{HF_HOME}/meta-llama/Meta-Llama-3-70B-Instruct")
+    tokenizer = AutoTokenizer.from_pretrained(HF_LLAMA)
+    model = AutoModelForCausalLM.from_pretrained(HF_LLAMA)
     #response = infer(model=my_model, messages=messages, model_id=args.model, batch_size=100)
     print("Loaded the LLM Model...")
 

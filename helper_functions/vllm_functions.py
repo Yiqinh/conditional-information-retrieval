@@ -25,7 +25,7 @@ def load_model(model_id: str):
     model = LLM(
         model_id,
         dtype=torch.float16,
-        tensor_parallel_size=torch.cuda.device_count(),
+        tensor_parallel_size=4, #torch.cuda.device_count(),
         download_dir=os.environ["HF_HOME"], # sometimes the distributed model doesn't pay attention to the 
         enforce_eager=True
     )

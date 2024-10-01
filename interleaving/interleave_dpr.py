@@ -127,9 +127,9 @@ if __name__ == "__main__":
     #LOAD THE LLM
     helper_dir = os.path.join(os.path.dirname(here), 'helper_functions')
     sys.path.append(helper_dir)
-    from vllm_functions import load_model, infer
+    # from vllm_functions import load_model, infer
 
-    LLM_model = load_model(args.model)
+    # LLM_model = load_model(args.model)
     model = pipeline("text-generation", model=args.model)
     #response = infer(model=my_model, messages=messages, model_id=args.model, batch_size=100)
     print("Loaded the LLM Model...")

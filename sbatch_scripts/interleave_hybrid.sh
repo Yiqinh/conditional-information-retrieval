@@ -18,4 +18,4 @@ source conda activate py39-retrieve-vllm
 export OMP_NUM_THREADS=50
 export VLLM_WORKER_MULTIPROC_METHOD=spawn
 
-CUDA_VISIBLE_DEVICES=0,1,2,3 python3 interleaving/interleave_v2_hybrid.py --start_idx=${start_idx} --end_idx=${end_idx} --iterations=20
+python3 interleaving/interleave_v2_hybrid.py --start_idx=${start_idx} --end_idx=${end_idx} --iterations=20

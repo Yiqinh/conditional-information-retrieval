@@ -21,6 +21,7 @@ def load_model(model_id: str):
     Args:
     model: Name of model as it appears on huggingface
     """
+    os.environ["CUDA_VISIBLE_DEVICES"] = "2,3"
     torch.cuda.memory_summary(device=None, abbreviated=False)
     model = LLM(
         model_id,
@@ -28,7 +29,6 @@ def load_model(model_id: str):
         tensor_parallel_size=torch.cuda.device_count(),
         download_dir=os.environ["HF_HOME"], # sometimes the distributed model doesn't pay attention to the 
         enforce_eager=True,
-        device='cuda'
     )
     return model
 

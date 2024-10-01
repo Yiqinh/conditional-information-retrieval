@@ -2,7 +2,7 @@
 #SBATCH -N 1
 #SBATCH -n 1
 #SBATCH --time=8:00:00
-#SBATCH --gres=4
+#SBATCH --gres=gpu:5
 #SBATCH --cpus-per-task=50
 #SBATCH --mem=400G
 #SBATCH --partition=sched_mit_psfc_gpu_r8

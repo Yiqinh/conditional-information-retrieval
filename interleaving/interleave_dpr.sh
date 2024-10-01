@@ -9,7 +9,7 @@
 
 source /home1/spangher/.bashrc
 
-source conda activate hay
+source activate hay
 
 start_idx=$1
 end_idx=$2

@@ -1,11 +1,12 @@
 import os
 import json
+import sys
 import numpy as np
 
 from sentence_transformers import SentenceTransformer
 here = os.path.dirname(os.path.abspath(__file__))    
 helper_dir = os.path.join(os.path.dirname(here), 'helper_functions')
-
+sys.path.append(helper_dir)
 from cosim import *
 
 from collections import defaultdict

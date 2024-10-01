@@ -26,7 +26,7 @@ logging.basicConfig(
     level=logging.INFO,
 )
 
-HF_LLAMA = "/project/jonmay_231/spangher/huggingface_cache/models--meta-llama--Meta-Llama-3-70B-Instruct"
+HF_LLAMA = "/project/jonmay_231/spangher/huggingface_cache/models--meta-llama--Meta-Llama-3-70B-Instruct/snapshots/7129260dd854a80eb10ace5f61c20324b472b31c"
 
 
 def search_vectors(index, query_vector, k):

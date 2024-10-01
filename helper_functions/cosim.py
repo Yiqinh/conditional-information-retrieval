@@ -26,7 +26,9 @@ def cosim_query_source(articles: list):
     """
     model = SentenceTransformer("all-MiniLM-L6-v2")
     res = []
-    for query, texts in articles.items():
+    for article in articles:
+        query = article['query']
+        texts = article['texts']
         query_embedding = model.encode([query])
         text_embedding = model.encode(texts)
         sim = model.similarity(query_embedding, text_embedding)

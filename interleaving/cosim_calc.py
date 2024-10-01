@@ -48,7 +48,7 @@ for i in range(0, 11500, 500):
         articles = json.load(file)
     for article in articles:
         a = {}
-        a['url'] = article['url']
+        a['query'] = article['query']
         a['texts'] = []
         for source in article['dr_sources']:
             a['texts'].append(source['text'])

@@ -13,7 +13,7 @@ from haystack.document_stores import FAISSDocumentStore
 from haystack.utils import convert_files_to_docs
 import logging
 import argparse
-from transformers import LlamaForCausalLM, LlamaTokenizer, pipeline
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
 """
 Starting from the initial query, returns json files storing the augmented queries and corresponding source retrievals for each iteration.
@@ -26,11 +26,26 @@ logging.basicConfig(
     level=logging.INFO,
 )
 
+HF_HOME = "/project/jonmay_231/spangher/huggingface_cache"
+
 
 def search_vectors(index, query_vector, k):
     """Search the index for the k nearest vectors to the query."""
     D, I = index.search(np.array([query_vector], dtype=np.float32), k)  # Perform the search
     return D, I  # Distances and indices of the near
+
+def infer(model, tokenizer, message):
+    input_ids = tokenizer.encode(message, return_tensors="pt").to(device)
+    output = model.generate(
+        input_ids=input_ids,
+        max_length=150,   # Define the maximum length of generated text
+        num_return_sequences=1,  # Number of sequences to generate
+        temperature=0.7,  # Adjust the randomness of generation
+        top_p=0.9,        # Top-p sampling
+        do_sample=True    # Enable sampling for diverse outputs
+    )
+    return tokenizer.decode(output[0], skip_special_tokens=True)
+
 
 
 if __name__ == "__main__":
@@ -130,7 +145,9 @@ if __name__ == "__main__":
     # from vllm_functions import load_model, infer
 
     # LLM_model = load_model(args.model)
-    model = pipeline("text-generation", model=args.model)
+    # model = pipeline("text-generation", model=args.model)
+    tokenizer = AutoTokenizer.from_pretrained(f"{HF_HOME}/meta-llama/Meta-Llama-3-70B-Instruct")
+    model = AutoModelForCausalLM.from_pretrained(f"{HF_HOME}/meta-llama/Meta-Llama-3-70B-Instruct")
     #response = infer(model=my_model, messages=messages, model_id=args.model, batch_size=100)
     print("Loaded the LLM Model...")
 
@@ -201,7 +218,7 @@ if __name__ == "__main__":
         # response = infer(model=LLM_model, messages=messages, model_id=args.model, batch_size=100)
         response = []
         for message in tqdm(messages):
-            response.append(model(message))
+            response.append(infer(message))
         print(f"Query augmentation {i} has been completed")
 
         url_to_new_query = {}

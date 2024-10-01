@@ -80,8 +80,8 @@ if __name__ == '__main__':
 
     from retriv import SparseRetriever
 
-    test_sr = SparseRetriever(
-        index_name="v2-test-sparse-index",
+    sr = SparseRetriever(
+        index_name="v2-ALL-sparse-index",
         model="bm25",
         min_df=1,
         tokenizer="whitespace",
@@ -94,31 +94,10 @@ if __name__ == '__main__':
         do_punctuation_removal=True,
         )
     
-    print("indexing test set")
-    print("len test set: ", len(test_sources))
-    test_sr.index(
-        collection=test_sources,  # File kind is automatically inferred
-        show_progress=True,         # Default value       
-    )
-
-    train_sr = SparseRetriever(
-        index_name="v2-train-sparse-index",
-        model="bm25",
-        min_df=1,
-        tokenizer="whitespace",
-        stemmer="english",
-        stopwords="english",
-        do_lowercasing=True,
-        do_ampersand_normalization=True,
-        do_special_chars_normalization=True,
-        do_acronyms_normalization=True,
-        do_punctuation_removal=True,
-        )
-    
-    print("indexing train set")
-    print("len train set: ", len(train_sources))
-
-    train_sr.index(
-        collection=train_sources,  # File kind is automatically inferred
+    print("indexing set")
+    print("len set: ", len(test_sources))
+    all_sources = test_sources + train_sources
+    sr.index(
+        collection=all_sources,  # File kind is automatically inferred
         show_progress=True,         # Default value       
     )

@@ -8,8 +8,9 @@
 #SBATCH --partition=isi
 
 source /home1/spangher/.bashrc
-conda activate retriv-py39
 
-cd /project/jonmay_231/spangher/Projects/conditional-information-retrieval
+source conda activate vllm-retriv-py39  
+
+cd /project/jonmay_1426/spangher/conditional-information-retrieval
 
 python3 source_retriever/v2_embed_sparse.py

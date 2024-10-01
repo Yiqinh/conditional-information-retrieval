@@ -19,4 +19,4 @@ cd /project/jonmay_1426/spangher/conditional-information-retrieval
 export VLLM_WORKER_MULTIPROC_METHOD=spawn
 export HF_HOME=/project/jonmay_231/spangher/huggingface_cache
 
-python3 interleaving/interleave_v2.py --start_idx 0 --end_idx 100 --iterations=20
+python3 interleaving/interleave_dpr.py --start_idx 0 --end_idx 100 --iterations=20

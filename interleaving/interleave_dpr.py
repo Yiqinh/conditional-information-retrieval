@@ -122,7 +122,7 @@ if __name__ == "__main__":
     sys.path.append(os.path.join(os.path.dirname(here), "source_retriever"))
     # needs to be imported here to make sure the environment variables are set before
     # the retriv library sets certain defaults
-    from dense_retriever import MyDenseRetriever
+    # from dense_retriever import MyDenseRetriever
     #sets the retriv base path
     retriv_cache_dir = args.retriv_cache_dir
     logging.info(f"Setting environment variables: RETRIV_BASE_PATH={retriv_cache_dir}")
@@ -142,12 +142,12 @@ if __name__ == "__main__":
     #LOAD THE LLM
     helper_dir = os.path.join(os.path.dirname(here), 'helper_functions')
     sys.path.append(helper_dir)
-    # from vllm_functions import load_model, infer
+    from vllm_functions import load_model, infer
 
-    # LLM_model = load_model(args.model)
-    # model = pipeline("text-generation", model=args.model)
-    tokenizer = AutoTokenizer.from_pretrained(HF_LLAMA)
-    model = AutoModelForCausalLM.from_pretrained(HF_LLAMA)
+    LLM_model = load_model(args.model)
+
+    # tokenizer = AutoTokenizer.from_pretrained(HF_LLAMA)
+    # model = AutoModelForCausalLM.from_pretrained(HF_LLAMA)
     #response = infer(model=my_model, messages=messages, model_id=args.model, batch_size=100)
     print("Loaded the LLM Model...")
 
@@ -215,10 +215,10 @@ if __name__ == "__main__":
             messages.append(message)
         
         #Infer AUGMENTED query using LLM agent
-        # response = infer(model=LLM_model, messages=messages, model_id=args.model, batch_size=100)
-        response = []
-        for message in tqdm(messages):
-            response.append(infer(message))
+        response = infer(model=LLM_model, messages=messages, model_id=args.model, batch_size=100)
+        # response = []
+        # for message in tqdm(messages):
+        #     response.append(infer(message))
         print(f"Query augmentation {i} has been completed")
 
         url_to_new_query = {}
@@ -235,6 +235,8 @@ if __name__ == "__main__":
 
             result = search_vectors(index, query_vector, 10)[1]
             dr_result = result[0].tolist()
+            dr_result = [int(i) for i in dr_result]
+            print(dr_result)
 
 
             # article_seen_ids = [d['id'] for d in url_to_searched_docs[url]] #current retrieval pool for this article. Do not include these in search

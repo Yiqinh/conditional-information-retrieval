@@ -13,7 +13,7 @@ from haystack.document_stores import FAISSDocumentStore
 from haystack.utils import convert_files_to_docs
 import logging
 import argparse
-from tqdm.auto import tqdm
+from transformers import LlamaForCausalLM, LlamaTokenizer, pipeline
 
 """
 Starting from the initial query, returns json files storing the augmented queries and corresponding source retrievals for each iteration.
@@ -25,6 +25,13 @@ logging.basicConfig(
     datefmt="%m/%d/%Y %H:%M:%S",
     level=logging.INFO,
 )
+
+
+def search_vectors(index, query_vector, k):
+    """Search the index for the k nearest vectors to the query."""
+    D, I = index.search(np.array([query_vector], dtype=np.float32), k)  # Perform the search
+    return D, I  # Distances and indices of the near
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -109,10 +116,13 @@ if __name__ == "__main__":
     save_dir = "../trained_model"
     index_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test.index"
 
+    print("loading model...")
     dr = DensePassageRetriever.load(load_dir=save_dir, document_store=None)
+    print("loaded the Dense Retriever...")
+    print("loading index...")
     index = faiss.read_index(index_file)
 
-    print("loaded the Dense Retriever...")
+    
 
     #LOAD THE LLM
     helper_dir = os.path.join(os.path.dirname(here), 'helper_functions')
@@ -120,6 +130,7 @@ if __name__ == "__main__":
     from vllm_functions import load_model, infer
 
     LLM_model = load_model(args.model)
+    model = pipeline("text-generation", model=args.model)
     #response = infer(model=my_model, messages=messages, model_id=args.model, batch_size=100)
     print("Loaded the LLM Model...")
 
@@ -187,7 +198,10 @@ if __name__ == "__main__":
             messages.append(message)
         
         #Infer AUGMENTED query using LLM agent
-        response = infer(model=LLM_model, messages=messages, model_id=args.model, batch_size=100)
+        # response = infer(model=LLM_model, messages=messages, model_id=args.model, batch_size=100)
+        response = []
+        for message in tqdm(messages):
+            response.append(model(message))
         print(f"Query augmentation {i} has been completed")
 
         url_to_new_query = {}
@@ -200,7 +214,7 @@ if __name__ == "__main__":
         print(f"Starting another round of DR search for augmented query {i}")
         for url in article_order:
             new_query = url_to_new_query[url]
-            query_vector = reloaded_retriever.embed_queries(new_query)
+            query_vector = dr.embed_queries(new_query)
 
             result = search_vectors(index, query_vector, 10)[1]
             dr_result = result[0].tolist()

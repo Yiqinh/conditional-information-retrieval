@@ -21,7 +21,7 @@ def load_model(model_id: str):
     Args:
     model: Name of model as it appears on huggingface
     """
-    os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+    torch.cuda.memory_summary(device=None, abbreviated=False)
     model = LLM(
         model_id,
         dtype=torch.float16,

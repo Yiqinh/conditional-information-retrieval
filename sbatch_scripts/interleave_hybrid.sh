@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --nodes=1
-#SBATCH --ntasks=4
+#SBATCH --nodes=2
+#SBATCH --ntasks=2
 #SBATCH --time=8:00:00
-#SBATCH --gres=gpu:4
+#SBATCH --gres=gpu:8
 #SBATCH --cpus-per-task=50
 #SBATCH --mem=200G
 #SBATCH --partition=sched_mit_psfc_gpu_r8

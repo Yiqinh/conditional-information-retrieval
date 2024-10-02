@@ -28,7 +28,7 @@ logging.basicConfig(
     level=logging.INFO,
 )
 
-HF_LLAMA = "/project/jonmay_231/spangher/huggingface_cache/models--meta-llama--Meta-Llama-3-70B-Instruct/snapshots/7129260dd854a80eb10ace5f61c20324b472b31c"
+HF_dir = "/project/jonmay_231/spangher/huggingface_cache"
 save_dir = "/project/jonmay_1426/spangher/conditional-information-retrieval/trained_model"
 
 
@@ -38,6 +38,7 @@ def search_vectors(index, query_vector, k):
     return D, I  # Distances and indices of the near
 
 def infer(model, tokenizer, message):
+    model.eval()
     input_ids = tokenizer.encode(message, return_tensors="pt").to("cuda")
     model = model.to("cuda")
     output = model.generate(
@@ -153,8 +154,9 @@ if __name__ == "__main__":
 
     # LLM_model = load_model(args.model)
 
-    tokenizer = AutoTokenizer.from_pretrained(HF_LLAMA, device_map='auto', torch_dtype=torch.float16)
-    model = AutoModelForCausalLM.from_pretrained(HF_LLAMA, device_map='auto', torch_dtype=torch.float16)
+    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-70B-Instruct", cach_dir=HF_dir)
+    model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-70B-Instruct", cach_dir=HF_dir, device_map='auto', torch_dtype=torch.float16)
+    
 
     # tokenizer = model = None
     #response = infer(model=my_model, messages=messages, model_id=args.model, batch_size=100)

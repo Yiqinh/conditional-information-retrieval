@@ -25,7 +25,7 @@ with open(train_filename, 'r') as f:
     articles_dev = json.load(f)
 print(len(articles_train), len(articles_dev))
 articles = articles_train + articles_dev 
-articles = articles[:10]
+articles = articles
 
 # Initialize document store and retriever
 document_store = FAISSDocumentStore(sql_url="sqlite:///", faiss_index_factory_str="Flat")

@@ -4,13 +4,12 @@
 #SBATCH --time=40:00:00
 #SBATCH --gres=gpu:a100:1
 #SBATCH --constraint=a100-80gb
-#SBATCH --mem=100GB
+#SBATCH --mem=200GB
 #SBATCH --cpus-per-gpu=10
 #SBATCH --partition=gpu
 
-source /home1/spangher/.bashrc
-
-source conda activate vllm-retriv-py39  
+source conda activate CIR
+pip install torch
 
 cd /project/jonmay_1426/spangher/conditional-information-retrieval
 

@@ -65,7 +65,7 @@ if __name__ == "__main__":
 
     #set huggingface token
     config_data = json.load(open(args.hf_config))
-    os.environ['HF_TOKEN'] = config_data["HF_TOKEN"]
+    # os.environ['HF_TOKEN'] = config_data["HF_TOKEN"]
 
     #set the proper huggingface cache directory
     os.environ['VLLM_WORKER_MULTIPROC_METHOD'] = 'spawn'
@@ -150,7 +150,7 @@ if __name__ == "__main__":
     # tokenizer = AutoTokenizer.from_pretrained(HF_LLAMA)
     # model = AutoModelForCausalLM.from_pretrained(HF_LLAMA)
     #response = infer(model=my_model, messages=messages, model_id=args.model, batch_size=100)
-    print("Loaded the LLM Model...")
+    # print("Loaded the LLM Model...")
 
     article_order = [url for url, val in url_to_story_lead.items()] #ordering of URLS
 

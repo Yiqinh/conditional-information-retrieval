@@ -8,9 +8,8 @@
 #SBATCH --cpus-per-gpu=10
 #SBATCH --partition=gpu
 
-source /home1/spangher/.bashrc
-
 source conda activate vllm-retriv-py39  
+pip install torch
 
 cd /project/jonmay_1426/spangher/conditional-information-retrieval
 

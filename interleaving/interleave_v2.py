@@ -21,7 +21,7 @@ if __name__ == "__main__":
     parser.add_argument('--hf_config', type=str, default=os.path.join(os.path.dirname(here), 'config.json'), help="The path to the json file containing HF_TOKEN")
     parser.add_argument("--index_name", type=str, help="Name of the index to load", default="v2-test-dense-index")
     parser.add_argument("--retriv_cache_dir", type=str, default=here, help="Path to the directory containing indices")
-    parser.add_argument("--iterations", type=int, help="Number of iterations to augment query and retrieve sources", default=5)
+    parser.add_argument("--iterations", type=int, help="Number of iterations to augment query and retrieve sources", default=10)
     parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3-70B-Instruct")
 
     parser.add_argument("--start_idx", type=int)
@@ -45,46 +45,36 @@ if __name__ == "__main__":
 
     included_docs = set() # pool of all ground truth documents from the test set to be considered
 
-    file_path = os.path.join(os.path.dirname(here), "source_retriever", "v2_search_res", "v2_search_test_prompt1_all.json")
+    file_path = os.path.join(os.path.dirname(here), "source_summaries", "v2_info_parsed", "combined_test_prompt1_v2.json")
 
     with open(file_path, 'r') as file:
         articles = json.load(file)
         for i in range(args.start_idx, args.end_idx):
             article = articles[i]
-            """
-            STRUCTURE OF ARTICLE
-            [
-                {
-                    "url": "www.url.com", 
-                    "sources": 
-                        [
-                            {"Name": "Rebecca Leber", "Original Name": "Rebecca Leber", "Information": "No information provided."}, 
-                            {"Name": "Ron", "Original Name": "ron Said \"Black Lives Matter\"?Big", "Information": "No information provided."} 
-                        ], 
-                    "dr_sources": 
-                        [
-                            {"id": "time.com/5761206/iran-plane-crash/#Qasem Soleimani", "text": "He was Iran's top military general who was killed in an American drone strike.", "score": "0.76743096"}, 
-                            {"id": "www.theguardian.com/us-news/2022/sep/13/ken-starr-dead-clinton-lewinsky#book", "text": "Trump feared assassination by Iran as revenge for Suleimani's death.", "score": "0.62700194"} 
-                        ], 
-                    "query": "Who was Qassem Soleimani, the powerful Iranian commander killed in a US airstrike, and what was his significance in the Middle East and to the US?"
-                    },
-            ] 
-            """
             url = article['url']
             initial_query = article['query']
-            truth = article['sources']
-            first_search = article['dr_sources']
+            if initial_query == "":
+                continue
 
             url_to_story_lead[url] = initial_query
             url_to_past_queries[url] = []
-            url_to_truth[url] = truth
-            url_to_searched_docs[url] = first_search
+            url_to_searched_docs[url] = []
 
             #add all source documents from each article to the TOTAL pool of ground truth
-            for doc in truth:
+
+    #add all source documents from each article to the TOTAL pool of sources
+    included_docs = set() 
+    
+    file_path = os.path.join(os.path.dirname(here), "source_summaries", "v2_info_parsed", "combined_test_prompt1_v2.json")
+    with open(file_path, 'r') as file:
+        articles = json.load(file)
+        for article in articles:
+            url = article['url']
+            for doc in article['sources']:
                 id = url + "#" + doc["Name"]
                 included_docs.add(id)
 
+    print(f"A TOTAL OF {len(included_docs)} INCLUDED IN THE SEARCH")
 
     #LOAD THE DENSE RETRIEVER
     sys.path.append(os.path.join(os.path.dirname(here), "source_retriever"))
@@ -172,16 +162,18 @@ if __name__ == "__main__":
             messages.append(message)
         
         #Infer AUGMENTED query using LLM agent
-        response = infer(model=LLM_model, messages=messages, model_id=args.model, batch_size=100)
+        url_to_new_query = {}
+        if i != 0:
+            response = infer(model=LLM_model, messages=messages, model_id=args.model, batch_size=100)
+            for url, output in zip(article_order, response):
+                url_to_new_query[url] = output.split("NEW QUERY:")[-1]
+        
+        if i == 0:
+            for url in article_order:
+                url_to_new_query[url] = url_to_story_lead[url]
         print(f"Query augmentation {i} has been completed")
 
-        url_to_new_query = {}
-
-        for url, output in zip(article_order, response):
-            url_to_new_query[url] = output.split("NEW QUERY:")[-1]
-
         interleave_result = []
-
         print(f"Starting another round of DR search for augmented query {i}")
         for url in article_order:
             new_query = url_to_new_query[url]
@@ -217,7 +209,7 @@ if __name__ == "__main__":
         
         print(f"DR search for round {i} complete")
         #write to json file with RESULTS from iteration i
-        fname = os.path.join(here, f"iter_{i}_search_results_v2_{args.start_idx}_{args.end_idx}.json")
+        fname = os.path.join(here, f"iter_{i}_search_TEST_SFR_{args.start_idx}_{args.end_idx}.json")
         with open(fname, 'w') as json_file:
             json.dump(interleave_result, json_file, indent=4)
 

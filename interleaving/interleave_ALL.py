@@ -40,13 +40,15 @@ if __name__ == "__main__":
     url_to_searched_docs = {} # url to the first set of 10 sources retrieved using the INITIAL query
     url_to_past_queries = {} #url to the previous queries used
 
-    file_path = os.path.join(os.path.dirname(here), "source_retriever", "v2_search_res", "v2_search_test_prompt1_all.json")
+    file_path = os.path.join(os.path.dirname(here), "source_summaries", "v2_info_parsed", "combined_test_prompt1_v2.json")
     with open(file_path, 'r') as file:
         articles = json.load(file)
         for i in range(args.start_idx, args.end_idx):
             article = articles[i]
             url = article['url']
             initial_query = article['query']
+            if initial_query == "":
+                continue
 
             url_to_story_lead[url] = initial_query
             url_to_past_queries[url] = []
@@ -161,13 +163,16 @@ if __name__ == "__main__":
             messages.append(message)
         
         #Infer AUGMENTED query using LLM agent
-        response = infer(model=LLM_model, messages=messages, model_id=args.model, batch_size=100)
-        print(f"Query augmentation {i} has been completed")
-
         url_to_new_query = {}
-
-        for url, output in zip(article_order, response):
-            url_to_new_query[url] = output.split("NEW QUERY:")[-1]
+        if i != 0:
+            response = infer(model=LLM_model, messages=messages, model_id=args.model, batch_size=100)
+            for url, output in zip(article_order, response):
+                url_to_new_query[url] = output.split("NEW QUERY:")[-1]
+        
+        if i == 0:
+            for url in article_order:
+                url_to_new_query[url] = url_to_story_lead[url]
+        print(f"Query augmentation {i} has been completed")
 
         interleave_result = []
 

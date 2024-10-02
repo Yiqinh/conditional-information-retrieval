@@ -21,7 +21,7 @@ mapping_file = "/project/jonmay_1426/spangher/conditional-information-retrieval/
 # Load development data
 with open(dev_filename, 'r') as f:
     articles_train = json.load(f)
-with open(dev_filename, 'r') as f:
+with open(train_filename, 'r') as f:
     articles_dev = json.load(f)
 print(len(articles_train), len(articles_dev))
 articles = articles_train + articles_dev 

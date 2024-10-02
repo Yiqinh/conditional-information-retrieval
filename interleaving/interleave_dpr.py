@@ -38,6 +38,7 @@ def search_vectors(index, query_vector, k):
 
 def infer(model, tokenizer, message):
     input_ids = tokenizer.encode(message, return_tensors="pt").to("cuda")
+    model = model.to("cuda")
     output = model.generate(
         input_ids=input_ids,
         max_length=150,   # Define the maximum length of generated text

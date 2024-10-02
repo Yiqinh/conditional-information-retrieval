@@ -174,7 +174,7 @@ if __name__ == "__main__":
 
         interleave_result = []
 
-        print(f"Starting another round of DR search for augmented query {i}")
+        print(f"Starting another round of HR search for augmented query {i}")
         for url in article_order:
             new_query = url_to_new_query[url]
             

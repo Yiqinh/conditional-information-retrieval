@@ -28,7 +28,9 @@ logging.basicConfig(
 )
 
 HF_LLAMA = "/project/jonmay_231/spangher/huggingface_cache/models--meta-llama--Meta-Llama-3-70B-Instruct/snapshots/7129260dd854a80eb10ace5f61c20324b472b31c"
+save_dir = "../trained_model"
 
+dr = DensePassageRetriever.load(load_dir=save_dir, document_store=None)
 
 def search_vectors(index, query_vector, k):
     """Search the index for the k nearest vectors to the query."""
@@ -65,7 +67,7 @@ if __name__ == "__main__":
 
     #set huggingface token
     config_data = json.load(open(args.hf_config))
-    # os.environ['HF_TOKEN'] = config_data["HF_TOKEN"]
+    os.environ['HF_TOKEN'] = config_data["HF_TOKEN"]
 
     #set the proper huggingface cache directory
     os.environ['VLLM_WORKER_MULTIPROC_METHOD'] = 'spawn'
@@ -129,11 +131,11 @@ if __name__ == "__main__":
     logging.info(f"Setting environment variables: RETRIV_BASE_PATH={retriv_cache_dir}")
     os.environ['RETRIV_BASE_PATH'] = retriv_cache_dir
 
-    save_dir = "../trained_model"
+    
     index_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test.index"
 
     print("loading model...")
-    dr = DensePassageRetriever.load(load_dir=save_dir, document_store=None)
+    
     print("loaded the Dense Retriever...")
     print("loading index...")
     index = faiss.read_index(index_file)

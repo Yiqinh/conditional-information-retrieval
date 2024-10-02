@@ -151,8 +151,10 @@ if __name__ == "__main__":
 
     # LLM_model = load_model(args.model)
 
-    tokenizer = AutoTokenizer.from_pretrained(HF_LLAMA)
-    model = AutoModelForCausalLM.from_pretrained(HF_LLAMA)
+    # tokenizer = AutoTokenizer.from_pretrained(HF_LLAMA)
+    # model = AutoModelForCausalLM.from_pretrained(HF_LLAMA)
+
+    tokenizer = model = None
     #response = infer(model=my_model, messages=messages, model_id=args.model, batch_size=100)
     # print("Loaded the LLM Model...")
 
@@ -222,6 +224,7 @@ if __name__ == "__main__":
         #Infer AUGMENTED query using LLM agent
         # response = infer(model=LLM_model, messages=messages, model_id=args.model, batch_size=100)
         response = []
+        print(messages)
         for message in tqdm(messages):
             response.append(infer(model, tokenizer, message))
         print(f"Query augmentation {i} has been completed")

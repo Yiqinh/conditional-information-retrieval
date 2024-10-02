@@ -21,13 +21,10 @@ if __name__ == "__main__":
     parser.add_argument('--hf_config', type=str, default=os.path.join(os.path.dirname(here), 'config.json'), help="The path to the json file containing HF_TOKEN")
     parser.add_argument("--index_name", type=str, help="Name of the index to load", default="v2-test-dense-index")
     parser.add_argument("--retriv_cache_dir", type=str, default=here, help="Path to the directory containing indices")
-    parser.add_argument("--iterations", type=int, help="Number of iterations to augment query and retrieve sources", default=5)
+    parser.add_argument("--iterations", type=int, help="Number of iterations to augment query and retrieve sources", default=10)
     parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3-70B-Instruct")
-
     parser.add_argument("--start_idx", type=int)
     parser.add_argument("--end_idx", type=int)
-
-
     args = parser.parse_args()
 
     #set huggingface token
@@ -38,50 +35,44 @@ if __name__ == "__main__":
     os.environ['VLLM_WORKER_MULTIPROC_METHOD'] = 'spawn'
 
     # BEGIN INTERLEAVE EXPERIMENT SETUP
-    url_to_query = {} # url to the initial query / initial story lead
+    url_to_story_lead = {} # url to the initial query / initial story lead
     url_to_truth = {} # url to the ground truth sources
     url_to_searched_docs = {} # url to the first set of 10 sources retrieved using the INITIAL query
-
-    included_docs = set() # pool of all ground truth documents from the test set to be considered
+    url_to_past_queries = {} #url to the previous queries used
 
     file_path = os.path.join(os.path.dirname(here), "source_retriever", "v2_search_res", "v2_search_test_prompt1_all.json")
-
     with open(file_path, 'r') as file:
         articles = json.load(file)
         for i in range(args.start_idx, args.end_idx):
             article = articles[i]
-            """
-            STRUCTURE OF ARTICLE
-            [
-                {
-                    "url": "www.url.com", 
-                    "sources": 
-                        [
-                            {"Name": "Rebecca Leber", "Original Name": "Rebecca Leber", "Information": "No information provided."}, 
-                            {"Name": "Ron", "Original Name": "ron Said \"Black Lives Matter\"?Big", "Information": "No information provided."} 
-                        ], 
-                    "dr_sources": 
-                        [
-                            {"id": "time.com/5761206/iran-plane-crash/#Qasem Soleimani", "text": "He was Iran's top military general who was killed in an American drone strike.", "score": "0.76743096"}, 
-                            {"id": "www.theguardian.com/us-news/2022/sep/13/ken-starr-dead-clinton-lewinsky#book", "text": "Trump feared assassination by Iran as revenge for Suleimani's death.", "score": "0.62700194"} 
-                        ], 
-                    "query": "Who was Qassem Soleimani, the powerful Iranian commander killed in a US airstrike, and what was his significance in the Middle East and to the US?"
-                    },
-            ] 
-            """
+
             url = article['url']
             initial_query = article['query']
-            truth = article['sources']
-            first_search = article['dr_sources']
 
-            url_to_query[url] = initial_query
-            url_to_truth[url] = truth
-            url_to_searched_docs[url] = first_search
+            url_to_story_lead[url] = initial_query
+            url_to_past_queries[url] = []
+            url_to_searched_docs[url] = []
 
-            #add all source documents from each article to the TOTAL pool of ground truth
-            for doc in truth:
+    #add all source documents from each article to the TOTAL pool of sources
+    included_docs = set() 
+
+    file_path = os.path.join(os.path.dirname(here), "source_summaries", "v2_info_parsed", "combined_train_prompt1_v2.json")
+    with open(file_path, 'r') as file:
+        articles = json.load(file)
+        for article in articles:
+            for doc in article['sources']:
                 id = url + "#" + doc["Name"]
                 included_docs.add(id)
+    
+    file_path = os.path.join(os.path.dirname(here), "source_summaries", "v2_info_parsed", "combined_test_prompt1_v2.json")
+    with open(file_path, 'r') as file:
+        articles = json.load(file)
+        for article in articles:
+            for doc in article['sources']:
+                id = url + "#" + doc["Name"]
+                included_docs.add(id)
+
+    print(f"A TOTAL OF {len(included_docs)} INCLUDED IN THE SEARCH")
 
     #LOAD THE DENSE RETRIEVER
     sys.path.append(os.path.join(os.path.dirname(here), "source_retriever"))
@@ -93,7 +84,7 @@ if __name__ == "__main__":
     logging.info(f"Setting environment variables: RETRIV_BASE_PATH={retriv_cache_dir}")
     os.environ['RETRIV_BASE_PATH'] = retriv_cache_dir
 
-    dr = MyDenseRetriever.load("v2-test-dense-index") # DENSE RETRIEVER FOR THE TEST SET
+    dr = MyDenseRetriever.load("v2-ALL-dense-index") # DENSE RETRIEVER
     print("loaded the Dense Retriever...")
 
     #LOAD THE LLM
@@ -105,7 +96,7 @@ if __name__ == "__main__":
     #response = infer(model=my_model, messages=messages, model_id=args.model, batch_size=100)
     print("Loaded the LLM Model...")
 
-    article_order = [url for url, val in url_to_query.items()] #ordering of URLS
+    article_order = [url for url, val in url_to_story_lead.items()] #ordering of URLS
 
     #BEGIN INTERLEAVING EXPERIMENT
     for i in range(args.iterations):
@@ -122,15 +113,25 @@ if __name__ == "__main__":
                 retrieved_str += '\n'
                 index += 1
             
-            story_lead = url_to_query[url]
+            index = 0
+            past_queries = ""
+            for old_query in url_to_past_queries[url]:
+                past_queries += f"Angle {i}: "
+                past_queries += old_query
+                past_queries += '\n'
+                index += 1
+
+            story_lead = url_to_story_lead[url]
             prompt = ("I am a journalist and you are my helpful assistant. We are working on a story proposed by my editor. " 
-                        "We need to think about sources to interview to complete the article. I am providing you with the initial query we asked ourselves when looking for sources to interview. " 
-                        "I am also providing you with the sources we interviewed and what information they provided to the story. "
+                        "We need to think about sources to interview to complete the article. I am providing you with the initial story lead we are working on." 
+                        "I am providing you with the sources we have already interviewed and the information they provided to the story. "
+                        "I am also providing you with the angles and queries we have already investigated."
                         "Mimicking the format, I want you to write a new query to help us think about the next informational needs of the story. Please format this query in one sentence. "
                         "Think about this step by step: \n"
                         
                         "- What are these sources that we have already interviewed providing to the story? \n"
                         "- What are we missing from the story? \n"
+                        "- What other angles could we look at for this story?"
                         "- What kinds of sources would complete our informational needs if we interviewed them? \n"
 
                         "You may include your thinking in the output. \n"
@@ -138,10 +139,13 @@ if __name__ == "__main__":
                         "We are working on this story: \n" 
                         f"{story_lead} \n"
 
+                        "We have already considered these angles: \n"
+                        f"{past_queries} \n"
+
                         "We have already interviewed these sources: \n"
                         f"{retrieved_str} \n"
 
-                        "Please write the 1 sentence query under the label “QUERY 2” below your thinking."
+                        "Please write the 1 sentence query under the label “NEW QUERY” below your thinking."
             )
             message = [
                 {
@@ -162,18 +166,16 @@ if __name__ == "__main__":
         url_to_new_query = {}
 
         for url, output in zip(article_order, response):
-            url_to_new_query[url] = output.split("QUERY 2:")[-1]
+            url_to_new_query[url] = output.split("NEW QUERY:")[-1]
 
         interleave_result = []
 
         print(f"Starting another round of DR search for augmented query {i}")
-        for url in article_order:
+        for url in tqdm(article_order):
             new_query = url_to_new_query[url]
             
-            article_seen_ids = [] #Put all of the past source retrievals for this article in a list to avoid duplicate retrieval
-            for d in url_to_searched_docs[url]:
-                article_seen_ids.append(d['id'])
- 
+            article_seen_ids = [d['id'] for d in url_to_searched_docs[url]] #current retrieval pool for this article. Do not include these in search
+
             included_id_list = [id for id in included_docs if id not in article_seen_ids]
 
             dr_result = dr.search(
@@ -182,20 +184,28 @@ if __name__ == "__main__":
                     include_id_list=included_id_list,
                     cutoff=10)
 
-            for source in dr_result:
+            #only taking the top 10 scores from last two retrievals
+            combined = list(dr_result)
+            combined.extend(url_to_searched_docs[url]) # last 10 sources + new 10 sources retrieved
+            combined.sort(key=lambda x: -float(x['score']))
+
+            new_top_k = combined[:10]
+
+            for source in new_top_k:
                 source["score"] = str(source["score"]) #convert to string to write to json file.
             
             one_article = {}
             one_article['url'] = url
             one_article['query'] = new_query
-            one_article['dr_sources'] = dr_result
-
-            url_to_searched_docs[url].extend(dr_result)
+            one_article['dr_sources'] = new_top_k
+            
             interleave_result.append(one_article)
+            url_to_searched_docs[url] = new_top_k
+            url_to_past_queries[url].append(new_query)
         
         print(f"DR search for round {i} complete")
         #write to json file with RESULTS from iteration i
-        fname = os.path.join(here, f"iter_{i}_search_results_{args.start_idx}_{args.end_idx}.json")
+        fname = os.path.join(here, f"iter_{i}_search_SFR_ALL_{args.start_idx}_{args.end_idx}.json")
         with open(fname, 'w') as json_file:
             json.dump(interleave_result, json_file, indent=4)
 

@@ -45,33 +45,16 @@ if __name__ == "__main__":
 
     included_docs = set() # pool of all ground truth documents from the test set to be considered
 
-    file_path = os.path.join(os.path.dirname(here), "source_retriever", "v2_search_res", "v2_search_test_prompt1_all.json")
+    file_path = os.path.join(os.path.dirname(here), "source_summaries", "v2_info_parsed", "combined_test_prompt1_v2.json")
 
     with open(file_path, 'r') as file:
         articles = json.load(file)
         for i in range(args.start_idx, args.end_idx):
             article = articles[i]
-            """
-            STRUCTURE OF ARTICLE
-            [
-                {
-                    "url": "www.url.com", 
-                    "sources": 
-                        [
-                            {"Name": "Rebecca Leber", "Original Name": "Rebecca Leber", "Information": "No information provided."}, 
-                            {"Name": "Ron", "Original Name": "ron Said \"Black Lives Matter\"?Big", "Information": "No information provided."} 
-                        ], 
-                    "dr_sources": 
-                        [
-                            {"id": "time.com/5761206/iran-plane-crash/#Qasem Soleimani", "text": "He was Iran's top military general who was killed in an American drone strike.", "score": "0.76743096"}, 
-                            {"id": "www.theguardian.com/us-news/2022/sep/13/ken-starr-dead-clinton-lewinsky#book", "text": "Trump feared assassination by Iran as revenge for Suleimani's death.", "score": "0.62700194"} 
-                        ], 
-                    "query": "Who was Qassem Soleimani, the powerful Iranian commander killed in a US airstrike, and what was his significance in the Middle East and to the US?"
-                    },
-            ] 
-            """
             url = article['url']
             initial_query = article['query']
+            if initial_query == "":
+                continue
 
             url_to_story_lead[url] = initial_query
             url_to_past_queries[url] = []

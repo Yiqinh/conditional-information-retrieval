@@ -10,6 +10,7 @@
 
 source conda activate CIR
 pip install torch
+pip install -U sentence-transformers
 
 cd /project/jonmay_1426/spangher/conditional-information-retrieval
 

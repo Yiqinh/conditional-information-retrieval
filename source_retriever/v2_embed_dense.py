@@ -112,8 +112,8 @@ if __name__ == '__main__':
     all_sources = train_sources + test_sources
 
     dr = MyDenseRetriever(
-        index_name="v2-ALL-dense-index",
-        model=args.embedding_model,
+        index_name="v2-ALL-GTR-dense-index",
+        model="sentence-transformers/gtr-t5-base",#args.embedding_model,
         normalize=True,
         max_length=args.max_seq_length,
         embedding_dim=args.embedding_dim,

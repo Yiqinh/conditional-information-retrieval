@@ -152,8 +152,8 @@ if __name__ == "__main__":
 
     # LLM_model = load_model(args.model)
 
-    tokenizer = AutoTokenizer.from_pretrained(HF_LLAMA)
-    model = AutoModelForCausalLM.from_pretrained(HF_LLAMA)
+    tokenizer = AutoTokenizer.from_pretrained(HF_LLAMA, device_map = 'auto')
+    model = AutoModelForCausalLM.from_pretrained(HF_LLAMA, device_map = 'auto')
 
     # tokenizer = model = None
     #response = infer(model=my_model, messages=messages, model_id=args.model, batch_size=100)

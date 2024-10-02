@@ -13,11 +13,11 @@ from pathlib import Path
 
 
 save_dir = "../trained_model"
-data_dir = "/project/jonmay_1426/spangher/Projects/conditional-information-retrieval/fine_tuning/docs_combined"
-dev_filename = "/project/jonmay_1426/spangher/Projects/conditional-information-retrieval/source_summaries/v2_info_parsed/combined_test_prompt1_v2.json"
-train_filename = "/project/jonmay_1426/spangher/Projects/conditional-information-retrieval/source_summaries/v2_info_parsed/combined_train_prompt1_v2.json"
-index_file = "/project/jonmay_1426/spangher/Projects/conditional-information-retrieval/fine_tuning/combined.index"
-mapping_file = "/project/jonmay_1426/spangher/Projects/conditional-information-retrieval/fine_tuning/mapping_combined.json"
+data_dir = "/project/jonmay_1426/spangher/conditional-information-retrieval/fine_tuning/docs_combined"
+dev_filename = "/project/jonmay_1426/spangher/conditional-information-retrieval/source_summaries/v2_info_parsed/combined_test_prompt1_v2.json"
+train_filename = "/project/jonmay_1426/spangher/conditional-information-retrieval/source_summaries/v2_info_parsed/combined_train_prompt1_v2.json"
+index_file = "/project/jonmay_1426/spangher/conditional-information-retrieval/fine_tuning/combined.index"
+mapping_file = "/project/jonmay_1426/spangher/conditional-information-retrieval/fine_tuning/mapping_combined.json"
 # Load development data
 with open(dev_filename, 'r') as f:
     articles_train = json.load(f)

@@ -33,6 +33,7 @@ save_dir = "../trained_model"
 print("loading model")
 
 dr = DensePassageRetriever.load(load_dir=save_dir, document_store=None)
+print("finished loading model")
 
 def search_vectors(index, query_vector, k):
     """Search the index for the k nearest vectors to the query."""

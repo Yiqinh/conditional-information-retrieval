@@ -15,6 +15,7 @@ from haystack.utils import convert_files_to_docs
 import logging
 import argparse
 from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
 
 """
 Starting from the initial query, returns json files storing the augmented queries and corresponding source retrievals for each iteration.
@@ -27,7 +28,7 @@ logging.basicConfig(
     level=logging.INFO,
 )
 
-HF_LLAMA = "/project/jonmay_231/spangher/huggingface_cache/models--meta-llama--Meta-Llama-3-70B-Instruct/snapshots/7129260dd854a80eb10ace5f61c20324b472b31c"
+HF_dir = "/project/jonmay_231/spangher/huggingface_cache"
 save_dir = "/project/jonmay_1426/spangher/conditional-information-retrieval/trained_model"
 
 
@@ -37,8 +38,9 @@ def search_vectors(index, query_vector, k):
     return D, I  # Distances and indices of the near
 
 def infer(model, tokenizer, message):
-    input_ids = tokenizer.encode(message, return_tensors="pt").to("cuda")
-    model = model.to("cuda")
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    input_ids = tokenizer.encode(message, return_tensors="pt").to(device)
+    model = model.to(device).eval()
     output = model.generate(
         input_ids=input_ids,
         max_length=150,   # Define the maximum length of generated text
@@ -152,8 +154,9 @@ if __name__ == "__main__":
 
     # LLM_model = load_model(args.model)
 
-    tokenizer = AutoTokenizer.from_pretrained(HF_LLAMA)
-    model = AutoModelForCausalLM.from_pretrained(HF_LLAMA)
+    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-70B-Instruct", cache_dir=HF_dir)
+    model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-70B-Instruct", cache_dir=HF_dir, device_map='auto', torch_dtype=torch.float16)
+    
 
     # tokenizer = model = None
     #response = infer(model=my_model, messages=messages, model_id=args.model, batch_size=100)

@@ -162,16 +162,18 @@ if __name__ == "__main__":
             messages.append(message)
         
         #Infer AUGMENTED query using LLM agent
-        response = infer(model=LLM_model, messages=messages, model_id=args.model, batch_size=100)
+        url_to_new_query = {}
+        if i != 0:
+            response = infer(model=LLM_model, messages=messages, model_id=args.model, batch_size=100)
+            for url, output in zip(article_order, response):
+                url_to_new_query[url] = output.split("NEW QUERY:")[-1]
+        
+        if i == 0:
+            for url in article_order:
+                url_to_new_query[url] = url_to_story_lead[url]
         print(f"Query augmentation {i} has been completed")
 
-        url_to_new_query = {}
-
-        for url, output in zip(article_order, response):
-            url_to_new_query[url] = output.split("NEW QUERY:")[-1]
-
         interleave_result = []
-
         print(f"Starting another round of DR search for augmented query {i}")
         for url in article_order:
             new_query = url_to_new_query[url]

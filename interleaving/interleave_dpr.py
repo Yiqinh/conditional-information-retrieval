@@ -15,6 +15,7 @@ from haystack.utils import convert_files_to_docs
 import logging
 import argparse
 from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
 
 """
 Starting from the initial query, returns json files storing the augmented queries and corresponding source retrievals for each iteration.
@@ -152,8 +153,8 @@ if __name__ == "__main__":
 
     # LLM_model = load_model(args.model)
 
-    tokenizer = AutoTokenizer.from_pretrained(HF_LLAMA, device_map = 'auto')
-    model = AutoModelForCausalLM.from_pretrained(HF_LLAMA, device_map = 'auto')
+    tokenizer = AutoTokenizer.from_pretrained(HF_LLAMA, device_map='auto', torch_dtype=torch.float16)
+    model = AutoModelForCausalLM.from_pretrained(HF_LLAMA, device_map='auto', torch_dtype=torch.float16)
 
     # tokenizer = model = None
     #response = infer(model=my_model, messages=messages, model_id=args.model, batch_size=100)

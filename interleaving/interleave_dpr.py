@@ -38,9 +38,9 @@ def search_vectors(index, query_vector, k):
     return D, I  # Distances and indices of the near
 
 def infer(model, tokenizer, message):
-    model.eval()
-    input_ids = tokenizer.encode(message, return_tensors="pt").to("cuda")
-    model = model.to("cuda")
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    input_ids = tokenizer.encode(message, return_tensors="pt").to(device)
+    model = model.to(device).eval()
     output = model.generate(
         input_ids=input_ids,
         max_length=150,   # Define the maximum length of generated text

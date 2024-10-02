@@ -28,7 +28,7 @@ logging.basicConfig(
 )
 
 HF_LLAMA = "/project/jonmay_231/spangher/huggingface_cache/models--meta-llama--Meta-Llama-3-70B-Instruct/snapshots/7129260dd854a80eb10ace5f61c20324b472b31c"
-save_dir = "../trained_model"
+save_dir = "/project/jonmay_1426/spangher/conditional-information-retrieval/trained_model"
 
 print("loading model")
 

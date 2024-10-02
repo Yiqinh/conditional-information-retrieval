@@ -72,6 +72,7 @@ if __name__ == "__main__":
                 id = url + "#" + doc["Name"]
                 included_docs.add(id)
 
+    print(f"A TOTAL OF {len(included_docs)} INCLUDED IN THE SEARCH")
 
     #LOAD THE DENSE RETRIEVER
     sys.path.append(os.path.join(os.path.dirname(here), "source_retriever"))

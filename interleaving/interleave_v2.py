@@ -21,7 +21,7 @@ if __name__ == "__main__":
     parser.add_argument('--hf_config', type=str, default=os.path.join(os.path.dirname(here), 'config.json'), help="The path to the json file containing HF_TOKEN")
     parser.add_argument("--index_name", type=str, help="Name of the index to load", default="v2-test-dense-index")
     parser.add_argument("--retriv_cache_dir", type=str, default=here, help="Path to the directory containing indices")
-    parser.add_argument("--iterations", type=int, help="Number of iterations to augment query and retrieve sources", default=5)
+    parser.add_argument("--iterations", type=int, help="Number of iterations to augment query and retrieve sources", default=10)
     parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3-70B-Instruct")
 
     parser.add_argument("--start_idx", type=int)
@@ -72,19 +72,26 @@ if __name__ == "__main__":
             """
             url = article['url']
             initial_query = article['query']
-            truth = article['sources']
-            first_search = article['dr_sources']
 
             url_to_story_lead[url] = initial_query
             url_to_past_queries[url] = []
-            url_to_truth[url] = truth
-            url_to_searched_docs[url] = first_search
+            url_to_searched_docs[url] = []
 
             #add all source documents from each article to the TOTAL pool of ground truth
-            for doc in truth:
+
+    #add all source documents from each article to the TOTAL pool of sources
+    included_docs = set() 
+    
+    file_path = os.path.join(os.path.dirname(here), "source_summaries", "v2_info_parsed", "combined_test_prompt1_v2.json")
+    with open(file_path, 'r') as file:
+        articles = json.load(file)
+        for article in articles:
+            url = article['url']
+            for doc in article['sources']:
                 id = url + "#" + doc["Name"]
                 included_docs.add(id)
 
+    print(f"A TOTAL OF {len(included_docs)} INCLUDED IN THE SEARCH")
 
     #LOAD THE DENSE RETRIEVER
     sys.path.append(os.path.join(os.path.dirname(here), "source_retriever"))
@@ -217,7 +224,7 @@ if __name__ == "__main__":
         
         print(f"DR search for round {i} complete")
         #write to json file with RESULTS from iteration i
-        fname = os.path.join(here, f"iter_{i}_search_results_v2_{args.start_idx}_{args.end_idx}.json")
+        fname = os.path.join(here, f"iter_{i}_search_TEST_SFR_{args.start_idx}_{args.end_idx}.json")
         with open(fname, 'w') as json_file:
             json.dump(interleave_result, json_file, indent=4)
 

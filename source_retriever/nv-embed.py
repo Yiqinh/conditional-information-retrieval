@@ -11,7 +11,6 @@ logging.basicConfig(
 )
 here = os.path.dirname(os.path.abspath(__file__))
 
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--hf_config', type=str, default=os.path.join(os.path.dirname(here), 'config.json'), help="The path to the json file containing HF_TOKEN")

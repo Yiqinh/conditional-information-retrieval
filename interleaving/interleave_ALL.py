@@ -45,7 +45,6 @@ if __name__ == "__main__":
         articles = json.load(file)
         for i in range(args.start_idx, args.end_idx):
             article = articles[i]
-
             url = article['url']
             initial_query = article['query']
 
@@ -60,6 +59,7 @@ if __name__ == "__main__":
     with open(file_path, 'r') as file:
         articles = json.load(file)
         for article in articles:
+            url = article['url']
             for doc in article['sources']:
                 id = url + "#" + doc["Name"]
                 included_docs.add(id)
@@ -68,6 +68,7 @@ if __name__ == "__main__":
     with open(file_path, 'r') as file:
         articles = json.load(file)
         for article in articles:
+            url = article['url']
             for doc in article['sources']:
                 id = url + "#" + doc["Name"]
                 included_docs.add(id)

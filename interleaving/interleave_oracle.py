@@ -43,9 +43,10 @@ if __name__ == "__main__":
             url = article['url']
             category_string = ""
             for source in article['sources']:
-                category_string += "* "
-                category_string += source['oracle_label']
-                category_string += "\n"
+                if source.get('oracle_label') != None:
+                    category_string += "* "
+                    category_string += source['oracle_label']
+                    category_string += "\n"
             url_to_categories[url] = category_string
 
     url_to_story_lead = {} # url to the initial query / initial story lead

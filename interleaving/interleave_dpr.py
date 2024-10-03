@@ -154,6 +154,7 @@ if __name__ == "__main__":
 
     # LLM_model = load_model(args.model)
 
+    torch.cuda.empty_cache()
     tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-70B-Instruct", cache_dir=HF_dir)
     model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-70B-Instruct", cache_dir=HF_dir, device_map='auto', torch_dtype=torch.float16)
     

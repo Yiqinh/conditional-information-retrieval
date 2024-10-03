@@ -17,7 +17,7 @@ dev_filename = "/project/jonmay_1426/spangher/Projects/conditional-information-r
 index_file = "/project/jonmay_1426/spangher/Projects/conditional-information-retrieval/fine_tuning/combined.index"
 # Load development data
 with open(dev_filename, 'r') as f:
-    articles = json.load(f)
+    articles = json.load(f)[:10]
 
 # Initialize document store and retriever
 # document_store = FAISSDocumentStore(sql_url="sqlite:///", faiss_index_factory_str="Flat")

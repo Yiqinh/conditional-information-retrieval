@@ -43,10 +43,10 @@ if __name__ == "__main__":
             url = article['url']
             category_string = ""
             for source in article['sources']:
-                if source.get('oracle_label') != None:
+                if source.get('oracle_label') != None and source.get('oracle_label') not in category_string:
                     category_string += "* "
                     category_string += source['oracle_label']
-                    category_string += "\n"
+                    category_string += '\n \t'
             url_to_categories[url] = category_string
 
     url_to_story_lead = {} # url to the initial query / initial story lead
@@ -174,8 +174,8 @@ if __name__ == "__main__":
         - What kinds of sources would complete our informational needs?
         You may include your thinking in the output.
 
-        We are working on this story:
-        {story_lead}
+        We are working on this story. Please keep this goal in mind:
+        *{story_lead}*
         We have already considered these angles:
         {past_queries}
         We have already interviewed these sources:
@@ -193,7 +193,7 @@ if __name__ == "__main__":
                 },
             ]
             messages.append(message)
-        
+            
         #Infer AUGMENTED query using LLM agent
         url_to_new_query = {}
         if i != 0:

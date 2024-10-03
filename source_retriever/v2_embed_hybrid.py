@@ -11,58 +11,17 @@ logging.basicConfig(
 )
 here = os.path.dirname(os.path.abspath(__file__))
 
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '--hf_config',
-        type=str,
-        default=os.path.join(os.path.dirname(here), 'config.json'),
-        help="The path to the json file containing HF_TOKEN"
-    )
-    parser.add_argument(
-        '--embedding_model',
-        type=str,
-        default="Salesforce/SFR-Embedding-2_R",  # "sentence-transformers/all-MiniLM-L6-v2", #
-        help="The model to use for generating embeddings"
-    )
-    parser.add_argument(
-        "--device",
-        type=str,
-        default='cuda' if torch.cuda.is_available() else 'cpu',
-        help="Device to use for inference"
-    )
+    parser.add_argument('--hf_config', type=str, default=os.path.join(os.path.dirname(here), 'config.json'), help="The path to the json file containing HF_TOKEN")
+    parser.add_argument('--embedding_model', type=str, default="Salesforce/SFR-Embedding-2_R", help="The model to use for generating embeddings")
+    parser.add_argument("--device", type=str, default='cuda' if torch.cuda.is_available() else 'cpu', help="Device to use for inference")
     # defaults and configs
-    parser.add_argument(
-        "--retriv_cache_dir",
-        type=str,
-        default=here,
-        help="Path to the directory containing indices"
-    )
-    parser.add_argument(
-        "--huggingface_cache_dir",
-        type=str,
-        default='/project/jonmay_231/spangher/huggingface_cache',
-        help="Path to the directory containing HuggingFace cache"
-    )
-    parser.add_argument(
-        '--embedding_dim',
-        type=int,
-        default=None,  # 4096
-        help="The dimension of the embeddings"
-    )
-    parser.add_argument(
-        "--max_seq_length",
-        type=int,
-        default=None,  # 32768,
-        help="Maximum sequence length for the model"
-    )
-    parser.add_argument(
-        "--batch_size_to_index",
-        type=int,
-        help="Batch size for indexing",
-        default=1,
-    )
+    parser.add_argument("--retriv_cache_dir", type=str, default=here, help="Path to the directory containing indices")
+    parser.add_argument("--huggingface_cache_dir", type=str, default='/project/jonmay_231/spangher/huggingface_cache', help="Path to the directory containing HuggingFace cache")
+    parser.add_argument('--embedding_dim', type=int, default=None, help="The dimension of the embeddings")
+    parser.add_argument("--max_seq_length", type=int, default=None, help="Maximum sequence length for the model")
+    parser.add_argument("--batch_size_to_index", type=int, help="Batch size for indexing", default=1)
     args = parser.parse_args()
 
     #set huggingface token
@@ -76,7 +35,7 @@ if __name__ == '__main__':
 
     # needs to be imported here to make sure the environment variables are set before
     # the retriv library sets certain defaults
-    from dense_retriever import MyDenseRetriever
+    from retriv import HybridRetriever
 
     #sets the retriv base path
     retriv_cache_dir = args.retriv_cache_dir
@@ -111,19 +70,30 @@ if __name__ == '__main__':
     # set up index
     all_sources = train_sources + test_sources
 
-    dr = MyDenseRetriever(
-        index_name="v2-ALL-GTR-dense-index",
-        model="sentence-transformers/gtr-t5-base",#args.embedding_model,
+    hr = HybridRetriever(
+        # Shared params ------------------------------------------------------------
+        index_name="v2-TEST-HYBRID-index",
+        # Sparse retriever params --------------------------------------------------
+        sr_model="bm25",
+        min_df=1,
+        tokenizer="whitespace",
+        stemmer="english",
+        stopwords="english",
+        do_lowercasing=True,
+        do_ampersand_normalization=True,
+        do_special_chars_normalization=True,
+        do_acronyms_normalization=True,
+        do_punctuation_removal=True,
+        # Dense retriever params ---------------------------------------------------
+        dr_model=args.embedding_model,
         normalize=True,
-        max_length=args.max_seq_length,
-        embedding_dim=args.embedding_dim,
-        device=args.device,
+        max_length=128,
         use_ann=True,
     )
 
-    print("currently indexing ALL sources. len:", len(all_sources))
-    dr.index(
-        collection=all_sources,  # File kind is automatically inferred
+    hr.index(
+        collection=test_sources,  # File kind is automatically inferred
         batch_size=args.batch_size_to_index,  # Default value
         show_progress=True,  # Default value
+        use_gpu=True,
     )

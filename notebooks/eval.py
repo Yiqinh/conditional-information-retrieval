@@ -7,9 +7,9 @@ from tqdm import tqdm
 import numpy as np
 
 
-# mapping_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/mapping.json"
-# with open(mapping_file, 'r') as f:
-#     mapping = json.load(f)
+mapping_file = "/project/jonmay_1426/spangher/conditional-information-retrieval/fine_tuning/mapping_combined.json"
+with open(mapping_file, 'r') as f:
+    mapping = json.load(f)
 
 # mapping_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/mapping_oft.json"
 # with open(mapping_file, 'r') as f:

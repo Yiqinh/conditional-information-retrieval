@@ -261,6 +261,7 @@ def get_text_and_sources(text_fname, summaries_fname):
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
+    # meta-llama/Llama-3.1-8B-Instruct
     parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3.1-70B-Instruct")
     parser.add_argument('--data_dir', type=str, default=f'{here}/../data')
     parser.add_argument('--source_data_file', type=str, default='full-source-scored-data.jsonl')
@@ -294,7 +295,7 @@ if __name__ == "__main__":
     # store each article_url, annoted_sentences pair
     # hold the batches
     url_batches, message_batches = [], []
-    df_batches = batchify_dataframe(article_df)
+    df_batches = batchify_dataframe(article_df, BATCH_SIZE)
 
     # generate the summaries
     start_idx = args.start_idx
@@ -381,11 +382,12 @@ args.end_idx = None
       --data_dir ../data \
       --source_data_file   full-source-scored-data.jsonl.gz \
       --output_file  test_sources.txt \
-        --do_article_gen \
-        --do_source_summ \
-        --do_narr_key_prompt \
-        --do_cent_prompt
-
+      --do_article_gen \
+      --do_source_summ \
+      --do_narr_key_prompt \
+      --do_cent_prompt \
+      --model meta-llama/Llama-3.1-8B-Instruct
+      --model meta-llama/Meta-Llama-3.1-8B-Instruct
 
 
 """

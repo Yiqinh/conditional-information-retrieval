@@ -10,6 +10,7 @@ import json
 import torch
 import ast
 import logging
+import re 
 
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(lineno)d - %(message)s",
@@ -158,6 +159,13 @@ For each source, answer the questions above. Output the summary in a list of pyt
 
 
 def robust_extract_json_str(lm_string):
+    
+    if not lm_string:
+        return None
+    # Use regular expressions to search for list brackets across multiple lines
+    match = re.search(r'\[.*?\]', lm_string, re.DOTALL)
+    if match:
+        lm_string = match.group(0)
     try:
         return json.loads(lm_string)
     except:

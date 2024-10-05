@@ -302,7 +302,7 @@ if __name__ == "__main__":
     end_idx = start_idx + BATCH_SIZE
     for df in tqdm(df_batches):
         dirname = os.path.dirname(args.output_file)
-        if not os.path.exists(dirname):
+        if (dirname != '') and not os.path.exists(dirname):
             os.makedirs(dirname)
 
         fname, fext = os.path.splitext(args.output_file)
@@ -313,12 +313,14 @@ if __name__ == "__main__":
 
         # clean the article text
         if args.do_article_gen and not os.path.exists(text_fname):
+            logging.info(f"Generating cleaned article text for batch {start_idx} to {end_idx}")
             clean_prompts = df[args.text_col].apply(lambda x: CLEAN_ARTICLE_TEXT_PROMPT.format(article_text=x)).tolist()
             cleaned_article_outputs = model.generate(clean_prompts, sampling_params)
             write_to_file(text_fname, df[args.id_col], cleaned_article_outputs)
 
         # generate the informational summaries
         if args.do_source_summ and not os.path.exists(summaries_fname):
+            logging.info(f"Generating source summaries for batch {start_idx} to {end_idx}")
             if not os.path.exists(text_fname):
                 raise ValueError("You need to generate the cleaned article text first.")
             cleaned_articles = pd.read_json(text_fname, lines=True)
@@ -328,6 +330,7 @@ if __name__ == "__main__":
 
         # generate the narrative keyword summaries
         if args.do_narr_key_prompt and not os.path.exists(narr_key_fname):
+            logging.info(f"Generating narrative keyword summaries for batch {start_idx} to {end_idx}")
             if not  os.path.exists(text_fname) and os.path.exists(summaries_fname):
                 raise ValueError("You need to generate the cleaned article text and source summaries first.")
             combined_df = get_text_and_sources(text_fname, summaries_fname)
@@ -341,6 +344,7 @@ if __name__ == "__main__":
         
         # generate the centrality and perspective annotations
         if args.do_cent_prompt and not os.path.exists(cent_persp_fname):
+            logging.info(f"Generating centrality and perspective annotations for batch {start_idx} to {end_idx}")
             if not  os.path.exists(text_fname) and os.path.exists(summaries_fname):
                 raise ValueError("You need to generate the cleaned article text and source summaries first.")
             combined_df = get_text_and_sources(text_fname, summaries_fname)
@@ -381,7 +385,7 @@ args.end_idx = None
       --text_col article_text \
       --data_dir ../data \
       --source_data_file   full-source-scored-data.jsonl.gz \
-      --output_file  test_sources.txt \
+      --output_file  ../data/v3_source_summaries/test_sources.txt \
       --do_article_gen \
       --do_source_summ \
       --do_narr_key_prompt \

@@ -30,11 +30,11 @@ BATCH_SIZE = 500
 CLEAN_ARTICLE_TEXT_PROMPT = """
 You are a helpful editor assistant. I scraped this news article from the web and removed HTML tags, however, 
 there is a lot of extraneous text from the HTML page that remains. Please only extract text related to the news article.
-Try not to miss any text. Copy over the text exactly. Here is the news article:
+Do NOT miss any article text. Copy over the text exactly. Here is the news article:
 
 ```{article_text}```
 
-Return only the text.
+Return only the text of the news article, nothing else.
 """
 
 SOURCE_EXTRACTION_PROMPT = """
@@ -326,7 +326,7 @@ if __name__ == "__main__":
             cleaned_articles = pd.read_json(text_fname, lines=True)
             source_prompts = cleaned_articles['response'].apply(lambda x: SOURCE_EXTRACTION_PROMPT.format(news_article=x)).tolist()
             source_outputs = model.generate(source_prompts, sampling_params)
-            write_to_file(summaries_fname, df['url'], source_outputs)
+            write_to_file(summaries_fname, cleaned_articles['url'], source_outputs)
 
         # generate the narrative keyword summaries
         if args.do_narr_key_prompt and not os.path.exists(narr_key_fname):

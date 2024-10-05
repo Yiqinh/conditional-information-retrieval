@@ -192,7 +192,6 @@ def load_model(model_name: str):
         model_name,
         dtype=torch.float16,
         tensor_parallel_size=torch.cuda.device_count(),
-        download_dir=HF_HOME, # sometimes the distributed model doesn't pay attention to the 
         enforce_eager=True,
         max_model_len=60_000
     )
@@ -379,7 +378,7 @@ args.end_idx = None
       --end_idx 50 \
       --id_col article_url \
       --text_col article_text \
-      --data_dir /pool001/spangher/alex/conditional-information-retrieval/data \
+      --data_dir ../data \
       --source_data_file   full-source-scored-data.jsonl.gz \
       --output_file  test_sources.txt \
         --do_article_gen \

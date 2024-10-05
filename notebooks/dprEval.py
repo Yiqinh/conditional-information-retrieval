@@ -13,8 +13,8 @@ from haystack.utils import convert_files_to_docs
 
 
 save_dir = "../trained_model"
-dev_filename = "/project/jonmay_1426/spangher/Projects/conditional-information-retrieval/source_summaries/v2_info_parsed/combined_test_prompt1_v2.json"
-index_file = "/project/jonmay_1426/spangher/Projects/conditional-information-retrieval/fine_tuning/combined.index"
+dev_filename = "/project/jonmay_1426/spangher/conditional-information-retrieval/source_summaries/v2_info_parsed/combined_test_prompt1_v2.json"
+index_file = "/project/jonmay_1426/spangher/conditional-information-retrieval/fine_tuning/combined.index"
 # Load development data
 with open(dev_filename, 'r') as f:
     articles = json.load(f)
@@ -79,7 +79,7 @@ def get_index(source, index):
 # distances, indices = search_vectors(index, query_vector, 10)
 # print("Nearest neighbors: ", indices)
 # print("Distances: ", distances)
-mapping_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/mapping.json"
+mapping_file = "/project/jonmay_1426/spangher/conditional-information-retrieval/fine_tuning/mapping_combined.json"
 with open(mapping_file, 'r') as f:
     mapping = json.load(f)
 
@@ -134,7 +134,7 @@ for i in tqdm(range(0, len(articles), batch_size), desc="Generating retrieval re
 
 
 print(results)
-with open(f"/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result.json", 'w') as json_file:
+with open(f"/project/jonmay_1426/spangher/conditional-information-retrieval/fine_tuning/test_result_combined.json", 'w') as json_file:
     json.dump(results, json_file)
 
 print("DONE!!!")

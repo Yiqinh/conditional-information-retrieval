@@ -7,13 +7,13 @@ from tqdm import tqdm
 import numpy as np
 
 
-mapping_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/mapping.json"
+mapping_file = "/project/jonmay_1426/spangher/conditional-information-retrieval/fine_tuning/mapping_combined.json"
 with open(mapping_file, 'r') as f:
     mapping = json.load(f)
 
-mapping_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/mapping_oft.json"
-with open(mapping_file, 'r') as f:
-    mapping_oft = json.load(f)
+# mapping_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/mapping_oft.json"
+# with open(mapping_file, 'r') as f:
+#     mapping_oft = json.load(f)
 
 
 
@@ -64,8 +64,8 @@ def get_scores(path: str):
 
 
 
-get_scores("/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result.json")
-get_scores("/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result_oft.json")
+get_scores("/project/jonmay_1426/spangher/conditional-information-retrieval/fine_tuning/test_result_combined.json")
+# get_scores("/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test_result_oft.json")
 
 
 

@@ -23,7 +23,6 @@ import os
 here = os.path.dirname(os.path.abspath(__file__))
 config_data = json.load(open(f'{here}/../config.json'))
 os.environ['HF_TOKEN'] = config_data["HF_TOKEN"]
-os.environ['HF_HOME'] = HF_HOME
 os.environ['VLLM_WORKER_MULTIPROC_METHOD'] = 'spawn'
 os.environ['VLLM_ALLOW_LONG_MAX_MODEL_LEN'] = '1'
 

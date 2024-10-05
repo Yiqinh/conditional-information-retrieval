@@ -259,7 +259,7 @@ def get_text_and_sources(text_fname, summaries_fname):
     combined_df['target_sources'] = (
         combined_df['source_summaries']
             .apply(robust_extract_json_str)
-            .apply(lambda x: [s['Name'] for s in x] if pd.notnull(x) else [])
+            .apply(lambda x: [s['Name'] for s in x] if x else [])
             .apply(lambda x: ', '.join(map(lambda y: '"%s"' % y , x)))
     )
     return combined_df

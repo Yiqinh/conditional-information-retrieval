@@ -317,7 +317,7 @@ if __name__ == "__main__":
         text_fname = f'{fname}__article_text__{start_idx}_{end_idx}{fext}'
         summaries_fname = f'{fname}__summaries__{start_idx}_{end_idx}{fext}'
         narr_key_fname = f'{fname}__narrative-keyword__{start_idx}_{end_idx}{fext}'
-        cent_persp_fname = f'{fname}__centraily-perspective__{start_idx}_{end_idx}{fext}'
+        cent_persp_fname = f'{fname}__centrality-perspective__{start_idx}_{end_idx}{fext}'
 
         # clean the article text
         if args.do_article_gen and not os.path.exists(text_fname):

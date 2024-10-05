@@ -20,9 +20,8 @@ logging.basicConfig(
 from vllm import LLM,  SamplingParams
 from transformers import AutoTokenizer
 import os
-HF_HOME = "/project/jonmay_231/spangher/huggingface_cache"
-proj_dir = '/project/jonmay_231/spangher/Projects/conditional-information-retrieval'
-config_data = json.load(open(f'{proj_dir}/config.json'))
+here = os.path.dirname(os.path.abspath(__file__))
+config_data = json.load(open(f'{here}/../config.json'))
 os.environ['HF_TOKEN'] = config_data["HF_TOKEN"]
 os.environ['HF_HOME'] = HF_HOME
 os.environ['VLLM_WORKER_MULTIPROC_METHOD'] = 'spawn'
@@ -376,14 +375,19 @@ args.start_idx = None
 args.end_idx = None
 
 
-    python data_vllm_70b.py \
+    python data_vllm_70b_v3.py \
       --start_idx 0 \
-      --end_idx 5 \
-      --id_col  doc_id \
-      --source_col  head \
-      --sent_col  sent \
-      --output_file  annotated_sources_summarized.txt \
-      --input_data_file  full-training-df.csv
+      --end_idx 50 \
+      --id_col article_url \
+      --text_col article_text \
+      --data_dir /pool001/spangher/alex/conditional-information-retrieval/data \
+      --source_data_file   full-source-scored-data.jsonl.gz \
+      --output_file  test_sources.txt \
+        --do_article_gen \
+        --do_source_summ \
+        --do_narr_key_prompt \
+        --do_cent_prompt
+
 
 
 """

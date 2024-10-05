@@ -196,7 +196,16 @@ def plot_hierarchical_tree(tree, depth=None, figsize=(8, 6)):
     
     # Plot the tree structure
     plt.figure(figsize=figsize)
-    nx.draw(graph, pos, with_labels=False, node_size=2000, node_color="skyblue", font_size=10, font_weight="bold", arrows=False)
+    nx.draw(
+        graph, 
+        pos, 
+        with_labels=False, 
+        node_size=2000, 
+        node_color="skyblue", 
+        font_size=10, 
+        font_weight="bold", 
+        arrows=False
+    )
     
     # Adjust text positions to avoid overlap
     texts = []
@@ -208,6 +217,7 @@ def plot_hierarchical_tree(tree, depth=None, figsize=(8, 6)):
     
     # Show plot
     plt.show()
+
 
 # Example tree structure
 tree = {

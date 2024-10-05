@@ -251,7 +251,7 @@ def get_text_and_sources(text_fname, summaries_fname):
     combined_df['target_sources'] = (
         combined_df['source_summaries']
             .apply(robust_extract_json_str)
-            .apply(lambda x: [s['Name'] for s in x])
+            .apply(lambda x: [s['Name'] for s in x] if pd.notnull(x) else [])
             .apply(lambda x: ', '.join(map(lambda y: '"%s"' % y , x)))
     )
     return combined_df
@@ -290,7 +290,7 @@ if __name__ == "__main__":
         args.end_idx = len(article_df)
     
     # load the model
-    sampling_params = SamplingParams(temperature=0.1, max_tokens=2048)
+    sampling_params = SamplingParams(temperature=0.1, max_tokens=4096)
     tokenizer, model = load_model(args.model)
     # store each article_url, annoted_sentences pair
     # hold the batches

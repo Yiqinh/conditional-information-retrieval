@@ -28,7 +28,7 @@ logging.basicConfig(
     level=logging.INFO,
 )
 
-HF_dir = "/project/jonmay_231/spangher/huggingface_cache"
+HF_dir = "/pool001/spangher/huggingface_home"
 save_dir = "/pool001/spangher/alex/conditional-information-retrieval/trained_model"
 
 

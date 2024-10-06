@@ -9,7 +9,7 @@
 
 cd /pool001/spangher/alex/conditional-information-retrieval
 
-source conda activate hay
+source conda activate conditional_retrieval
 
 start_idx=$1
 end_idx=$2

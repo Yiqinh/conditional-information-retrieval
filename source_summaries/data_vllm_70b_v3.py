@@ -141,10 +141,9 @@ You will receive a news article and a set of sources to examine in that article.
     
     For each source, provide the following information:
         (1) Name: who the source is.
-        (2) Perspective: What is their perspective on the main events of the article? Choose from "Authoritative", "Informative", "Supportive", "Skeptical", "Against", "Neutral".
+        (2) Perspective: What is their perspective on the main events of the article? Choose as many labels as fit from: ["Authoritative", "Informative", "Supportive", "Skeptical", "Against", "Neutral"].
         (3) Centrality: How central is this source to the main events of the article? Choose from "High", "Medium", "Low".
         (4) Is_Error: Did we annotate this source in error? This can happen for many reasons, including if a sentence from the webpage was included in the story unintentionally. Answer with "Yes" or "No".
-        (7) JUSTIFY your choice for (3) and (4) in 1-2 sentences. 
 
 Here is a news article:
 
@@ -238,16 +237,6 @@ def write_to_file(fname, urls, outputs):
 
 
 def batchify_dataframe(df, batch_size):
-    """
-    Splits a DataFrame into batches of a specified size.
-
-    Parameters:
-    df (pd.DataFrame): The DataFrame to be split into batches.
-    batch_size (int): The size of each batch.
-
-    Returns:
-    list: A list of DataFrame batches.
-    """
     num_batches = len(df) // batch_size + (1 if len(df) % batch_size != 0 else 0)
     return [df.iloc[i * batch_size:(i + 1) * batch_size] for i in range(num_batches)]
 
@@ -313,11 +302,12 @@ if __name__ == "__main__":
         if (dirname != '') and not os.path.exists(dirname):
             os.makedirs(dirname)
 
-        fname, fext = os.path.splitext(args.output_file)
-        text_fname = f'{fname}__article_text__{start_idx}_{end_idx}{fext}'
-        summaries_fname = f'{fname}__summaries__{start_idx}_{end_idx}{fext}'
-        narr_key_fname = f'{fname}__narrative-keyword__{start_idx}_{end_idx}{fext}'
-        cent_persp_fname = f'{fname}__centrality-perspective__{start_idx}_{end_idx}{fext}'
+        out_dirname, out_fname = os.path.split(args.output_file)
+        fname, fext = os.path.splitext(out_fname)
+        text_fname = f'{out_dirname}/article_text/{fname}__article_text__{start_idx}_{end_idx}{fext}'
+        summaries_fname = f'{out_dirname}/summaries/{fname}__summaries__{start_idx}_{end_idx}{fext}'
+        narr_key_fname = f'{out_dirname}/narrative-keyword/{fname}__narrative-keyword__{start_idx}_{end_idx}{fext}'
+        cent_persp_fname = f'{out_dirname}/centrality-perspective-v2/{fname}__centrality-perspective__{start_idx}_{end_idx}{fext}'
 
         # clean the article text
         if args.do_article_gen and not os.path.exists(text_fname):
@@ -417,5 +407,24 @@ original prompt:
     Only rely on the annotations I have provided, don't identify additional sources. 
     Generate only ONE summary per source. Group sources that are clearly the same but named slightly differently.
     That is, summarize the SAME source if it occurs in multiple source annotations. 
+
+"""
+
+"""
+# count completed files on disk
+
+import glob
+import pandas as pd
+
+summ_df = pd.Series(glob.glob('test_sources__summaries__*')).to_frame('filename')
+summ_df = (
+    summ_df
+        .assign(file_chunks=lambda df: df['filename'].str.split('__').str.get(2).str.replace('.txt', ''))
+        .assign(start_idx=lambda df: df['file_chunks'].str.split('_').str.get(0).astype(int))
+        .assign(end_idx=lambda df: df['file_chunks'].str.split('_').str.get(1).astype(int))
+)
+expected_starts = pd.Series(list(range(0, 350_000, 500))).to_frame('expected_starts')
+
+summ_df = summ_df.merge(expected_starts, left_on='start_idx', right_on='expected_starts', how='right')
 
 """

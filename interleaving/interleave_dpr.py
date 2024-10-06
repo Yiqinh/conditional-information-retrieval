@@ -28,8 +28,8 @@ logging.basicConfig(
     level=logging.INFO,
 )
 
-HF_dir = "/project/jonmay_231/spangher/huggingface_cache"
-save_dir = "/project/jonmay_1426/spangher/conditional-information-retrieval/trained_model"
+HF_dir = "/pool001/spangher/huggingface_home"
+save_dir = "/pool001/spangher/alex/conditional-information-retrieval/trained_model"
 
 
 def search_vectors(index, query_vector, k):
@@ -134,7 +134,7 @@ if __name__ == "__main__":
     os.environ['RETRIV_BASE_PATH'] = retriv_cache_dir
 
     
-    index_file = "/project/jonmay_231/spangher/Projects/conditional-information-retrieval/fine_tuning/test.index"
+    index_file = "/pool001/spangher/alex/conditional-information-retrieval/fine_tuning/test.index"
 
     print("loading model...")
 

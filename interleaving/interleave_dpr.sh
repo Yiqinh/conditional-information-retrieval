@@ -16,6 +16,5 @@ end_idx=$2
 
 
 export VLLM_WORKER_MULTIPROC_METHOD=spawn
-export HF_HOME=/project/jonmay_231/spangher/huggingface_cache
 
 python3 interleaving/interleave_dpr.py --start_idx 0 --end_idx 100 --iterations=20

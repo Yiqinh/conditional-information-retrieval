@@ -10,8 +10,7 @@
 
 source conda activate CIR
 pip install torch
-pip install -U sentence-transformers
 
 cd /project/jonmay_1426/spangher/conditional-information-retrieval
 
-python3 source_retriever/v2_embed_dense.py
+python3 source_retriever/v3_embed_dense.py

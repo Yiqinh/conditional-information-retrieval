@@ -11,7 +11,7 @@ start_idx=$1
 end_idx=$2
 
 source /home/spangher/.bashrc
-conda activate py39-retrieve-vllm
+conda activate alex
 cd /pool001/spangher/alex/conditional-information-retrieval
 
 export VLLM_WORKER_MULTIPROC_METHOD=spawn

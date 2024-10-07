@@ -160,8 +160,8 @@ if __name__ == "__main__":
     # tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-70B-Instruct", cache_dir=HF_dir)
     # model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-70B-Instruct", cache_dir=HF_dir, device_map='auto', torch_dtype=torch.float16)
 
-    model = AutoModelForCausalLM.from_config(model_dir, device_map='auto', torch_dtype=torch.float16)
-    tokenizer = AutoTokenizer.from_pretrained(model_dir)
+    model = AutoModelForCausalLM.from_config(HF_dir, device_map='auto', torch_dtype=torch.float16)
+    tokenizer = AutoTokenizer.from_pretrained(HF_dir)
     
     
 

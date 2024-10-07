@@ -10,6 +10,7 @@
 start_idx=$1
 end_idx=$2
 
+source /home/spangher/.bashrc
 cd /pool001/spangher/alex/conditional-information-retrieval
 source conda activate py39-retrieve-vllm
 

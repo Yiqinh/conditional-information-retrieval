@@ -28,7 +28,8 @@ logging.basicConfig(
     level=logging.INFO,
 )
 
-HF_dir = "/pool001/spangher/huggingface_home"
+HF_dir = "/pool001/spangher/huggingface_home/models--meta-llama--Meta-Llama-3-70B-Instruct"
+model_dir = "/pool001/spangher/huggingface_home/models--meta-llama--Meta-Llama-3-70B-Instruct/snapshots/05917295788658563fd7ef778b6240ad9867d6d1"
 save_dir = "/pool001/spangher/alex/conditional-information-retrieval/trained_model"
 
 
@@ -155,8 +156,12 @@ if __name__ == "__main__":
     # LLM_model = load_model(args.model)
 
     torch.cuda.empty_cache()
-    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-70B-Instruct", cache_dir=HF_dir)
-    model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-70B-Instruct", cache_dir=HF_dir, device_map='auto', torch_dtype=torch.float16)
+    # tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-70B-Instruct", cache_dir=HF_dir)
+    # model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-70B-Instruct", cache_dir=HF_dir, device_map='auto', torch_dtype=torch.float16)
+
+    model = AutoModelForCausalLM.from_config(model_dir, device_map='auto', torch_dtype=torch.float16)
+    tokenizer = AutoTokenizer.from_pretrained(model_dir)
+    
     
 
     # tokenizer = model = None

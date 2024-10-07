@@ -11,6 +11,8 @@ cd /pool001/spangher/alex/conditional-information-retrieval
 
 source conda activate conditional_retrieval
 
+pip install numpy
+
 start_idx=$1
 end_idx=$2
 

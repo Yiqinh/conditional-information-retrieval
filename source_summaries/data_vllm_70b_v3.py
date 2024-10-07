@@ -303,6 +303,17 @@ if __name__ == "__main__":
             os.makedirs(dirname)
 
         out_dirname, out_fname = os.path.split(args.output_file)
+        if (out_dirname != '') and not os.path.exists(out_dirname):
+            os.makedirs(out_dirname)
+            if args.do_article_gen:
+                os.makedirs(f'{out_dirname}/article_text', exist_ok=True)
+            if args.do_source_summ:
+                os.makedirs(f'{out_dirname}/summaries', exist_ok=True)
+            if args.do_narr_key_prompt:
+                os.makedirs(f'{out_dirname}/narrative-keyword', exist_ok=True)
+            if args.do_cent_prompt:
+                os.makedirs(f'{out_dirname}/centrality-perspective-v2', exist_ok=True)
+
         fname, fext = os.path.splitext(out_fname)
         text_fname = f'{out_dirname}/article_text/{fname}__article_text__{start_idx}_{end_idx}{fext}'
         summaries_fname = f'{out_dirname}/summaries/{fname}__summaries__{start_idx}_{end_idx}{fext}'

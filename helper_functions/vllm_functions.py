@@ -33,7 +33,6 @@ def load_model(model_id: str):
     )
     return model
 
-
 def infer(model, messages, model_id, temperature=0.1, max_tokens=4096, batch_size=100):
     """
     Args:
@@ -54,25 +53,19 @@ def infer(model, messages, model_id, temperature=0.1, max_tokens=4096, batch_siz
     model_id: Name of model as it appears on huggingface
     temperature, max_tokens: model hyperparameters
     """
-
     message_batches = []
     formatted_messages = []
-
     tokenizer = AutoTokenizer.from_pretrained(model_id)
-
     for message in messages:
         if len(formatted_messages) >= batch_size:
             message_batches.append(formatted_messages)
             formatted_messages = []
-            
         formatted_prompt = tokenizer.apply_chat_template(message, tokenize=False, add_generation_prompt=True)
         formatted_messages.append(formatted_prompt)
-    
     message_batches.append(formatted_messages)
 
     sampling_params = SamplingParams(temperature=temperature, max_tokens=max_tokens)
     res = []
-
     for batch in tqdm(message_batches, desc="Message batches"):
         outputs = model.generate(batch, sampling_params)
         print("length of outputs is", len(outputs))
@@ -80,5 +73,4 @@ def infer(model, messages, model_id, temperature=0.1, max_tokens=4096, batch_siz
             generated_text = output.outputs[0].text
             generated_text = unicodedata.normalize('NFKC', generated_text)
             res.append(generated_text)
-
     return res

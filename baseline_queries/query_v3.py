@@ -50,21 +50,23 @@ if __name__ == "__main__":
     for i in range(args.start_idx, args.end_idx):
         article_text = articles[i]['response']
         prompt = f"""
-            I am a journalist and I just wrote an article. You will try to guess the initial question I had before I started investigating this topic. 
-            This is the article I wrote:
+            I am a journalist, and I just wrote an article. You will try to guess the initial question I had before I started investigating this topic. 
+            Please format your guess in one sentence.
 
+            This is the article I wrote:
             ```{article_text}```
 
             Again, try to guess the initial question or angle I decided to investigate when I started to pursue this article, before interviewing any other sources. 
             Be specific. If there is a specific event, person, fact, or company that seems like it lead to the idea, you can reference it. 
-            Pay attention to the angle I took and incorporate that into your question. Please output your answer under the label "ANSWER"
-
+            Pay attention to the angle I took and incorporate that into your question. 
+            
+            Please write the one sentence question under the label “QUERY” below your thinking.
                 """
         
         message = [
             {
                 "role": "system",
-                "content": "You are an experienced journalist",
+                "content": "I am a journalist and you are my helpful assistant.",
             },
 
             {
@@ -87,6 +89,6 @@ if __name__ == "__main__":
         }
         queries.append(one_query)
 
-    with open(f"v3_query_{args.start_idx}_{args.end_idx}", 'w') as json_file:
+    with open(os.path.join(here, f"v3_query_{args.start_idx}_{args.end_idx}"), 'w') as json_file:
         json.dump(queries, json_file, indent=4)
 

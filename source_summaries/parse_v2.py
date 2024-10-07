@@ -2,6 +2,7 @@ import re
 import ast
 import json
 import os
+import logging
 
 from sklearn.model_selection import train_test_split
 
@@ -16,6 +17,23 @@ def robust_ast(x):
         return ast.literal_eval(x)
     except:
         return None
+    
+def robust_extract_json_str(lm_string):
+    if not lm_string:
+        return None
+    # Use regular expressions to search for list brackets across multiple lines
+    match = re.search(r'\[.*?\]', lm_string, re.DOTALL)
+    if match:
+        lm_string = match.group(0)
+    try:
+        return json.loads(lm_string)
+    except:
+        try:
+            return ast.literal_eval(lm_string)
+        except:
+            pass
+    logging.error(f"Could not extract json string from: {lm_string}")
+    return None
 
 def split_curly_braces(input_string):
     pattern = r'\{([^{}]*)\}'

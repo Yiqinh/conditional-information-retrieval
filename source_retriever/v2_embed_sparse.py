@@ -13,26 +13,15 @@ here = os.path.dirname(os.path.abspath(__file__))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '--hf_config',
-        type=str,
-        default=os.path.join(os.path.dirname(here), 'config.json'),
-        help="The path to the json file containing HF_TOKEN"
-    )
+    parser.add_argument('--hf_config', type=str, default=os.path.join(os.path.dirname(here), 'config.json'), help="The path to the json file containing HF_TOKEN")
+    parser.add_argument('--embedding_model', type=str, default="Salesforce/SFR-Embedding-2_R", help="The model to use for generating embeddings")
+    parser.add_argument("--device", type=str, default='cuda' if torch.cuda.is_available() else 'cpu', help="Device to use for inference")
     # defaults and configs
-    parser.add_argument(
-        "--retriv_cache_dir",
-        type=str,
-        default=here,
-        help="Path to the directory containing indices"
-    )
-    parser.add_argument(
-        "--huggingface_cache_dir",
-        type=str,
-        default='/project/jonmay_231/spangher/huggingface_cache',
-        help="Path to the directory containing HuggingFace cache"
-    )
-
+    parser.add_argument("--retriv_cache_dir", type=str, default=here, help="Path to the directory containing indices")
+    parser.add_argument("--huggingface_cache_dir", type=str, default='/project/jonmay_231/spangher/huggingface_cache', help="Path to the directory containing HuggingFace cache")
+    parser.add_argument('--embedding_dim', type=int, default=None, help="The dimension of the embeddings")
+    parser.add_argument("--max_seq_length", type=int, default=None, help="Maximum sequence length for the model")
+    parser.add_argument("--batch_size_to_index", type=int, help="Batch size for indexing", default=1)
     args = parser.parse_args()
 
     #set huggingface token
@@ -58,7 +47,6 @@ if __name__ == '__main__':
     test_data = json.load(f)
 
     test_sources = []
-
     for article in test_data:
         for source in article['sources']:
             if type(source['Information']) == str and type(source['Name']) == str:
@@ -68,7 +56,6 @@ if __name__ == '__main__':
     
     f = open(os.path.join(info_dir, "v2_train_set.json"))
     train_data = json.load(f)
-
     train_sources = []
 
     for article in train_data:
@@ -76,7 +63,6 @@ if __name__ == '__main__':
             if type(source['Information']) == str and type(source['Name']) == str:
                 formatted_source = {"id": article['url'] + "#" + source['Name'], "text": source['Information']}
                 train_sources.append(formatted_source)
-
 
     from retriv import SparseRetriever
 
@@ -94,8 +80,7 @@ if __name__ == '__main__':
         do_punctuation_removal=True,
         )
     
-    print("indexing set")
-    print("len set: ", len(test_sources))
+    print("INDEXING SET OF: ", len(test_sources))
     all_sources = test_sources + train_sources
     sr.index(
         collection=all_sources,  # File kind is automatically inferred

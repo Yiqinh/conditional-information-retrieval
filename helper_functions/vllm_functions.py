@@ -33,7 +33,7 @@ def load_model(model_id: str):
     return model
 
 
-def infer(model, messages, model_id, temperature=0, max_tokens=512, batch_size=100):
+def infer(model, messages, model_id, temperature=0.1, max_tokens=4096, batch_size=100):
     """
     Args:
     model: model returned by vllm.LLM()

@@ -42,39 +42,51 @@ if __name__ == "__main__":
                 json_obj = json.loads(line)
                 if len(json_obj['response']) > 300:
                     articles.append(json_obj)
-    
-    print(len(articles))
-    print(articles[50])
 
-    # urls = []
-    # messages = []
+    #LENGTH ARTICLES IS: 239535
+    urls = []
+    all_messages = []
 
-    # for i in range(args.start_idx, args.end_idx):
-    #     article_text = articles[i]['response']
+    for i in range(args.start_idx, args.end_idx):
+        article_text = articles[i]['response']
+        prompt = f"""
+            I am a journalist and I just wrote an article. You will try to guess the initial question I had before I started investigating this topic. 
+            This is the article I wrote:
 
-    #     prompt = f"""
-    #             Output one sentence only. I have pasted a news article below. State the preliminary question the news article answers. 
-    #             Incorporate the initial story lead and the reason why the journalist started investigating this topic. Please output this one question only.
-    #             Do not output "here is..."
-                    
-    #             {one_article_text}
+            ```{article_text}```
 
-    #             """
+            Again, try to guess the initial question or angle I decided to investigate when I started to pursue this article, before interviewing any other sources. 
+            Be specific. If there is a specific event, person, fact, or company that seems like it lead to the idea, you can reference it. 
+            Pay attention to the angle I took and incorporate that into your question. Please output your answer under the label "ANSWER"
+
+                """
         
-    #     message = [
-    #         {
-    #             "role": "system",
-    #             "content": "You are an experienced journalist",
-    #         },
+        message = [
+            {
+                "role": "system",
+                "content": "You are an experienced journalist",
+            },
 
-    #         {
-    #             "role": "user",
-    #             "content": prompt
-    #         },
-    #     ]
+            {
+                "role": "user",
+                "content": prompt
+            },
+        ]
+        urls.append(articles[i]['url'])
+        all_messages.append(message)
 
-                
     #Load the LLM
-    #my_model = load_model(args.model)
-    #response = infer(model=my_model, messages=messages, model_id=args.model, batch_size=100)
+    my_model = load_model(args.model)
+    response = infer(model=my_model, messages=all_messages, model_id=args.model, batch_size=100)
+
+    queries = []
+    for url, output in zip(urls, response):
+        one_query = {
+             'url': url,
+             'query': output
+        }
+        queries.append(one_query)
+
+    with open(f"v3_query_{args.start_idx}_{args.end_idx}", 'w') as json_file:
+        json.dump(queries, json_file, indent=4)
 

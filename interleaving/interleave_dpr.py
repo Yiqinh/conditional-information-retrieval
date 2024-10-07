@@ -29,7 +29,8 @@ logging.basicConfig(
 )
 
 HF_dir = "/pool001/spangher/huggingface_home/models--meta-llama--Meta-Llama-3-70B-Instruct"
-model_dir = "/pool001/spangher/huggingface_home/models--meta-llama--Meta-Llama-3-70B-Instruct/snapshots/05917295788658563fd7ef778b6240ad9867d6d1"
+# model_dir = "/pool001/spangher/huggingface_home/models--meta-llama--Meta-Llama-3-70B-Instruct/snapshots/05917295788658563fd7ef778b6240ad9867d6d1"
+model_dir = "/pool001/spangher/huggingface_home/models--meta-llama--Meta-Llama-3-70B-Instruct/"
 save_dir = "/pool001/spangher/alex/conditional-information-retrieval/trained_model"
 
 

@@ -21,7 +21,7 @@ if __name__ == '__main__':
     #parser.add_argument("--huggingface_cache_dir", type=str, default='/project/jonmay_231/spangher/huggingface_cache', help="Path to the directory containing HuggingFace cache")
     parser.add_argument('--embedding_dim', type=int, default=None, help="The dimension of the embeddings")
     parser.add_argument("--max_seq_length", type=int, default=None, help="Maximum sequence length for the model")
-    parser.add_argument("--batch_size_to_index", type=int, help="Batch size for indexing", default=512)
+    parser.add_argument("--batch_size_to_index", type=int, help="Batch size for indexing", default=256)
     args = parser.parse_args()
 
     #set huggingface token

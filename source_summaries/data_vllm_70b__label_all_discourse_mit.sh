@@ -11,7 +11,7 @@
 source /home/spangher/.bashrc
 conda activate alex
 
-python data_vllm_70b_v3.py \
+python label_discourse_vllm.py \
   --input_data_file ../data/quick-discourse-prompts-to-run.csv.gz \
   --id_col url \
   --prompt_col prompt \

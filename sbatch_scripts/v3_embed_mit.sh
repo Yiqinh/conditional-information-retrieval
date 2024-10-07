@@ -8,7 +8,7 @@
 #SBATCH --partition=sched_mit_psfc_gpu_r8
 
 cd /pool001/spangher/alex/conditional-information-retrieval
-conda activate py39-retrieve-vllm
+source conda activate conditional_retrieval
 
 export OMP_NUM_THREADS=50
 

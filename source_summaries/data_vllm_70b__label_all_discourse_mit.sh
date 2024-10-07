@@ -11,26 +11,9 @@
 source /home/spangher/.bashrc
 conda activate alex
 
-start_idx=$1
-step=$2
-iterations=$3
-iterations=$((iterations + 1))
-end_idx=$((start_idx + step))
+python data_vllm_70b_v3.py \
+  --input_data_file ../data/quick-discourse-prompts-to-run.csv.gz \
+  --id_col url \
+  --prompt_col prompt \
+  --output_file  ../data/v3_source_summaries/discourse-labeled/discourse_labeled.txt \
 
-for ((i=0; i<iterations; i++)); do
-    python data_vllm_70b_v3.py \
-      --start_idx ${start_idx} \
-      --end_idx ${end_idx} \
-      --id_col article_url \
-      --text_col article_text \
-      --data_dir ../data \
-      --source_data_file   full-source-scored-data.jsonl.gz \
-      --output_file  ../data/v3_source_summaries/test_sources.txt \
-      --do_article_gen \
-      --do_source_summ \
-      --do_narr_key_prompt \
-      --do_cent_prompt 
-
-    start_idx=${end_idx}
-    end_idx=$((start_idx + step))
-done

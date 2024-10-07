@@ -59,7 +59,7 @@ if __name__ == '__main__':
             all_sources.append(one_source)
     
     dr = MyDenseRetriever(
-        index_name=f"v3-SFR-{args.start_idx}_{args.end_idx}",
+        index_name=f"v3_SFR_{args.start_idx}_{args.end_idx}",
         model=args.embedding_model,
         normalize=True,
         max_length=args.max_seq_length,

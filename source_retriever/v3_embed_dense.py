@@ -21,7 +21,9 @@ if __name__ == '__main__':
     #parser.add_argument("--huggingface_cache_dir", type=str, default='/project/jonmay_231/spangher/huggingface_cache', help="Path to the directory containing HuggingFace cache")
     parser.add_argument('--embedding_dim', type=int, default=None, help="The dimension of the embeddings")
     parser.add_argument("--max_seq_length", type=int, default=None, help="Maximum sequence length for the model")
-    parser.add_argument("--batch_size_to_index", type=int, help="Batch size for indexing", default=256)
+    parser.add_argument("--batch_size_to_index", type=int, help="Batch size for indexing", default=1)
+    parser.add_argument("--start_idx", type=int)
+    parser.add_argument("--end_idx", type=int)
     args = parser.parse_args()
 
     #set huggingface token
@@ -57,7 +59,7 @@ if __name__ == '__main__':
             all_sources.append(one_source)
     
     dr = MyDenseRetriever(
-        index_name="v3-ALL-SFR-index",
+        index_name=f"v3-ALL-SFR-{args.start_idx}_{args.end_idx}",
         model=args.embedding_model,
         normalize=True,
         max_length=args.max_seq_length,
@@ -66,9 +68,9 @@ if __name__ == '__main__':
         use_ann=True,
     )
 
-    print("currently indexing ALL sources. Length: ", len(all_sources))
+    #print("currently indexing ALL sources. Length: ", len(all_sources))
     dr.index(
-        collection=all_sources,  # File kind is automatically inferred
+        collection=all_sources[args.start_idx:args.end_idx],  # File kind is automatically inferred
         batch_size=args.batch_size_to_index,  # Default value
         show_progress=True,  # Default value
     )

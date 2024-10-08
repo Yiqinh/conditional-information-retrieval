@@ -9,7 +9,7 @@ embeddings = np.concatenate(
     [np.load(os.path.join(path, npy_file_path)) for npy_file_path in npy_file_paths]
 )
 
-np.save(os.path.join(here, 'merged_embeddings.npy"'), embeddings)
+np.save(os.path.join(here, 'merged_embeddings.npy'), embeddings)
 print(embeddings.shape)
 
 a = np.load(os.path.join(path, npy_file_paths[0]))

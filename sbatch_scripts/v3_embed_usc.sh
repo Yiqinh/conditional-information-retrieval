@@ -11,6 +11,6 @@
 source conda activate CIR
 pip install torch
 
-cd /project/jonmay_1426/spangher/conditional-information-retrieval
+cd /project/jonmay_1426/spangher/CIR_temp/conditional-information-retrieval
 
-python3 source_retriever/v2_embed_sparse.py
+python3 source_retriever/v3_embed_dense.py 0 380411

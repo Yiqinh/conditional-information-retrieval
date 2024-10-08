@@ -76,14 +76,11 @@ if __name__ == "__main__":
     # load the model
     sampling_params = SamplingParams(temperature=0.1, max_tokens=4096)
     tokenizer, model = load_model(args.model)
-    # store each article_url, annoted_sentences pair
-    # hold the batches
-    # Calculate the number of batches
     num_batches = (args.end_idx - args.start_idx) // BATCH_SIZE
     batch_indices = [(i * BATCH_SIZE, min((i + 1) * BATCH_SIZE, args.end_idx)) for i in range(num_batches)]
     random.shuffle(batch_indices)
 
-    for start_idx, end_idx in batch_indices:
+    for start_idx, end_idx in tqdm(batch_indices):
         dirname = os.path.dirname(args.output_file)
         if (dirname != '') and not os.path.exists(dirname):
             os.makedirs(dirname)
@@ -96,4 +93,4 @@ if __name__ == "__main__":
             df = article_df.iloc[start_idx:end_idx]
             clean_prompts = df[args.prompt_col].tolist()
             cleaned_article_outputs = model.generate(clean_prompts, sampling_params)
-            write_to_file(output_fname, df[args.id_col], cleaned_article_outputs)
+            write_to_file(output_fname, df[args.id_col] + '__' + df['Name'], cleaned_article_outputs)

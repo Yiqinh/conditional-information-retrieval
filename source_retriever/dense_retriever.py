@@ -302,6 +302,7 @@ class MyDenseRetriever(DenseRetriever):
         callback: callable = None,
         show_progress: bool = True,
         batch_size: int = 1,
+        embeddings_path: str = None,
     ):
         """Indexes the provided collection and generates an inverse index mapping.
 
@@ -320,7 +321,8 @@ class MyDenseRetriever(DenseRetriever):
             callback=callback,
             show_progress=show_progress,
             batch_size=batch_size,
-            use_gpu=use_gpu
+            use_gpu=use_gpu,
+            embeddings_path=embeddings_path,
         )
         self.id_mapping_reverse = self.make_inverse_index(self.id_mapping)
 

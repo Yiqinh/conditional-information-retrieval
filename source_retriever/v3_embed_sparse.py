@@ -42,7 +42,7 @@ if __name__ == '__main__':
     logging.info(f"Setting environment variables: RETRIV_BASE_PATH={retriv_cache_dir}")
     os.environ['RETRIV_BASE_PATH'] = retriv_cache_dir
 
-   #building the collection of sources
+    #building the collection of sources
     file_path = os.path.join(here, "v3_combined_ALL.json")
     with open(file_path, 'r') as json_file:
         articles = json.load(json_file)

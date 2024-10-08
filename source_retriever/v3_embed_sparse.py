@@ -42,32 +42,25 @@ if __name__ == '__main__':
     logging.info(f"Setting environment variables: RETRIV_BASE_PATH={retriv_cache_dir}")
     os.environ['RETRIV_BASE_PATH'] = retriv_cache_dir
 
-    info_dir = os.path.join(os.path.dirname(here), "source_summaries", "v2_info_parsed")
-    f = open(os.path.join(info_dir, "v2_test_set.json"))
-    test_data = json.load(f)
+   #building the collection of sources
+    file_path = os.path.join(here, "v3_combined_ALL.json")
+    with open(file_path, 'r') as json_file:
+        articles = json.load(json_file)
 
-    test_sources = []
-    for article in test_data:
-        for source in article['sources']:
-            if type(source['Information']) == str and type(source['Name']) == str:
-                formatted_source = {"id": article['url'] + "#" + source['Name'], "text": source['Information']}
-                test_sources.append(formatted_source)
-
-    
-    f = open(os.path.join(info_dir, "v2_train_set.json"))
-    train_data = json.load(f)
-    train_sources = []
-
-    for article in train_data:
-        for source in article['sources']:
-            if type(source['Information']) == str and type(source['Name']) == str:
-                formatted_source = {"id": article['url'] + "#" + source['Name'], "text": source['Information']}
-                train_sources.append(formatted_source)
+    all_sources = []
+    for article in articles:
+        for source in article['truth']:
+            one_source = {}
+            id = article['url'] + "#" + source['Name']
+            text = source['Text_embed']
+            one_source['id'] = id
+            one_source['text'] = text
+            all_sources.append(one_source)
 
     from retriv import SparseRetriever
 
     sr = SparseRetriever(
-        index_name="v2-ALL-sparse-index",
+        index_name="v3-ALL-BM25-index",
         model="bm25",
         min_df=1,
         tokenizer="whitespace",
@@ -80,8 +73,6 @@ if __name__ == '__main__':
         do_punctuation_removal=True,
         )
     
-    print("INDEXING SET OF: ", len(test_sources))
-    all_sources = test_sources + train_sources
     sr.index(
         collection=all_sources,  # File kind is automatically inferred
         show_progress=True,         # Default value       

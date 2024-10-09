@@ -112,23 +112,24 @@ if __name__ == "__main__":
 
             story_lead = url_to_story_lead[url]
             prompt = f"""
-                    You are a journalist working on a news article.
+                    You are helping me find relevant and diverse sources for a news article I am working on.
 
-                    **Main Topic of the Story:**
-                    {story_lead}
+                    Here is the question we started out asking at the beginning of our investigation:
+                    ```{story_lead}```
 
-                    Below are the sources currently included in the article and the information they provide:
-                    {retrieved_str}
+                    We've already interviewed these sources and they've given us this information:
+                    ```{retrieved_str}```
 
-                    Please write a single-sentence query that identifies the next informational needs for the story, focusing on the following aspects:
-                    1. Additional information required to make the story compelling.
-                    2. Other angles to explore.
-                    3. Types of sources to interview to fulfill our informational needs.
+                    We've already considered these questions:
+                    {past_queries}                  
 
-                    You have already considered these questions:
-                    {past_queries}
+                    What question should we ask next in our investigation? Please write a 1-sentence query to help us find our next source. Let's think about this step-by-step:
+                    1. What information has already been gathered? What information is missing?
+                    2. What angles have already been explored? What angles are missing?
+                    3. What kinds of sources would fulfill these missing informational needs?
 
-                    Please write the one-sentence query under the label “NEW QUERY” below your reasoning.
+                    Finally, after answering these questions, write the one-sentence query under the label "NEW QUERY".
+                    Try to keep the starting point in mind. Don't drift too far from it.
                     """
             message = [
                 {

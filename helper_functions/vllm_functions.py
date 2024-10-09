@@ -29,7 +29,7 @@ def load_model(model_id: str):
         gpu_memory_utilization=0.5,
         download_dir=os.environ["HF_HOME"], # sometimes the distributed model doesn't pay attention to the 
         enforce_eager=True,
-        max_model_len=60_000,
+        max_model_len=43_000,
     )
     return model
 

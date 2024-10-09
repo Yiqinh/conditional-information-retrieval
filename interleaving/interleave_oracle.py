@@ -72,13 +72,14 @@ if __name__ == "__main__":
     oracle_to_docs = defaultdict(list)
     url_to_oracle = defaultdict(list)
     oracle_ordering = {'Main Actor': 0, 'Analysis': 1, 'Background Information': 2, 'Subject': 3, 'Expert': 4, 'Data Resource': 5, 
-                       'Confirmation and Witness': 6, 'Anecdotes, Examples and Illustration': 7, 'Counterpoint': 8, 'Broadening Perspective': 9}
+                       'Confirmation and Witness': 6, 'Anecdotes, Examples and Illustration': 7, 'Counterpoint': 8, 'Broadening Perspective': 9, 'Start' : -1}
     
     oracle_file = '/pool001/spangher/alex/conditional-information-retrieval/interleaving/v3_combined_ALL_with_oracle.json.gz'
     with gzip.open(oracle_file, 'r') as file:
         articles = json.load(file)
         for article in articles:
             url = article['url']
+            url_to_oracle[url].append('Start')
             for doc in article['truth']:
                 id = url + "#" + doc["Name"]
                 oracle_label = doc['llama_label']
@@ -193,6 +194,8 @@ if __name__ == "__main__":
                 cur_oracle = "None"
 
             included_id_list = [id for id in oracle_to_docs.get(cur_oracle, []) if id not in article_seen_ids]
+            if i == 0:
+                included_id_list = list(included_docs)
 
             dr_result = dr.search(
                     query=new_query,
@@ -220,6 +223,6 @@ if __name__ == "__main__":
         
         print(f"DR search for round {i} complete")
         # write to json file with RESULTS from iteration i
-        fname = os.path.join(here, f"iter_{i}_SFR_V3_ORACLE_{args.start_idx}_{args.end_idx}.json")
+        fname = os.path.join(here, f"ORACLE_iter_{i}_SFR_V3_{args.start_idx}_{args.end_idx}.json")
         with open(fname, 'w') as json_file:
             json.dump(interleave_result, json_file, indent=4)

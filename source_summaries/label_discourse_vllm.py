@@ -90,7 +90,12 @@ if __name__ == "__main__":
         output_fname = f'{out_dirname}/{fname}__{start_idx}_{end_idx}{fext}'
         if not os.path.exists(output_fname):
             logging.info(f"Running prompts for batch {start_idx} to {end_idx}")
+            # create an empty file to indicate that this batch is being processed
+            with open(output_fname, 'w') as f:
+                f.write('')
             df = article_df.iloc[start_idx:end_idx]
             clean_prompts = df[args.prompt_col].tolist()
             cleaned_article_outputs = model.generate(clean_prompts, sampling_params)
             write_to_file(output_fname, df[args.id_col] + '__' + df['Name'], cleaned_article_outputs)
+        else:
+            logging.info(f"Skipping batch {start_idx} to {end_idx} as it already exists")

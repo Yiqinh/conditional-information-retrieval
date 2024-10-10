@@ -84,37 +84,38 @@ if __name__ == "__main__":
             formatted_oracles += f'"{item}": {count}\n'
 
         prompt = f"""
-            You are a journalist writing a news article. 
-            The main story of the article is:
-            {url_to_story_lead[url]}
-            
-            You are looking for diverse sources to tell a persuasive story.
-            Sources serve various narrative roles. I have defined some narrative roles below:
+        
+        You are a journalist writing a news article. 
+        The main story of the article is:
+        {url_to_story_lead[url]}
+        
+        You are looking for diverse sources to tell a persuasive story.
+        Sources serve various narrative roles. I have defined some narrative roles below:
 
-            'Main Actor',
-            'Analysis',
-            'Background Information',
-            'Subject',
-            'Expert',
-            'Data Resource',
-            'Confirmation and Witness',
-            'Anecdotes, Examples and Illustration',
-            'Counterpoint',
-            'Broadening Perspective'
+        'Main Actor',
+        'Analysis',
+        'Background Information',
+        'Subject',
+        'Expert',
+        'Data Resource',
+        'Confirmation and Witness',
+        'Anecdotes, Examples and Illustration',
+        'Counterpoint',
+        'Broadening Perspective'
 
-            I have included a large list of sources and their narrative roles.
-            Please pick out sources from this list according to this distribution of narrative roles:
-            {formatted_oracles}
+        I have included a large list of sources and their narrative roles.
+        Please pick out sources from this list according to this distribution of narrative roles:
+        {formatted_oracles}
 
-            Here is the list of sources to pick from:
-            {url_to_source_mappings[url]}
+        Here is the list of sources to pick from:
+        {url_to_source_mappings[url]}
 
-            Please output your selection of sources in a Python list of source numbers under the label "OUTPUT".
-            For example: 
+        Please output your selection of sources in a Python list of source numbers under the label "OUTPUT".
+        For example: 
 
-            OUTPUT: ["Source 1", "Source 2", "Source 3"]
+        OUTPUT: ["Source 1", "Source 2", "Source 3"]
 
-            """
+                """
         message = [
             {
                 "role": "system",

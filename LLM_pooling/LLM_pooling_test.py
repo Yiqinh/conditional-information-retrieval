@@ -35,7 +35,7 @@ if __name__ == "__main__":
     with open(file_path, 'r') as file:
         articles = json.load(file)
         for article in articles:
-            url_to_pred[article['url']] = article['truth']
+            url_to_pred[article['url']] = article['dr_sources']
 
     url_to_story_lead = {}
     test_set_file = '/pool001/spangher/alex/conditional-information-retrieval/interleaving/article_data_v3/v3_combined_TEST.json'
@@ -84,6 +84,7 @@ if __name__ == "__main__":
             formatted_oracles += f'"{item}": {count}\n\t'
 
         prompt = f"""
+        
             You are a journalist writing a news article. 
             The main story of the article is:
             {url_to_story_lead[url]}

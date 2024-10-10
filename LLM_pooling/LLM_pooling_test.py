@@ -71,7 +71,7 @@ if __name__ == "__main__":
         for s in url_to_pred[url]:
             pred_sources += f"Source {index}: {s['Text_embed']} "
             pred_sources += f"Narrative role: {text_to_oracle[text]} "
-            pred_sources += "\n"
+            pred_sources += "\n\t"
             index += 1
         url_to_source_mappings[url] = pred_sources
     
@@ -81,39 +81,38 @@ if __name__ == "__main__":
         # Format the output to display each source cluster and its count in the article
         formatted_oracles = ""
         for item, count in counter.items():
-            formatted_oracles += f'"{item}": {count}\n'
+            formatted_oracles += f'"{item}": {count}\n\t'
 
         prompt = f"""
-        
-        You are a journalist writing a news article. 
-        The main story of the article is:
-        {url_to_story_lead[url]}
-        
-        You are looking for diverse sources to tell a persuasive story.
-        Sources serve various narrative roles. I have defined some narrative roles below:
+            You are a journalist writing a news article. 
+            The main story of the article is:
+            {url_to_story_lead[url]}
+            
+            You are looking for diverse sources to tell a persuasive story.
+            Sources serve various narrative roles. I have defined some narrative roles below:
 
-        'Main Actor',
-        'Analysis',
-        'Background Information',
-        'Subject',
-        'Expert',
-        'Data Resource',
-        'Confirmation and Witness',
-        'Anecdotes, Examples and Illustration',
-        'Counterpoint',
-        'Broadening Perspective'
+            'Main Actor',
+            'Analysis',
+            'Background Information',
+            'Subject',
+            'Expert',
+            'Data Resource',
+            'Confirmation and Witness',
+            'Anecdotes, Examples and Illustration',
+            'Counterpoint',
+            'Broadening Perspective'
 
-        I have included a large list of sources and their narrative roles.
-        Please pick out sources from this list according to this distribution of narrative roles:
-        {formatted_oracles}
+            I have included a large list of sources and their narrative roles.
+            Please pick out sources from this list according to this distribution of narrative roles:
+            {formatted_oracles}
 
-        Here is the list of sources to pick from:
-        {url_to_source_mappings[url]}
+            Here is the list of sources to pick from:
+            {url_to_source_mappings[url]}
 
-        Please output your selection of sources in a Python list of source numbers under the label "OUTPUT".
-        For example: 
+            Please output your selection of sources in a Python list of source numbers under the label "OUTPUT".
+            For example: 
 
-        OUTPUT: ["Source 1", "Source 2", "Source 3"]
+            OUTPUT: ["Source 1", "Source 2", "Source 3"]
 
                 """
         message = [

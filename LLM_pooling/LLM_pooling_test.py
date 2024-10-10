@@ -69,7 +69,7 @@ if __name__ == "__main__":
         pred_sources = ""
         index = 1
         for s in url_to_pred[url]:
-            pred_sources += f"Source {index}: {s['Text_embed']} "
+            pred_sources += f"Source {index}: {s['text']} "
             pred_sources += f"Narrative role: {text_to_oracle[text]} "
             pred_sources += "\n\t"
             index += 1

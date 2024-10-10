@@ -172,7 +172,7 @@ if __name__ == "__main__":
             combined = list(dr_result)
             combined.extend(url_to_searched_docs[url]) # last 10 sources + new 10 sources retrieved
             combined.sort(key=lambda x: -float(x['score']))
-            new_top_k = combined[:10]
+            new_top_k = combined
             for source in new_top_k:
                 source["score"] = str(source["score"]) #convert to string to write to json file.
             
@@ -187,7 +187,7 @@ if __name__ == "__main__":
         
         print(f"DR search for round {i} complete")
         # write to json file with RESULTS from iteration i
-        fname = os.path.join(here, f"iter_{i}_SFR_V3_{args.start_idx}_{args.end_idx}.json")
+        fname = os.path.join(here, f"Pooling_iter_{i}_SFR_V3_{args.start_idx}_{args.end_idx}.json")
         with open(fname, 'w') as json_file:
             json.dump(interleave_result, json_file, indent=4)
 

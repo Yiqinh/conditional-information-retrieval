@@ -16,12 +16,7 @@ logging.basicConfig(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--hf_config', type=str, default=os.path.join(os.path.dirname(here), 'config.json'), help="The path to the json file containing HF_TOKEN")
-    parser.add_argument("--index_name", type=str, help="Name of the index to load", default="v3_SFR_MERGED_index")
-    parser.add_argument("--retriv_cache_dir", type=str, default=here, help="Path to the directory containing indices")
-    parser.add_argument("--iterations", type=int, help="Number of iterations to augment query and retrieve sources", default=10)
     parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3.1-70B-Instruct")    
-    parser.add_argument("--start_idx", type=int)
-    parser.add_argument("--end_idx", type=int)
     args = parser.parse_args()
 
     #set huggingface token
@@ -46,8 +41,7 @@ if __name__ == "__main__":
     test_set_file = '/pool001/spangher/alex/conditional-information-retrieval/interleaving/article_data_v3/v3_combined_TEST.json'
     with open(test_set_file, 'r') as file:
         articles = json.load(file)
-        for i in range(args.start_idx, args.end_idx):
-            article = articles[i]
+        for article in articles:
             url = article['url']
             initial_query = article['query']
             if initial_query == "":
@@ -120,7 +114,7 @@ if __name__ == "__main__":
 
             OUTPUT: ["Source 1", "Source 2", "Source 3"]
 
-                    """
+            """
         message = [
             {
                 "role": "system",

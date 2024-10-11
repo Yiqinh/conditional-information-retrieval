@@ -170,9 +170,10 @@ if __name__ == "__main__":
                 },
             ]
             cluster_messages.append(message)
+            
+        url_to_new_cluster = {}
         if i != 0:
             cluster_response = infer(model=LLM_model, messages=cluster_messages, model_id=args.model, batch_size=100)
-            url_to_new_cluster = {}
             for url, output in zip(article_order, cluster_response):
                 cur_cluster = output.split("NEW SOURCE:")[-1]
                 url_to_new_cluster[url] = cur_cluster

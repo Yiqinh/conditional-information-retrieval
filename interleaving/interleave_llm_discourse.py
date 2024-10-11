@@ -80,6 +80,7 @@ if __name__ == "__main__":
     #ORACLE SETUP
     from collections import defaultdict
     oracle_to_docs = defaultdict(list)
+    text_to_oracle_label = {}
     oracle_file = '/pool001/spangher/alex/conditional-information-retrieval/interleaving/v3_combined_ALL_with_oracle.json.gz'
     with gzip.open(oracle_file, 'r') as file:
         articles = json.load(file)
@@ -89,6 +90,8 @@ if __name__ == "__main__":
                 id = url + "#" + doc["Name"]
                 oracle_label = doc['llama_label']
                 oracle_to_docs[oracle_label].append(id)
+                text = doc['Text_embed']
+                text_to_oracle_label[text] = oracle_label
     
     # LOAD THE DENSE RETRIEVER
     sys.path.append(os.path.join(os.path.dirname(here), "source_retriever"))
@@ -119,13 +122,12 @@ if __name__ == "__main__":
         for url in article_order:
             retrieved_str = ""
             dr_list = url_to_searched_docs[url]
-            index = 0
             for source_dict in dr_list:
                 source_text = source_dict['text']
-                retrieved_str += f"Source {index}: "
+                source_type = text_to_oracle_label[source_text]
+                retrieved_str += f"{source_type}: "
                 retrieved_str += source_text
                 retrieved_str += '\n'
-                index += 1
             
             index = 0
             past_queries = ""
@@ -194,13 +196,12 @@ if __name__ == "__main__":
         for url in article_order:
             retrieved_str = ""
             dr_list = url_to_searched_docs[url]
-            index = 0
             for source_dict in dr_list:
                 source_text = source_dict['text']
-                retrieved_str += f"Source {index}: "
+                source_type = text_to_oracle_label[source_text]
+                retrieved_str += f"{source_type}: "
                 retrieved_str += source_text
                 retrieved_str += '\n'
-                index += 1
             
             index = 0
             past_queries = ""

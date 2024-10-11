@@ -132,7 +132,7 @@ if __name__ == "__main__":
                 We began this investigation with the following question:
                 {story_lead}
 
-                We've already consulted a range of sources from different categories, and they've provided us with the following information:
+                We have already consulted a range of sources from different categories, and they have provided us with the following information:
                 {retrieved_str}
 
                 These are the questions we have already explored:
@@ -206,7 +206,7 @@ if __name__ == "__main__":
                 We began this investigation with the following question:
                 {story_lead}
 
-                We've already consulted a range of sources, and they've provided us with the following information:
+                We have already consulted a range of sources, and they have provided us with the following information:
                 {retrieved_str}
 
                 These are the questions we have already explored:

@@ -176,15 +176,16 @@ if __name__ == "__main__":
             new_top_k = combined
             for source in new_top_k:
                 source["score"] = str(source["score"]) #convert to string to write to json file.
-            
-            one_article = {}
-            one_article['url'] = url
-            one_article['query'] = new_query
-            one_article['dr_sources'] = new_top_k
-            
-            interleave_result.append(one_article)
+
             url_to_searched_docs[url] = new_top_k
             url_to_past_queries[url].append(new_query)
+
+            one_article = {}
+            one_article['url'] = url
+            one_article['initial_story'] = url_to_story_lead[url]
+            one_article['queries'] = url_to_past_queries[url]
+            one_article['dr_sources'] = new_top_k
+            interleave_result.append(one_article)
         
         print(f"DR search for round {i} complete")
         # write to json file with RESULTS from iteration i

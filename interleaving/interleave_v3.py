@@ -23,10 +23,12 @@ if __name__ == "__main__":
     parser.add_argument("--index_name", type=str, help="Name of the index to load", default="v3_SFR_MERGED_index")
     parser.add_argument("--retriv_cache_dir", type=str, default=here, help="Path to the directory containing indices")
     parser.add_argument("--iterations", type=int, help="Number of iterations to augment query and retrieve sources", default=10)
-    parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3.1-70B-Instruct")    
+    parser.add_argument("--top_k", type=str, default=10)    
+    parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3.1-70B-Instruct")
     parser.add_argument("--start_idx", type=int)
     parser.add_argument("--end_idx", type=int)
     args = parser.parse_args()
+    print(vars(args))
 
     #set huggingface token
     config_data = json.load(open(args.hf_config))
@@ -112,25 +114,24 @@ if __name__ == "__main__":
 
             story_lead = url_to_story_lead[url]
             prompt = f"""
-                    You are helping me find relevant and diverse sources for a news article I am working on.
+                    Role: You are helping to identify the next source we should consult for a news article.
 
-                    Here is the question we started out asking at the beginning of our investigation:
-                    ```{story_lead}```
+                    We began this investigation with the following question:
+                    {story_lead}
 
-                    We've already interviewed these sources and they've given us this information:
-                    ```{retrieved_str}```
+                    We've already consulted a range of sources, and they've provided us with the following information:
+                    {retrieved_str}
 
-                    We've already considered these questions:
-                    {past_queries}                  
+                    These are the questions we have already explored:
+                    {past_queries}
 
-                    What question should we ask next in our investigation? Please write a 1-sentence query to help us find our next source. Let's think about this step-by-step:
-                    1. What information has already been gathered? What information is missing?
-                    2. What angles have already been explored? What angles are missing?
-                    3. What kinds of sources would fulfill these missing informational needs?
+                    Now, we need to determine our next step. Please craft a one-sentence query for the next source we should consult, following these steps:
+                    1. Assess the information already gathered and identify what is still missing.
+                    2. Review the angles we've explored and determine which perspectives or areas are yet to be covered.
+                    3. Consider what type of source will help address these informational gaps.
 
-                    Finally, after answering these questions, write the one-sentence query under the label "NEW QUERY".
-                    Try to keep the starting point in mind. Don't drift too far from it.
-                    """
+                    Please provide the one-sentence query under the label "NEW QUERY:". 
+                        """
             message = [
                 {
                     "role": "system",
@@ -166,7 +167,7 @@ if __name__ == "__main__":
                     query=new_query,
                     return_docs=True,
                     include_id_list=included_id_list,
-                    cutoff=10)
+                    cutoff=args.top_k)
 
             # Only taking the top 10 scores from last two retrievals
             combined = list(dr_result)
@@ -187,7 +188,7 @@ if __name__ == "__main__":
         
         print(f"DR search for round {i} complete")
         # write to json file with RESULTS from iteration i
-        fname = os.path.join(here, f"Pooling_iter_{i}_SFR_V3_{args.start_idx}_{args.end_idx}.json")
+        fname = os.path.join(here, f"K_100_iter_{i}_SFR_V3_{args.start_idx}_{args.end_idx}.json")
         with open(fname, 'w') as json_file:
             json.dump(interleave_result, json_file, indent=4)
 

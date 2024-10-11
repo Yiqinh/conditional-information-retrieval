@@ -119,7 +119,7 @@ if __name__ == "__main__":
                     We began this investigation with the following question:
                     {story_lead}
 
-                    We've already consulted a range of sources, and they've provided us with the following information:
+                    We have already consulted a range of sources, and they have provided us with the following information:
                     {retrieved_str}
 
                     These are the questions we have already explored:
@@ -127,7 +127,7 @@ if __name__ == "__main__":
 
                     Now, we need to determine our next step. Please craft a one-sentence query for the next source we should consult, following these steps:
                     1. Assess the information already gathered and identify what is still missing.
-                    2. Review the angles we've explored and determine which perspectives or areas are yet to be covered.
+                    2. Review the angles we have explored and determine which perspectives or areas are yet to be covered.
                     3. Consider what type of source will help address these informational gaps.
 
                     Please provide the one-sentence query under the label "NEW QUERY:". 

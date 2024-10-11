@@ -140,7 +140,7 @@ if __name__ == "__main__":
 
                 Now, we need to determine the next source we should consult, following these steps:
                 1. Assess the information already gathered and identify what is still missing.
-                2. Review the angles we've explored and determine which perspectives or areas are yet to be covered.
+                2. Review the angles we have explored and determine which perspectives or areas are yet to be covered.
                 3. Consider what type of source will help address these informational gaps.
                 
                 Here are the types of sources in our database:
@@ -214,7 +214,7 @@ if __name__ == "__main__":
 
                 Now, we need to determine our next step. Please craft a one-sentence query for the next source we should consult, following these steps:
                 1. Assess the information already gathered and identify what is still missing.
-                2. Review the angles we've explored and determine which perspectives or areas are yet to be covered.
+                2. Review the angles we have explored and determine which perspectives or areas are yet to be covered.
                 3. Consider what type of source will help address these informational gaps.
 
                 We are now particularly interested in this source type:

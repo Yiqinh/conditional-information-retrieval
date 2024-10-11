@@ -262,7 +262,7 @@ if __name__ == "__main__":
         for url in tqdm(article_order):
             new_query = url_to_new_query[url]
             article_seen_ids = [d['id'] for d in url_to_searched_docs[url]] #current retrieval pool for this article. Do not include these in search
-            cur_oracle = url_to_new_cluster.get(url)
+            cur_oracle = url_to_new_cluster.get(url, "None")
 
             if i == 0:
                 included_id_list = list(included_docs)

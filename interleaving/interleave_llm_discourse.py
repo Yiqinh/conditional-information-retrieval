@@ -18,6 +18,16 @@ logging.basicConfig(
     datefmt="%m/%d/%Y %H:%M:%S",
     level=logging.INFO,
 )
+from Levenshtein import distance as levenshtein_distance
+def find_most_overlapping_string(input_string, string_list):
+    best_match = "None"
+    best_score = float('inf')
+    for string in string_list:
+        score = levenshtein_distance(input_string, string)
+        if score < best_score:
+            best_score = score
+            best_match = string
+    return best_match
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -100,6 +110,7 @@ if __name__ == "__main__":
     LLM_model = load_model(args.model)
     print("Loaded the LLM Model...")
 
+    cluster_list = ['Main Actor', 'Analysis', 'Background Information', 'Subject', 'Expert', 'Data Resource', 'Confirmation and Witness', 'Anecdotes, Examples and Illustration', 'Counterpoint', 'Broadening Perspective', "None"]
     article_order = [url for url, val in url_to_story_lead.items()] #ordering of URLS
     url_to_query_clusters = defaultdict(list)
     # BEGIN INTERLEAVING EXPERIMENT
@@ -170,12 +181,13 @@ if __name__ == "__main__":
                 },
             ]
             cluster_messages.append(message)
-            
+
         url_to_new_cluster = {}
         if i != 0:
             cluster_response = infer(model=LLM_model, messages=cluster_messages, model_id=args.model, batch_size=100)
             for url, output in zip(article_order, cluster_response):
-                cur_cluster = output.split("NEW SOURCE:")[-1]
+                llm_cluster = output.split("NEW SOURCE: ")[-1]
+                cur_cluster = find_most_overlapping_string(llm_cluster, cluster_list)
                 url_to_new_cluster[url] = cur_cluster
                 
         query_messages = []
@@ -239,23 +251,18 @@ if __name__ == "__main__":
         if i != 0:
             response = infer(model=LLM_model, messages=query_messages, model_id=args.model, batch_size=100)
             for url, output in zip(article_order, response):
-                url_to_new_query[url] = output.split("NEW QUERY:")[-1]
+                url_to_new_query[url] = output.split("NEW QUERY: ")[-1]
         if i == 0:
             for url in article_order:
                 url_to_new_query[url] = url_to_story_lead[url]
         print(f"Query augmentation {i} has been completed")
-
-        cluster_list = ['Main Actor', 'Analysis', 'Background Information', 'Subject', 'Expert', 'Data Resource', 'Confirmation and Witness', 'Anecdotes, Examples and Illustration', 'Counterpoint', 'Broadening Perspective', "None"]
 
         interleave_result = []
         print(f"Starting another round of DR search for augmented query {i}")
         for url in tqdm(article_order):
             new_query = url_to_new_query[url]
             article_seen_ids = [d['id'] for d in url_to_searched_docs[url]] #current retrieval pool for this article. Do not include these in search
-            
-            target_cluster = url_to_new_cluster.get(url, 'None')
-            best_match = difflib.get_close_matches(target_cluster, cluster_list, n=1, cutoff=0.5)
-            cur_oracle = cluster_list.index(best_match[0])
+            cur_oracle = url_to_new_cluster.get(url)
 
             if i == 0:
                 included_id_list = list(included_docs)
@@ -268,11 +275,10 @@ if __name__ == "__main__":
                     include_id_list=included_id_list,
                     cutoff=10)
 
-            # Only taking the top 10 scores from last two retrievals
             combined = list(dr_result)
-            combined.extend(url_to_searched_docs[url]) # last 10 sources + new 10 sources retrieved
+            combined.extend(url_to_searched_docs[url])
             combined.sort(key=lambda x: -float(x['score']))
-            new_top_k = combined #[:10]
+            new_top_k = combined
             for source in new_top_k:
                 source["score"] = str(source["score"]) #convert to string to write to json file.
 

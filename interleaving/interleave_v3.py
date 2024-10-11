@@ -169,9 +169,8 @@ if __name__ == "__main__":
                     include_id_list=included_id_list,
                     cutoff=args.top_k)
 
-            # Only taking the top 10 scores from last two retrievals
             combined = list(dr_result)
-            combined.extend(url_to_searched_docs[url]) # last 10 sources + new 10 sources retrieved
+            combined.extend(url_to_searched_docs[url])
             combined.sort(key=lambda x: -float(x['score']))
             new_top_k = combined
             for source in new_top_k:

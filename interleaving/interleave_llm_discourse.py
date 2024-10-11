@@ -1,9 +1,11 @@
 import json
+import gzip
 import sys
 import os
 import logging
 import argparse
 from tqdm.auto import tqdm
+import difflib
 
 """
     Starting from the initial query, returns json files storing the augmented queries 
@@ -55,7 +57,6 @@ if __name__ == "__main__":
 
     # Add all source documents from each article to the TOTAL pool of sources
     included_docs = set() 
-    
     all_articles_file = '/pool001/spangher/alex/conditional-information-retrieval/interleaving/article_data_v3/v3_combined_ALL.json'
     with open(all_articles_file, 'r') as file:
         articles = json.load(file)
@@ -66,7 +67,19 @@ if __name__ == "__main__":
                 included_docs.add(id)
 
     print(f"A TOTAL OF {len(included_docs)} INCLUDED IN THE SEARCH")
-
+    #ORACLE SETUP
+    from collections import defaultdict
+    oracle_to_docs = defaultdict(list)
+    oracle_file = '/pool001/spangher/alex/conditional-information-retrieval/interleaving/v3_combined_ALL_with_oracle.json.gz'
+    with gzip.open(oracle_file, 'r') as file:
+        articles = json.load(file)
+        for article in articles:
+            url = article['url']
+            for doc in article['truth']:
+                id = url + "#" + doc["Name"]
+                oracle_label = doc['llama_label']
+                oracle_to_docs[oracle_label].append(id)
+    
     # LOAD THE DENSE RETRIEVER
     sys.path.append(os.path.join(os.path.dirname(here), "source_retriever"))
     # needs to be imported here to make sure the environment variables are set before the retriv library sets certain defaults
@@ -90,7 +103,7 @@ if __name__ == "__main__":
     article_order = [url for url, val in url_to_story_lead.items()] #ordering of URLS
     # BEGIN INTERLEAVING EXPERIMENT
     for i in range(args.iterations):
-        messages = []
+        cluster_messages = []
         for url in article_order:
             retrieved_str = ""
             dr_list = url_to_searched_docs[url]
@@ -111,41 +124,40 @@ if __name__ == "__main__":
                 index += 1
 
             story_lead = url_to_story_lead[url]
+
             prompt = f"""
-                    You are helping me find relevant and diverse sources for a news article I am working on.
+                Role: You are helping to identify the next source we should consult for a news article.
 
-                    Here is the question we started out asking at the beginning of our investigation:
-                    ```{story_lead}```
+                We began this investigation with the following question:
+                {story_lead}
 
-                    We've already interviewed these sources and they've given us this information:
-                    ```{retrieved_str}```
+                We've already consulted a range of sources from different categories, and they've provided us with the following information:
+                {retrieved_str}
 
-                    We've already considered these questions:
-                    ```{past_queries}```              
+                These are the questions we have already explored:
+                {past_queries}
 
-                    What question should we ask next in our investigation? Please write a 1-sentence query to help us find our next source. Let's think about this step-by-step:
-                    1. What information has already been gathered? What information is missing?
-                    2. What angles have already been explored? What angles are missing?
-                    3. What kinds of sources would fulfill these missing informational needs?
+                Now, we need to determine the next source we should consult, following these steps:
+                1. Assess the information already gathered and identify what is still missing.
+                2. Review the angles we've explored and determine which perspectives or areas are yet to be covered.
+                3. Consider what type of source will help address these informational gaps.
+                
+                Here are the types of sources in our database:
 
-                    We have a source database with the following kinds of sources:
+                'Main Actor',
+                'Analysis',
+                'Background Information',
+                'Subject',
+                'Expert',
+                'Data Resource',
+                'Confirmation and Witness',
+                'Anecdotes, Examples and Illustration',
+                'Counterpoint',
+                'Broadening Perspective'
 
-                    'Main Actor',
-                    'Analysis',
-                    'Background Information',
-                    'Subject',
-                    'Expert',
-                    'Data Resource',
-                    'Confirmation and Witness',
-                    'Anecdotes, Examples and Illustration',
-                    'Counterpoint',
-                    'Broadening Perspective'
-
-                    First pick a source role that you think will be necessary to tell this story.
-                    Then formulate the query based on that source role. You can mention the source role in the query.
-
-                    Please write the one-sentence query under the label "NEW QUERY".
-                    """
+                Identify a source type from the list above that we should consult next.
+                Please write the source type under the label "NEW SOURCE:".
+                """
             message = [
                 {
                     "role": "system",
@@ -156,12 +168,74 @@ if __name__ == "__main__":
                     "content": prompt
                 },
             ]
-            messages.append(message)
-        
+            cluster_messages.append(message)
+        if i != 0:
+            cluster_response = infer(model=LLM_model, messages=cluster_messages, model_id=args.model, batch_size=100)
+            url_to_new_cluster = {}
+            for url, output in zip(article_order, cluster_response):
+                cur_cluster = output.split("NEW SOURCE:")[-1]
+                url_to_new_cluster[url] = cur_cluster
+                
+        query_messages = []
+        for url in article_order:
+            retrieved_str = ""
+            dr_list = url_to_searched_docs[url]
+            index = 0
+            for source_dict in dr_list:
+                source_text = source_dict['text']
+                retrieved_str += f"Source {index}: "
+                retrieved_str += source_text
+                retrieved_str += '\n'
+                index += 1
+            
+            index = 0
+            past_queries = ""
+            for old_query in url_to_past_queries[url]:
+                past_queries += f"{index}. "
+                past_queries += old_query
+                past_queries += '\n'
+                index += 1
+                
+            story_lead = url_to_story_lead[url]
+            cluster = url_to_new_cluster.get(url, "None")
+
+            prompt = f"""
+                Role: You are helping to identify the next source we should consult for a news article.
+
+                We began this investigation with the following question:
+                {story_lead}
+
+                We've already consulted a range of sources, and they've provided us with the following information:
+                {retrieved_str}
+
+                These are the questions we have already explored:
+                {past_queries}
+
+                Now, we need to determine our next step. Please craft a one-sentence query for the next source we should consult, following these steps:
+                1. Assess the information already gathered and identify what is still missing.
+                2. Review the angles we've explored and determine which perspectives or areas are yet to be covered.
+                3. Consider what type of source will help address these informational gaps.
+
+                We are now particularly interested in this source type:
+                {cluster}
+
+                Please provide the one-sentence query under the label "NEW QUERY:".  
+                """
+            message = [
+                {
+                    "role": "system",
+                    "content": "You are an experienced journalist",
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                },
+            ]
+            query_messages.append(message)
         # Infer the new query using LLM agent
         url_to_new_query = {}
         if i != 0:
-            response = infer(model=LLM_model, messages=messages, model_id=args.model, batch_size=100)
+            response = infer(model=LLM_model, messages=query_messages, model_id=args.model, batch_size=100)
             for url, output in zip(article_order, response):
                 url_to_new_query[url] = output.split("NEW QUERY:")[-1]
         if i == 0:
@@ -169,13 +243,22 @@ if __name__ == "__main__":
                 url_to_new_query[url] = url_to_story_lead[url]
         print(f"Query augmentation {i} has been completed")
 
-        interleave_result = []
+        cluster_list = ['Main Actor', 'Analysis', 'Background Information', 'Subject', 'Expert', 'Data Resource', 'Confirmation and Witness', 'Anecdotes, Examples and Illustration', 'Counterpoint', 'Broadening Perspective', "None"]
 
+        interleave_result = []
         print(f"Starting another round of DR search for augmented query {i}")
         for url in tqdm(article_order):
             new_query = url_to_new_query[url]
             article_seen_ids = [d['id'] for d in url_to_searched_docs[url]] #current retrieval pool for this article. Do not include these in search
-            included_id_list = [id for id in included_docs if id not in article_seen_ids]
+            
+            target_cluster = url_to_new_cluster.get(url, 'None')
+            best_match = difflib.get_close_matches(target_cluster, cluster_list, n=1, cutoff=0.5)
+            cur_oracle = cluster_list.index(best_match[0])
+
+            if i == 0:
+                included_id_list = list(included_docs)
+            else:
+                included_id_list = [id for id in oracle_to_docs[cur_oracle] if id not in article_seen_ids]
 
             dr_result = dr.search(
                     query=new_query,
@@ -187,13 +270,14 @@ if __name__ == "__main__":
             combined = list(dr_result)
             combined.extend(url_to_searched_docs[url]) # last 10 sources + new 10 sources retrieved
             combined.sort(key=lambda x: -float(x['score']))
-            new_top_k = combined
+            new_top_k = combined #[:10]
             for source in new_top_k:
                 source["score"] = str(source["score"]) #convert to string to write to json file.
             
             one_article = {}
             one_article['url'] = url
             one_article['query'] = new_query
+            one_article['query_cluster'] = cur_oracle
             one_article['dr_sources'] = new_top_k
             
             interleave_result.append(one_article)
@@ -202,6 +286,6 @@ if __name__ == "__main__":
         
         print(f"DR search for round {i} complete")
         # write to json file with RESULTS from iteration i
-        fname = os.path.join(here, f"interleave_plus_iter_{i}_SFR_{args.start_idx}_{args.end_idx}.json")
+        fname = os.path.join(here, f"LLM_discourse_{i}_SFR_{args.start_idx}_{args.end_idx}.json")
         with open(fname, 'w') as json_file:
             json.dump(interleave_result, json_file, indent=4)

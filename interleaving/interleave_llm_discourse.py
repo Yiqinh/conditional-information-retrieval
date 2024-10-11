@@ -298,6 +298,6 @@ if __name__ == "__main__":
         
         print(f"DR search for round {i} complete")
         # write to json file with RESULTS from iteration i
-        fname = os.path.join(here, f"LLM_discourse_{i}_SFR_{args.start_idx}_{args.end_idx}.json")
+        fname = os.path.join(here, f"LLM_discourse2_{i}_SFR_{args.start_idx}_{args.end_idx}.json")
         with open(fname, 'w') as json_file:
             json.dump(interleave_result, json_file, indent=4)

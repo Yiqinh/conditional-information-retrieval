@@ -153,11 +153,11 @@ if __name__ == "__main__":
             selected_row = df[df['query'] == url_to_story_lead[url]]
             article_cluster_pred = selected_row.squeeze()
 
-            cluster_pred += cluster_to_dist(int(article_cluster_pred['cluster_pred_1']))
+            cluster_pred += cluster_to_dist[int(article_cluster_pred['cluster_pred_1'])]
             cluster_pred += "\n"
-            cluster_pred += cluster_to_dist(int(article_cluster_pred['cluster_pred_2']))
+            cluster_pred += cluster_to_dist[int(article_cluster_pred['cluster_pred_2'])]
             cluster_pred += "\n"
-            cluster_pred += cluster_to_dist(int(article_cluster_pred['cluster_pred_3']))
+            cluster_pred += cluster_to_dist[int(article_cluster_pred['cluster_pred_3'])]
 
             prompt = f"""
                 Role: You are helping to identify the next source we should investigate for a news article.

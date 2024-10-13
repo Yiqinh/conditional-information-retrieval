@@ -1,5 +1,4 @@
 import json
-import gzip
 import sys
 import os
 import logging
@@ -67,25 +66,6 @@ if __name__ == "__main__":
                 included_docs.add(id)
 
     print(f"A TOTAL OF {len(included_docs)} INCLUDED IN THE SEARCH")
-    #ORACLE SETUP
-    from collections import defaultdict
-    oracle_to_docs = defaultdict(list)
-    url_to_oracle = defaultdict(list)
-    oracle_ordering = {'Main Actor': 0, 'Analysis': 1, 'Background Information': 2, 'Subject': 3, 'Expert': 4, 'Data Resource': 5, 
-                       'Confirmation and Witness': 6, 'Anecdotes, Examples and Illustration': 7, 'Counterpoint': 8, 'Broadening Perspective': 9, 'Start' : -1}
-    
-    oracle_file = '/pool001/spangher/alex/conditional-information-retrieval/interleaving/v3_combined_ALL_with_oracle.json.gz'
-    with gzip.open(oracle_file, 'r') as file:
-        articles = json.load(file)
-        for article in articles:
-            url = article['url']
-            url_to_oracle[url].append('Start')
-            for doc in article['truth']:
-                id = url + "#" + doc["Name"]
-                oracle_label = doc['llama_label']
-                oracle_to_docs[oracle_label].append(id)
-                url_to_oracle[url].append(oracle_label)
-            url_to_oracle[url].sort(key=lambda x: oracle_ordering.get(x, 100))
 
     # LOAD THE DENSE RETRIEVER
     sys.path.append(os.path.join(os.path.dirname(here), "source_retriever"))
@@ -131,32 +111,40 @@ if __name__ == "__main__":
                 index += 1
 
             story_lead = url_to_story_lead[url]
-            if i < len(url_to_oracle[url]):
-                cur_oracle = url_to_oracle[url][i]
-            else:
-                cur_oracle = "None"
-
             prompt = f"""
-                You are helping me find relevant and diverse sources for a news article I am working on.
+                    You are helping me find relevant and diverse sources for a news article I am working on.
 
-                Here is the question we started out asking at the beginning of our investigation:
-                ```{story_lead}```
+                    Here is the question we started out asking at the beginning of our investigation:
+                    ```{story_lead}```
 
-                We've already interviewed these sources and they've given us this information:
-                {retrieved_str}
+                    We've already interviewed these sources and they've given us this information:
+                    ```{retrieved_str}```
 
-                We've already considered these questions:
-                {past_queries}
+                    We've already considered these questions:
+                    ```{past_queries}```              
 
-                Take into account: We are specifically looking for:
-                ```{cur_oracle}```
+                    What question should we ask next in our investigation? Please write a 1-sentence query to help us find our next source. Let's think about this step-by-step:
+                    1. What information has already been gathered? What information is missing?
+                    2. What angles have already been explored? What angles are missing?
+                    3. What kinds of sources would fulfill these missing informational needs?
 
-                Please write a 1-sentence query to help us find our next source. Let's think about this step-by-step:
-                1. What information has already been gathered? What information is missing?
-                2. What angles have already been explored? What angles are missing?
-                3. What kinds of sources would fulfill these missing informational needs?
+                    We have a source database with the following kinds of sources:
 
-                Finally, after answering these questions, write the one-sentence query under the label "NEW QUERY".
+                    'Main Actor',
+                    'Analysis',
+                    'Background Information',
+                    'Subject',
+                    'Expert',
+                    'Data Resource',
+                    'Confirmation and Witness',
+                    'Anecdotes, Examples and Illustration',
+                    'Counterpoint',
+                    'Broadening Perspective'
+
+                    First pick a source role that you think will be necessary to tell this story.
+                    Then formulate the query based on that source role. You can mention the source role in the query.
+
+                    Please write the one-sentence query under the label "NEW QUERY".
                     """
             message = [
                 {
@@ -187,15 +175,7 @@ if __name__ == "__main__":
         for url in tqdm(article_order):
             new_query = url_to_new_query[url]
             article_seen_ids = [d['id'] for d in url_to_searched_docs[url]] #current retrieval pool for this article. Do not include these in search
-            
-            if i < len(url_to_oracle[url]):
-                cur_oracle = url_to_oracle[url][i]
-            else:
-                cur_oracle = "None"
-
-            included_id_list = [id for id in oracle_to_docs.get(cur_oracle, []) if id not in article_seen_ids]
-            if i == 0:
-                included_id_list = list(included_docs)
+            included_id_list = [id for id in included_docs if id not in article_seen_ids]
 
             dr_result = dr.search(
                     query=new_query,
@@ -207,7 +187,7 @@ if __name__ == "__main__":
             combined = list(dr_result)
             combined.extend(url_to_searched_docs[url]) # last 10 sources + new 10 sources retrieved
             combined.sort(key=lambda x: -float(x['score']))
-            new_top_k = combined #[:10]
+            new_top_k = combined
             for source in new_top_k:
                 source["score"] = str(source["score"]) #convert to string to write to json file.
             
@@ -215,7 +195,6 @@ if __name__ == "__main__":
             one_article['url'] = url
             one_article['query'] = new_query
             one_article['dr_sources'] = new_top_k
-            one_article['oracle'] = cur_oracle
             
             interleave_result.append(one_article)
             url_to_searched_docs[url] = new_top_k
@@ -223,6 +202,6 @@ if __name__ == "__main__":
         
         print(f"DR search for round {i} complete")
         # write to json file with RESULTS from iteration i
-        fname = os.path.join(here, f"ORACLE_iter_{i}_SFR_V3_{args.start_idx}_{args.end_idx}.json")
+        fname = os.path.join(here, f"interleave_plus_iter_{i}_SFR_{args.start_idx}_{args.end_idx}.json")
         with open(fname, 'w') as json_file:
             json.dump(interleave_result, json_file, indent=4)

@@ -26,10 +26,10 @@ def load_model(model_id: str):
         model_id,
         dtype=torch.float16,
         tensor_parallel_size=4,#torch.cuda.device_count(),
-        #gpu_memory_utilization=0.5,
-        download_dir=os.environ["HF_HOME"], # sometimes the distributed model doesn't pay attention to the 
+        gpu_memory_utilization=0.5,
+        #download_dir=os.environ["HF_HOME"], # sometimes the distributed model doesn't pay attention to the 
         enforce_eager=True,
-        max_model_len=60_000,
+        max_model_len=43_000,
     )
     return model
 

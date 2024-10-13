@@ -7,9 +7,6 @@
 #SBATCH --mem=200G
 #SBATCH --partition=sched_mit_psfc_gpu_r8
 
-start_idx=$1
-end_idx=$2
-
 source /home/spangher/.bashrc
 cd /pool001/spangher/alex/conditional-information-retrieval
 conda activate py39-retrieve-vllm
@@ -17,4 +14,4 @@ conda activate py39-retrieve-vllm
 export OMP_NUM_THREADS=50
 export VLLM_WORKER_MULTIPROC_METHOD=spawn
 
-python3 interleaving/interleave_oracle.py --start_idx=${start_idx} --end_idx=${end_idx}
+python3 LLM_pooling/LLM_pooling_test.py

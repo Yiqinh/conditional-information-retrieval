@@ -22,11 +22,13 @@ if __name__ == "__main__":
     parser.add_argument('--hf_config', type=str, default=os.path.join(os.path.dirname(here), 'config.json'), help="The path to the json file containing HF_TOKEN")
     parser.add_argument("--index_name", type=str, help="Name of the index to load", default="v3_SFR_MERGED_index")
     parser.add_argument("--retriv_cache_dir", type=str, default=here, help="Path to the directory containing indices")
-    parser.add_argument("--iterations", type=int, help="Number of iterations to augment query and retrieve sources", default=10)
-    parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3.1-70B-Instruct")    
+    parser.add_argument("--iterations", type=int, help="Number of iterations to augment query and retrieve sources", default=1)
+    parser.add_argument("--top_k", type=str, default=100)    
+    parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3.1-70B-Instruct")
     parser.add_argument("--start_idx", type=int)
     parser.add_argument("--end_idx", type=int)
     args = parser.parse_args()
+    print(vars(args))
 
     #set huggingface token
     config_data = json.load(open(args.hf_config))
@@ -112,24 +114,24 @@ if __name__ == "__main__":
 
             story_lead = url_to_story_lead[url]
             prompt = f"""
-                    You are a journalist working on a news article.
+                    Role: You are helping to identify the next source we should consult for a news article.
 
-                    **Main Topic of the Story:**
+                    We began this investigation with the following question:
                     {story_lead}
 
-                    Below are the sources currently included in the article and the information they provide:
+                    We have already consulted a range of sources, and they have provided us with the following information:
                     {retrieved_str}
 
-                    Please write a single-sentence query that identifies the next informational needs for the story, focusing on the following aspects:
-                    1. Additional information required to make the story compelling.
-                    2. Other angles to explore.
-                    3. Types of sources to interview to fulfill our informational needs.
-
-                    You have already considered these questions:
+                    These are the questions we have already explored:
                     {past_queries}
 
-                    Please write the one-sentence query under the label “NEW QUERY” below your reasoning.
-                    """
+                    Now, we need to determine our next step. Please craft a one-sentence query for the next source we should consult, following these steps:
+                    1. Assess the information already gathered and identify what is still missing.
+                    2. Review the angles we have explored and determine which perspectives or areas are yet to be covered.
+                    3. Consider what type of source will help address these informational gaps.
+
+                    Please provide the one-sentence query under the label "NEW QUERY:". 
+                        """
             message = [
                 {
                     "role": "system",
@@ -165,28 +167,28 @@ if __name__ == "__main__":
                     query=new_query,
                     return_docs=True,
                     include_id_list=included_id_list,
-                    cutoff=10)
+                    cutoff=args.top_k)
 
-            # Only taking the top 10 scores from last two retrievals
             combined = list(dr_result)
-            combined.extend(url_to_searched_docs[url]) # last 10 sources + new 10 sources retrieved
+            combined.extend(url_to_searched_docs[url])
             combined.sort(key=lambda x: -float(x['score']))
-            new_top_k = combined[:10]
+            new_top_k = combined
             for source in new_top_k:
                 source["score"] = str(source["score"]) #convert to string to write to json file.
-            
-            one_article = {}
-            one_article['url'] = url
-            one_article['query'] = new_query
-            one_article['dr_sources'] = new_top_k
-            
-            interleave_result.append(one_article)
+
             url_to_searched_docs[url] = new_top_k
             url_to_past_queries[url].append(new_query)
+
+            one_article = {}
+            one_article['url'] = url
+            one_article['initial_story'] = url_to_story_lead[url]
+            one_article['queries'] = url_to_past_queries[url]
+            one_article['dr_sources'] = new_top_k
+            interleave_result.append(one_article)
         
         print(f"DR search for round {i} complete")
         # write to json file with RESULTS from iteration i
-        fname = os.path.join(here, f"iter_{i}_SFR_V3_{args.start_idx}_{args.end_idx}.json")
+        fname = os.path.join(here, f"K_100_iter_{i}_SFR_V3_{args.start_idx}_{args.end_idx}.json")
         with open(fname, 'w') as json_file:
             json.dump(interleave_result, json_file, indent=4)
 

@@ -17,4 +17,4 @@ conda activate py39-retrieve-vllm
 export OMP_NUM_THREADS=50
 export VLLM_WORKER_MULTIPROC_METHOD=spawn
 
-python3 interleaving/interleave_oracle.py --start_idx=${start_idx} --end_idx=${end_idx}
+python3 interleaving/interleave_discourse_cluster_pred.py --start_idx=${start_idx} --end_idx=${end_idx}

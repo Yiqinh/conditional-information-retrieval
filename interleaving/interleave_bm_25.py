@@ -188,7 +188,7 @@ if __name__ == "__main__":
         
         print(f"Source Search for round {i} complete")
         # write to json file with RESULTS from iteration i
-        fname = os.path.join(here, f"K_100_BM25_iter_{i}_{args.start_idx}_{args.end_idx}.json")
+        fname = os.path.join(here, f"BM25_iter_{i}_{args.start_idx}_{args.end_idx}.json")
         with open(fname, 'w') as json_file:
             json.dump(interleave_result, json_file, indent=4)
 

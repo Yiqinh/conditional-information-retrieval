@@ -23,7 +23,7 @@ if __name__ == "__main__":
     parser.add_argument("--index_name", type=str, help="Name of the index to load", default="v3-ALL-BM25-index")
     parser.add_argument("--retriv_cache_dir", type=str, default=here, help="Path to the directory containing indices")
     parser.add_argument("--iterations", type=int, help="Number of iterations to augment query and retrieve sources", default=10)
-    parser.add_argument("--top_k", type=str, default=10)    
+    parser.add_argument("--top_k", type=str, default=100)    
     parser.add_argument("--model", type=str, default="meta-llama/Meta-Llama-3.1-70B-Instruct")
     parser.add_argument("--start_idx", type=int)
     parser.add_argument("--end_idx", type=int)
@@ -69,17 +69,17 @@ if __name__ == "__main__":
 
     print(f"A TOTAL OF {len(included_docs)} INCLUDED IN THE SEARCH")
 
-    # LOAD THE DENSE RETRIEVER
+    # LOAD THE RETRIEVER
     sys.path.append(os.path.join(os.path.dirname(here), "source_retriever"))
     # needs to be imported here to make sure the environment variables are set before the retriv library sets certain defaults
-    from dense_retriever import MyDenseRetriever
+    from retriv import SparseRetriever
     # Sets the retriv base path
     retriv_cache_dir = args.retriv_cache_dir
     logging.info(f"Setting environment variables: RETRIV_BASE_PATH={retriv_cache_dir}")
     os.environ['RETRIV_BASE_PATH'] = retriv_cache_dir
 
-    dr = MyDenseRetriever.load(args.index_name) # DENSE RETRIEVER
-    print("loaded the Dense Retriever...")
+    sr = SparseRetriever.load(args.index_name)
+    print("loaded the Retriever...")
 
     # LOAD THE LLM
     helper_dir = os.path.join(os.path.dirname(here), 'helper_functions')
@@ -95,9 +95,9 @@ if __name__ == "__main__":
         messages = []
         for url in article_order:
             retrieved_str = ""
-            dr_list = url_to_searched_docs[url]
+            sr_list = url_to_searched_docs[url]
             index = 0
-            for source_dict in dr_list:
+            for source_dict in sr_list:
                 source_text = source_dict['text']
                 retrieved_str += f"Source {index}: "
                 retrieved_str += source_text
@@ -128,7 +128,7 @@ if __name__ == "__main__":
                     Now, we need to determine our next step. Please craft a one-sentence query for the next source we should investigate, following these steps:
                     1. Assess the information already gathered and identify what is still missing.
                     2. Review the angles we have explored and determine which perspectives or areas are yet to be covered.
-                    3. Consider what type of source will help address these informational gaps.
+                    3. Consider what type of source will help adsress these informational gaps.
 
                     Please provide the one-sentence query under the label "NEW QUERY:". 
                         """
@@ -157,19 +157,19 @@ if __name__ == "__main__":
 
         interleave_result = []
 
-        print(f"Starting another round of DR search for augmented query {i}")
+        print(f"Starting another round of sr search for augmented query {i}")
         for url in tqdm(article_order):
             new_query = url_to_new_query[url]
             article_seen_ids = [d['id'] for d in url_to_searched_docs[url]] #current retrieval pool for this article. Do not include these in search
             included_id_list = [id for id in included_docs if id not in article_seen_ids]
 
-            dr_result = dr.search(
+            sr_result = sr.search(
                     query=new_query,
                     return_docs=True,
                     include_id_list=included_id_list,
                     cutoff=args.top_k)
 
-            combined = list(dr_result)
+            combined = list(sr_result)
             combined.extend(url_to_searched_docs[url])
             combined.sort(key=lambda x: -float(x['score']))
             new_top_k = combined
@@ -183,12 +183,12 @@ if __name__ == "__main__":
             one_article['url'] = url
             one_article['initial_story'] = url_to_story_lead[url]
             one_article['queries'] = url_to_past_queries[url]
-            one_article['dr_sources'] = new_top_k
+            one_article['sr_sources'] = new_top_k
             interleave_result.append(one_article)
         
         print(f"Source Search for round {i} complete")
         # write to json file with RESULTS from iteration i
-        fname = os.path.join(here, f"BM25_iter_{i}_{args.start_idx}_{args.end_idx}.json")
+        fname = os.path.join(here, f"K_100_BM25_iter_{i}_{args.start_idx}_{args.end_idx}.json")
         with open(fname, 'w') as json_file:
             json.dump(interleave_result, json_file, indent=4)
 

@@ -78,7 +78,7 @@ if __name__ == "__main__":
     logging.info(f"Setting environment variables: RETRIV_BASE_PATH={retriv_cache_dir}")
     os.environ['RETRIV_BASE_PATH'] = retriv_cache_dir
 
-    sr = SparseRetriever.load(args.index_name) 
+    sr = SparseRetriever.load(args.index_name)
     print("loaded the Retriever...")
 
     # LOAD THE LLM

@@ -22,42 +22,101 @@ from utils_basic import batchify, process_source_data
 os.environ['TOKENIZERS_PARALLELISM'] = 'false'
 
 
-def compute_embeddings(source_df, embedding_model_name):
+def compute_embeddings(
+        source_df,
+        embedding_model_name, 
+        col_name='Narrative Function', 
+        err_col_name='Is_Error',
+        max_returned=None
+):
     """
-    Compute embeddings for the 'Narrative Function' field using a SentenceTransformer model.
+    Compute embeddings for the specified column in the DataFrame using a SentenceTransformer model.
+    
+    Parameters:
+    - source_df: DataFrame containing the source data.
+    - embedding_model_name: Name of the SentenceTransformer model to use for computing embeddings.
+    - col_name: Name of the column to compute embeddings for (default is 'Narrative Function').
+    - err_col_name: Name of the column indicating errors (default is 'Is_Error').
+    - max_returned: Maximum number of samples to return (optional).
+    
+    Returns:
+    - embeddings: Computed embeddings for the specified column.
+    - idx_of_df: Index of the DataFrame rows used for computing embeddings.
     """
     model = SentenceTransformer(embedding_model_name)
-    narrative_functions = source_df.loc[source_df['Is_Error'] == 'No', 'Narrative Function'].dropna()
+    if err_col_name in source_df.columns:
+        source_df = source_df.loc[source_df[err_col_name] == 'No', col_name]
+    if max_returned:
+        source_df = source_df.sample(n=max_returned)
+
+    narrative_functions = source_df[col_name].dropna()
     texts = narrative_functions.str.split(':').str.get(0).tolist()
     embeddings = model.encode(texts, show_progress_bar=True)
     idx_of_df = narrative_functions.index
     return embeddings, idx_of_df
 
 
-def compute_high_similarity_pairs(embeddings, idx_of_df, sim_threshold=0.3, sample_size=2000000):
+def compute_high_similarity_pairs(embeddings, idx_of_df, sim_threshold=0.3, sample_size=2_000_000, batch_size=1000):
     """
-    Compute pairs of high similarity based on cosine similarity of embeddings.
+    Identify pairs of data points with high similarity based on cosine similarity of embeddings.
+    This version processes embeddings in batches to handle large datasets efficiently.
+    
+    Parameters:
+    - embeddings: Embeddings of the data points.
+    - idx_of_df: Index of the DataFrame rows corresponding to the embeddings.
+    - sim_threshold: Threshold for considering a pair as highly similar (default is 0.3).
+    - sample_size: Number of high similarity pairs to sample (default is 2,000,000).
+    - batch_size: Number of embeddings to process in each batch (default is 1000).
+    
+    Returns:
+    - high_sim_sample: DataFrame containing sampled high similarity pairs.
     """
-    similarity_matrix = cosine_similarity(embeddings, embeddings)
-    tril_indices = np.tril_indices_from(similarity_matrix)
-    similarity_matrix[tril_indices] = 0  # Zero out lower triangle and diagonal
-    sim_df = pd.DataFrame(similarity_matrix, index=idx_of_df, columns=idx_of_df)
-    sim_df = sim_df.stack().reset_index()
-    sim_df.columns = ['level_0', 'level_1', 'similarity']
-    high_sim_pairs = sim_df.loc[
-        (sim_df['similarity'] > sim_threshold) &
-        (sim_df['similarity'] < 0.99999)
-    ]
+    num_embeddings = len(embeddings)
+    high_sim_pairs = []
+
+    for start in tqdm(range(0, num_embeddings, batch_size), total=int(np.ceil(num_embeddings / batch_size))):
+        end = min(start + batch_size, num_embeddings)
+        batch_embeddings = embeddings[start:end]
+        batch_idx = idx_of_df[start:end]
+
+        # Compute cosine similarity for the current batch
+        similarity_matrix = cosine_similarity(batch_embeddings, embeddings)
+        
+        # Zero out lower triangle and diagonal for the current batch
+        for i in range(end - start):
+            similarity_matrix[i, start:start + i + 1] = 0
+
+        # Convert to DataFrame and filter based on similarity threshold
+        sim_df = pd.DataFrame(similarity_matrix, index=batch_idx, columns=idx_of_df)
+        sim_df = sim_df.stack().reset_index()
+        sim_df.columns = ['level_0', 'level_1', 'similarity']
+        batch_high_sim_pairs = sim_df.loc[
+            (sim_df['similarity'] > sim_threshold) &
+            (sim_df['similarity'] < 0.99999)
+        ]
+        high_sim_pairs.append(batch_high_sim_pairs)
+
+    # Concatenate all high similarity pairs from each batch
+    high_sim_pairs = pd.concat(high_sim_pairs, ignore_index=True)
     high_sim_pairs = high_sim_pairs.loc[high_sim_pairs['level_0'] != high_sim_pairs['level_1']]
-    high_sim_sample = high_sim_pairs.sample(n=sample_size)
+    high_sim_sample = high_sim_pairs.sample(n=min(sample_size, len(high_sim_pairs)))
+
     return high_sim_sample
 
 
-def create_high_similarity_samples(source_df, high_sim_sample):
+def create_high_similarity_samples(text_df, high_sim_sample, text_col_name='Narrative Function'):
     """
-    Create DataFrame with pairs of 'Narrative Function' texts for high similarity samples.
+    Create a DataFrame with pairs of texts that have high similarity.
+    
+    Parameters:
+    - text_df: DataFrame containing the text data.
+    - high_sim_sample: DataFrame containing high similarity pairs.
+    - text_col_name: Name of the column containing the text data (default is 'Narrative Function').
+    
+    Returns:
+    - high_sim_pairwise_samples_to_evaluate: DataFrame with pairs of high similarity texts.
     """
-    narrative_functions = source_df['Narrative Function']
+    narrative_functions = text_df[text_col_name]
     high_sim_pairwise_samples_to_evaluate = (
         pd.concat([
             narrative_functions.loc[high_sim_sample['level_0']].reset_index(drop=True).rename('source_1'),
@@ -68,9 +127,17 @@ def create_high_similarity_samples(source_df, high_sim_sample):
     )
     return high_sim_pairwise_samples_to_evaluate
 
+
 def generate_prompts(high_sim_samples, k=5):
     """
     Generate prompts for the OpenAI API based on high similarity samples.
+    
+    Parameters:
+    - high_sim_samples: DataFrame containing high similarity text pairs.
+    - k: Number of pairs to include in each prompt (default is 5).
+    
+    Returns:
+    - all_prompts: List of generated prompts for the OpenAI API.
     """
     prompt_template = (f"""I will show you {k} pairs of sources, all from different news articles.
 
